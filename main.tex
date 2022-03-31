@@ -8,7 +8,7 @@
 \usepackage{todonotes}
 
 \usepackage[urldate=long]{biblatex}
-\addbibresource{references.bib}
+\addbibresource{sections/references.bib}
 \usepackage[hidelinks]{hyperref}
 
 % Changes the paragraph indentations to newlines
@@ -17,6 +17,7 @@
 \usepackage[a4paper]{geometry}
 
 \usepackage{minted}
+% \usemintedstyle{vs}
 \newenvironment{haskell}{\VerbatimEnvironment\begin{center}\begin{minted}[escapeinside=!!]{haskell}}{\end{minted}\end{center}}
 
 \newcommand{\inlinehaskell}[1]{\mintinline[escapeinside=!!]{haskell}{#1}}
@@ -29,7 +30,7 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{} % Clears the default header and footers
-\fancyhead[L]{Jort van Gorkum - Master's Thesis Proposal}
+\fancyhead[L]{Jort van Gorkum — Master's Thesis}
 \fancyhead[R]{Page \thepage\ of \pageref{LastPage}}
 
 \linespread{1.3}
@@ -44,7 +45,6 @@
 \begin{document}
 
 \input{sections/cover.tex}
-\thispagestyle{empty} % Removes the first page number at the bottom
 
 % \input{sections/introduction.tex}
 
@@ -57,8 +57,8 @@
 % \newpage
 % \input{sections/planning.tex}
 
-% \newpage
-% \input{sections/appendix.tex}
+\newpage
+\input{sections/appendix.tex}
 
 \newpage
 \printbibliography

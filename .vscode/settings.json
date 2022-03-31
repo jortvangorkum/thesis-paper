@@ -65,34 +65,8 @@
             ]
         }
     ],
-    "grammarly.overrides": [
-        {
-            "files": [
-                "**/sections/*.tex"
-            ],
-            "config": {
-                "audience": "knowledgeable",
-                "dialect": "american",
-                "domain": "academic",
-                "emotions": [],
-                "goals": []
-            }
-        },
-        {
-            "files": [
-                "**/sections/introduction.tex"
-            ],
-            "config": {
-                "audience": "knowledgeable",
-                "dialect": "american",
-                "domain": "academic",
-                "emotions": [
-                    "neutral"
-                ],
-                "goals": [
-                    "inform"
-                ]
-            }
-        }
-    ]
+    "ltex.latex.environments": {
+        "haskell": "ignore"
+    },
+    "ltex.additionalRules.enablePickyRules": true
 }
