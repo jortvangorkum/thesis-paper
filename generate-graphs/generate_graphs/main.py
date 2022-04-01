@@ -5,12 +5,21 @@ import re
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
-from scipy import stats
+from scipy.optimize import curve_fit
 import statsmodels.api as sm
 
 regex_memory_benchmark = r"benchmarking (.*?)\/(\d*)(?:(?:.|\n)*?)iters(?:(?:\s)*)(\d+\.?\d+e?\d*)"
 
 DATA_MEMORY_PATH = './data/memory'
+IMAGES_PATH = '../images'
+
+def calculate_rsquared(x: pd.Series, y: pd.Series, f, popt) -> float:
+    ss_res   = np.dot((y - f(x, *popt)), (y - f(x, *popt)))
+    ymean    = np.mean(y)
+    ss_tot   = np.dot((y-ymean), (y-ymean))
+    rsquared = 1 - ss_res/ss_tot
+
+    return rsquared
 
 def parse_memory_data_file(file_name: str) -> pd.DataFrame:
     with open(f"{DATA_MEMORY_PATH}/{file_name}.txt", 'r') as data_memory_file:
@@ -30,7 +39,7 @@ def parse_memory_data_file(file_name: str) -> pd.DataFrame:
 
         return df_data_memory
 
-def plot_linear_benchmark(df: pd.DataFrame, benchmark_name: str, logx = True, logy = True) -> None:
+def plot_linear_benchmark(df: pd.DataFrame, benchmark_name: str) -> None:
     data = df[df['Benchmark'] == benchmark_name]
     x = data["Amount Nodes"]
     y = data["Allocated Bytes"]
@@ -39,32 +48,47 @@ def plot_linear_benchmark(df: pd.DataFrame, benchmark_name: str, logx = True, lo
     r = model.fit()
     slope = r.params[0]
     rsquared = r.rsquared 
-    
+
     ax1 = sns.lineplot(x=x, y=slope * x)
     ax2 = sns.scatterplot(x=x, y=y)
 
-    if logx:
-        plt.xscale('log')
-    if logy:
-        plt.yscale('log')
+    plt.xscale('log')
+    plt.yscale('log')
     
     ax1.legend(title="Equation", loc='upper left', labels=["y={0:.1f}x, R²={1:.2f}".format(slope, rsquared)])
 
+def plot_log_benchmark(df: pd.DataFrame, benchmark_name: str) -> None:
+    data = df[df['Benchmark'] == benchmark_name]
+    x = data["Amount Nodes"]
+    y = data["Allocated Bytes"]
+
+    def log_func(x, a, b): 
+        return a + b * np.log(x)
+
+    (popt, _) = curve_fit(log_func, x, y)
+    rsquared = calculate_rsquared(x, y, log_func, popt)
+
+    ax1 = sns.lineplot(x=x, y=x.apply(lambda i: log_func(i, *popt)))
+    ax2 = sns.scatterplot(x=x, y=y)
+
+    plt.xscale('log')
+
+    ax1.legend(title="Equation", loc='upper left', labels=["y={0:.1f} * ln(x) + {1:.1f}, R²={2:.2f}".format(*popt, rsquared)])
+
+def save_benchmark(file_name: str) -> None:
+    plt.savefig(f'{IMAGES_PATH}/{file_name}.pdf')
+    plt.clf()
 
 if __name__ == "__main__":
     sns.set_palette("pastel")
 
     df_data_memory_1 = parse_memory_data_file('run-1')
-    # print(df_data_memory_1)
 
     plot_linear_benchmark(df_data_memory_1, 'Cata Sum Memory')
-    plt.show()
-    plt.clf()
+    save_benchmark('plots/memory/benchmark_cata_sum')
 
     plot_linear_benchmark(df_data_memory_1, 'Generic Cata Sum')
-    plt.show()
-    plt.clf()
+    save_benchmark('plots/memory/benchmark_generic_cata_sum')
 
-    plot_linear_benchmark(df_data_memory_1, 'Incremental Compute Map')
-    plt.show()
-    plt.clf()
+    plot_log_benchmark(df_data_memory_1, 'Incremental Compute Map')
+    save_benchmark('plots/memory/benchmark_incremental_cata_sum')
