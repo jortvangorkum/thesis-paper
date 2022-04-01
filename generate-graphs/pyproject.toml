@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "generate-graphs"
+version = "0.1.0"
+description = ""
+authors = ["Jort van Gorkum <jortvangorkum@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pandas = "^1.4.1"
+seaborn = "^0.11.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
