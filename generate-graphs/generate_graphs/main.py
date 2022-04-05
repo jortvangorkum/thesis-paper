@@ -72,6 +72,7 @@ def plot_log_benchmark(df: pd.DataFrame, benchmark_name: str) -> None:
     ax2 = sns.scatterplot(x=x, y=y)
 
     plt.xscale('log')
+    plt.ticklabel_format(axis='y', style='sci', scilimits=(0,3), useMathText=True)
 
     ax1.legend(title="Equation", loc='upper left', labels=["y={0:.1f} * ln(x) + {1:.1f}, R²={2:.2f}".format(*popt, rsquared)])
 
