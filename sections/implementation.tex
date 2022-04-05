@@ -1,0 +1,76 @@
+\section{Implementation}
+
+Implementing the idea using a generic programming library, would be the ultimate goal. But first a \textbf{proof-of-concept} was made to show that the implementation is a viable product. A prototype-language is created, which is based on the notion of \textit{pattern functors}.
+
+\subsection{Prototype language}
+\begin{haskell}
+data I r         = I r                  
+data K a r       = K a                  
+data (:+:) f g r = Inl (f r) | Inr (g r)
+data (:*:) f g r = Pair (f r, g r)
+\end{haskell}
+
+The definition of the pattern functor only leads to shallow recursion. Meaning that pattern functor can only be used to observe a single layer of recursion. To apply a function over the complete data structure, deep recursion is used. To implement deep recursion, the fix point is introduced.
+
+\begin{haskell}
+data Fix f = In { unFix :: f (Fix f) }
+\end{haskell}
+
+The fix point is then used to describe the recursion of the datatype on a type-level basis. Using pattern functors and fix point most of the Haskell datatypes can be represented. For example:
+
+\begin{haskell}
+data Tree a = Leaf a
+            | Node (Tree a) a (Tree a)
+
+type TreeG a = Fix (TreeF a)
+type TreeF a = K a                  -- Leaf
+            :+: ((I :*: K a) :*: I) -- Node
+\end{haskell}
+
+Because the generic representation of the Haskell datatypes can be represented using pattern functors, we can use Functors. Using the Functor class a \texttt{cata} function can be defined, which is a generic fold function.
+
+\begin{haskell}
+cata :: Functor f => (f a -> a) -> Fix f -> a
+cata alg t = alg (fmap (cata alg) (unFix t))
+\end{haskell}
+
+\begin{haskell}
+cataSum :: TreeG Int -> Int
+cataSum = cata f
+  where
+    f (Inl (K x))                         = x
+    f (Inr (Pair (Pair (I l, K x), I r))) = x + l + r
+\end{haskell}
+
+To store the intermediate results of \texttt{cata}, we want the structure of the data to be hashed. This way we can easily compare if the data structure has changed over time, without completely recomputing the resulting digests. To do this, first a fix point is introduced which additionally stores the digest.
+
+\begin{haskell}
+type Merkle f = Fix (f :*: K Digest)
+\end{haskell}
+
+Then to convert the fix point to a fix point containing the structural digest, the \texttt{Merkelize} class is introduced. 
+
+\begin{haskell}
+class Merkelize f where
+    merkleG :: Merkelize g => f (Fix g) -> (f :*: K Digest) (Fix (g :*: K Digest))
+
+merkle :: Merkelize f => Fix f -> Merkle f
+merkle = In . merkleG . unFix
+\end{haskell}
+
+Using the new fix point with its structural digest, a new \texttt{cata} function can be defined which can store its intermediate values in a \inlinehaskell{Map Digest a}. 
+
+\begin{haskell}
+cataMerkleState :: (Functor f, Traversable f, Container c, Show (c a), Show a)
+                => (f a -> a) -> Merkle f -> State (c a) a
+cataMerkleState alg (In (Pair (x, K h))) = do m <- get
+  case lookup h m of
+    Just a  -> return a
+    Nothing -> do y <- mapM (cataMerkleState alg) x
+               let r = alg y
+               modify (insert h r) >> return r
+
+cataMerkle :: (Traversable f, Container c, Show (c a), Show a)
+           => (f a -> a) -> Merkle f -> (a, c a)
+cataMerkle alg t = runState (cataMerkleState alg t) empty
+\end{haskell}

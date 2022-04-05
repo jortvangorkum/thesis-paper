@@ -8,7 +8,7 @@
 \usepackage{todonotes}
 
 \usepackage[urldate=long]{biblatex}
-\addbibresource{sections/references.bib}
+\addbibresource{references.bib}
 \usepackage[hidelinks]{hyperref}
 
 % Changes the paragraph indentations to newlines
@@ -33,7 +33,7 @@
 \fancyhead[L]{Jort van Gorkum — Master's Thesis}
 \fancyhead[R]{Page \thepage\ of \pageref{LastPage}}
 
-\linespread{1.3}
+\linespread{1.2}
 
 \usepackage[inline]{enumitem}
 
@@ -46,16 +46,25 @@
 
 \input{sections/cover.tex}
 
-% \input{sections/introduction.tex}
-
-% \newpage
-% \input{sections/background/main.tex}
+\input{sections/abstract.tex}
 
 \newpage
-\input{sections/experiments.tex}
+\input{sections/introduction.tex}
 
-% \newpage
-% \input{sections/planning.tex}
+\newpage
+\input{sections/background.tex}
+
+\newpage
+\input{sections/implementation.tex}
+
+\newpage
+\input{sections/results.tex}
+
+\newpage
+\input{sections/conclusion.tex}
+
+\newpage
+\input{sections/future_work.tex}
 
 \newpage
 \input{sections/appendix.tex}

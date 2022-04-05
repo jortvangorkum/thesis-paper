@@ -60,7 +60,7 @@ def plot_linear_benchmark(df: pd.DataFrame, benchmark_name: str) -> None:
     y = data["Allocated Bytes"]
 
     plot_linear_line(x, y)
-    ax2 = sns.scatterplot(x=x, y=y)
+    ax2 = sns.scatterplot(x=x, y=y, label="_nolegend_")
 
     plt.xscale('log')
     plt.yscale('log')
@@ -82,7 +82,7 @@ def plot_log_benchmark(df: pd.DataFrame, benchmark_name: str) -> None:
     y = data["Allocated Bytes"]
 
     plot_log_line(x, y)
-    ax2 = sns.scatterplot(x=x, y=y)
+    ax2 = sns.scatterplot(x=x, y=y, label="_nolegend_")
 
     plt.xscale('log')
     plt.ticklabel_format(axis='y', style='sci', scilimits=(0,3), useMathText=True)

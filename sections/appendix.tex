@@ -1,7 +1,9 @@
 \section{Appendix}
 \appendix
 
-\section{Definition Generic Datatypes}
+\section{Implementation Regular}
+
+\subsection{Definition Generic Datatypes}
 \label{app-def-generic-datatypes}
 \begin{haskell}
 data U r         = U
@@ -14,7 +16,7 @@ data C c f r     = C (f r)
 newtype Fix f = In { out :: f (Fix f) }
 \end{haskell}
 
-\section{Implementation Hashable}
+\subsection{Implementation Hashable}
 \label{app-impl-hashable}
 \begin{haskell}
 class Hashable f where
@@ -43,7 +45,7 @@ instance (Hashable f) => Hashable (C c f) where
   hash (C x) = digestConcat [digest "C", hash x]
 \end{haskell}
 
-\section{Implementation Merkle}
+\subsection{Implementation Merkle}
 \label{app-impl-merkle}
 \begin{haskell}
 type Merkle f = Fix (f :*: K Digest)
@@ -58,7 +60,7 @@ merkle :: (Regular a, Hashable (PF a), Functor (PF a))
 merkle = In . merkleG . fmap merkle . from
 \end{haskell}
 
-\section{Implementation Cata Merkle}
+\subsection{Implementation Cata Merkle}
 \label{app-impl-cata-merkle}
 \begin{haskell}
 cataMerkleState :: (Functor f, Traversable f)
@@ -76,7 +78,7 @@ cataMerkle :: (Functor f, Traversable f)
 cataMerkle alg t = runState (cataMerkleState alg t) M.empty
 \end{haskell}
 
-\section{Implementation Zipper Merkle}
+\subsection{Implementation Zipper Merkle}
 \label{app-impl-zipper-merkle}
 \begin{haskell}
 data Loc :: * -> * where
