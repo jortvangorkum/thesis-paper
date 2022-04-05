@@ -87,8 +87,9 @@ def plot_log_benchmark(df: pd.DataFrame, benchmark_name: str) -> None:
     plt.xscale('log')
     plt.ticklabel_format(axis='y', style='sci', scilimits=(0,3), useMathText=True)
 
-def plot_all_benchmarks(df: pd.DataFrame, benchmark_names: List[Tuple[str, FuncType]]) -> None:
-    for (benchmark_name, func_type) in benchmark_names:
+def plot_all_benchmarks(df: pd.DataFrame, benchmarks: List[Tuple[str, FuncType]]) -> None:
+    benchmark_names = []
+    for (benchmark_name, func_type) in benchmarks:
         data = df[df['Benchmark'] == benchmark_name]
         x = data["Amount Nodes"]
         y = data["Allocated Bytes"]
@@ -99,12 +100,13 @@ def plot_all_benchmarks(df: pd.DataFrame, benchmark_names: List[Tuple[str, FuncT
             case FuncType.Log:
                 plot_log_line(x,y)
 
-        ax = sns.scatterplot(x=x, y=y)
+        ax = sns.scatterplot(x=x, y=y, label="_nolegend_")
+        benchmark_names.append(benchmark_name)
 
-        plt.xscale('log')
-        plt.yscale('log')
+    ax.legend(title="Benchmarks", loc="upper left", labels=benchmark_names)
 
-        ax.legend(title="Benchmarks", loc="upper left", labels=benchmark_names)
+    plt.xscale('log')
+    plt.yscale('log')
 
 def save_benchmark(file_name: str) -> None:
     plt.savefig(f'{IMAGES_PATH}/{file_name}.pdf')
@@ -124,5 +126,5 @@ if __name__ == "__main__":
     plot_log_benchmark(df_data_memory_1, 'Incremental Compute Map')
     save_benchmark('plots/memory/benchmark_incremental_cata_sum')
 
-    plot_all_benchmarks(df_data_memory_1, ['Cata Sum Memory', 'Generic Cata Sum', 'Incremental Compute Map'])
+    plot_all_benchmarks(df_data_memory_1, [('Cata Sum Memory', FuncType.Linear), ('Generic Cata Sum', FuncType.Linear), ('Incremental Compute Map', FuncType.Log)])
     save_benchmark('plots/memory/all_benchmarks')
