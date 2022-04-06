@@ -1,4 +1,3 @@
-from enum import Enum, auto
 from typing import List, Tuple
 import numpy as np
 import pandas as pd
@@ -10,9 +9,6 @@ from scipy.optimize import curve_fit
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
 
-class FuncType(Enum):
-    Linear = auto()
-    Log = auto()
 
 def calculate_rsquared(x: pd.Series, y: pd.Series, f, popt) -> float:
     ss_res   = np.dot((y - f(x, *popt)), (y - f(x, *popt)))
