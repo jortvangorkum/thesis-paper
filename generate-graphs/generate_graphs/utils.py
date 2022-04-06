@@ -72,7 +72,15 @@ def plot_log_benchmark(df: pd.DataFrame, benchmark_name: str, x_name: str, y_nam
     plt.ticklabel_format(axis='y', style='sci', scilimits=(0,3), useMathText=True)
 
 def plot_all_benchmarks(df: pd.DataFrame, x_name: str, y_name: str) -> None:
-    ax = sns.lineplot(data=df, x=x_name, y=y_name, style='Benchmark', hue='Benchmark', markers=True)
+    ax = sns.lineplot(
+        data=df,
+        x=x_name,
+        y=y_name,
+        style='Benchmark',
+        hue='Benchmark',
+        markers=True,
+        dashes=False,
+    )
 
     plt.xscale('log')
     plt.yscale('log')
