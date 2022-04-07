@@ -1,11 +1,11 @@
 \section{Appendix}
 \appendix
 
-\section{Implementation Regular}
+\section{Implementation Memo Cata}
 
 \subsection{Definition Generic Datatypes}
 \label{app-def-generic-datatypes}
-\begin{haskell}
+\begin{minted}{haskell}
 data U r         = U
 data I r         = I r                  
 data K a r       = K a                  
@@ -14,11 +14,11 @@ data (:*:) f g r = (f r) :*: (g r)
 data C c f r     = C (f r)
 
 newtype Fix f = In { out :: f (Fix f) }
-\end{haskell}
+\end{minted}
 
 \subsection{Implementation Hashable}
 \label{app-impl-hashable}
-\begin{haskell}
+\begin{minted}{haskell}
 class Hashable f where
   hash :: f (Fix (g :*: K Digest)) -> Digest
 
@@ -43,11 +43,11 @@ instance (Hashable f, Hashable g) => Hashable (f :*: g) where
 
 instance (Hashable f) => Hashable (C c f) where
   hash (C x) = digestConcat [digest "C", hash x]
-\end{haskell}
+\end{minted}
 
 \subsection{Implementation Merkle}
 \label{app-impl-merkle}
-\begin{haskell}
+\begin{minted}{haskell}
 type Merkle f = Fix (f :*: K Digest)
 
 merkleG :: Hashable f 
@@ -58,11 +58,11 @@ merkleG f = f :*: K (hash f)
 merkle :: (Regular a, Hashable (PF a), Functor (PF a)) 
        => a -> Merkle (PF a)
 merkle = In . merkleG . fmap merkle . from
-\end{haskell}
+\end{minted}
 
 \subsection{Implementation Cata Merkle}
 \label{app-impl-cata-merkle}
-\begin{haskell}
+\begin{minted}{haskell}
 cataMerkleState :: (Functor f, Traversable f)
                 => (f a -> a) -> Fix (f :*: K Digest) 
                 -> State (M.Map Digest a) a
@@ -76,11 +76,11 @@ cataMerkleState alg (In (x :*: K h)) = do m <- get
 cataMerkle :: (Functor f, Traversable f)
            => (f a -> a) -> Fix (f :*: K Digest) -> (a, M.Map Digest a)
 cataMerkle alg t = runState (cataMerkleState alg t) M.empty
-\end{haskell}
+\end{minted}
 
 \subsection{Implementation Zipper Merkle}
 \label{app-impl-zipper-merkle}
-\begin{haskell}
+\begin{minted}{haskell}
 data Loc :: * -> * where
   Loc :: (Zipper a) => Merkle a 
                     -> [Ctx (a :*: K Digest) (Merkle a)] 
@@ -106,4 +106,17 @@ updateLoc f loc = if   top loc'
                        $ expectJust "Exception: Cannot go up" (up loc')
   where
     loc' = modify f loc
-\end{haskell}
+\end{minted}
+
+\section{Regular}
+
+\subsection{Zipper}
+\begin{minted}{haskell}
+data instance Ctx (K a) r
+data instance Ctx U r
+data instance Ctx (f :+: g) r = CL (Ctx f r) | CR (Ctx g r)
+data instance Ctx (f :*: g) r = C1 (Ctx f r) (g r) | C2 (f r) (Ctx g r)
+data instance Ctx I r = CId
+data instance Ctx (C c f) r = CC (Ctx f r)
+data instance Ctx (S s f) r = CS (Ctx f r)
+\end{minted}

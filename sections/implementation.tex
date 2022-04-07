@@ -79,5 +79,65 @@ cataMerkle :: (Traversable f, Container c, Show (c a), Show a)
 cataMerkle alg t = runState (cataMerkleState alg t) empty
 \end{haskell}
 
+\subsection{Complexity}
+\todo[inline]{Describe for every function used the complexity and what leads to the complete complexity}
+
+\subsection{HashMap vs Trie}
+\todo[inline]{Write a piece about the comparison of storing it in a HashMap or a Trie datastructure}
+
+\subsection{Comparison of Generic programming libraries in Haskell}
+\todo[inline]{Describe the differences between Generic programming libraries in Haskell}
+
 \subsection{Regular}
 \todo[inline]{Write about the implementation of Regular and what had to change compared to the prototype language}
+
+\begin{haskell}
+newtype K a r    = K { unK :: a}     -- Constant value
+newtype I r      = I { unI :: r }    -- Recursive value
+data U r         = U                 -- Empty Constructor
+data (f :+: g) r = L (f r) | R (g r) -- Alternatives
+data (f :*: g) r = f r :*: g r       -- Combine
+data C c f r     = C { unC :: f r }  -- Name of a constructor
+data S l f r     = S { unS :: f r }  -- Name of a record selector
+\end{haskell}
+
+\begin{minted}{haskell}
+merkle :: (Regular a, Hashable (PF a), Functor (PF a))
+       => a -> Merkle (PF a)
+merkle = In . merkleG . fmap merkle . from
+\end{minted}
+
+\begin{minted}{haskell}
+cataSum :: Merkle (PF (Tree Int)) -> (Int, M.Map Digest Int)
+cataSum = cataMerkle
+  (\case
+    L (C (K x))                 -> x
+    R (C (I l :*: K x :*: I r)) -> l + x + r
+  )
+\end{minted}
+
+\subsection{Memory Strategies}
+\todo[inline]{Describe multiple memory strategies for keeping memory usage and execution time low}
+
+\subsection{Pattern Synonyms}
+\todo[inline]{Explain Pattern Synonyms}
+\begin{minted}{haskell}
+{-# COMPLETE Leaf_, Node_ #-}
+
+pattern Leaf_ :: a -> PF (Tree a) r
+pattern Leaf_ x <- L (C (K x)) where
+  Leaf_ x = L (C (K x))
+
+pattern Node_ :: r -> a -> r -> PF (Tree a) r
+pattern Node_ l x r <- R (C (I l :*: K x :*: I r)) where
+  Node_ l x r = R (C (I l :*: K x :*: I r))
+\end{minted}
+
+\begin{minted}{haskell}
+cataSum :: MerklePF (Tree Int) -> (Int, M.Map Digest Int)
+cataSum = cataMerkle
+  (\case
+    Leaf_ x     -> x
+    Node_ l x r -> l + x + r
+  )
+\end{minted}
