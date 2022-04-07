@@ -51,11 +51,15 @@ type Merkle f = Fix (f :*: K Digest)
 Then to convert the fix point to a fix point containing the structural digest, the \texttt{Merkelize} class is introduced. 
 
 \begin{haskell}
-class Merkelize f where
-    merkleG :: Merkelize g => f (Fix g) -> (f :*: K Digest) (Fix (g :*: K Digest))
+class Hashable f where
+    hash :: Hashable g => f (Fix g) -> (f :*: K Digest) (Fix (g :*: K Digest))
 
-merkle :: Merkelize f => Fix f -> Merkle f
-merkle = In . merkleG . unFix
+merkleG :: Hashable f 
+        => f (Fix (g :*: K Digest)) -> (f :*: K Digest) (Fix (g :*: K Digest))
+merkleG f = f :*: K (hash f)
+
+merkle :: Hashable f => Fix f -> Merkle f
+merkle = In . merkleG . fmap merkle . from
 \end{haskell}
 
 Using the new fix point with its structural digest, a new \texttt{cata} function can be defined which can store its intermediate values in a \inlinehaskell{Map Digest a}. 
@@ -74,3 +78,6 @@ cataMerkle :: (Traversable f, Container c, Show (c a), Show a)
            => (f a -> a) -> Merkle f -> (a, c a)
 cataMerkle alg t = runState (cataMerkleState alg t) empty
 \end{haskell}
+
+\subsection{Regular}
+\todo[inline]{Write about the implementation of Regular and what had to change compared to the prototype language}

@@ -7,7 +7,7 @@ def parse_memory_data_file(data_memory_path: str, file_name: str) -> pd.DataFram
     with open(f"{data_memory_path}/{file_name}.txt", 'r') as data_memory_file:
         data_memory_contents = data_memory_file.read()
         matches = re.finditer(regex_memory_benchmark, data_memory_contents)
-        df_data_memory = pd.DataFrame(columns=['Benchmark', 'Amount Nodes', 'Allocated Bytes'])
+        df_data_memory = pd.DataFrame(columns=['Benchmark', 'Amount Nodes', 'Memory Usage'])
 
         for match in matches:
             benchmark_name  = match.group(1)
