@@ -1,6 +1,7 @@
-\section{Background}
+\subsection{Comparison of Generic programming libraries in Haskell}
+\todo[inline]{Describe the differences between Generic programming libraries in Haskell}
 
-\subsection{Regular}
+\subsubsection{Regular}
 \todo[inline]{Describe the workings of Regular with an example}
 
 \begin{minted}{haskell}
@@ -31,7 +32,7 @@ cataSum = cata f
     f (R (C (I l :*: K x :*: r))) = l + x + r
 \end{minted}
 
-\subsubsection{Zipper}
+% Zipper
 \begin{minted}{haskell}
 data Loc :: * -> * where
   Loc :: (Regular a, Zipper (PF a)) => a -> [Ctx (PF a) a] -> Loc a
@@ -51,11 +52,3 @@ class Functor f => Zipper f where
 down :: Loc a -> Maybe (Loc a)
 down (Loc x cs) = first (from x) >>= \(a,c) -> return (Loc a (c:cs))
 \end{minted}
-
-
-\subsection{HDiff}
-\todo[inline]{Write a piece about what HDiff does and how it suggests the use of Merkle trees}
-\todo[inline]{Write a piece about the suggestion of storing the hashes inside a Trie datastructure}
-
-\subsection{Selective Memoization}
-\todo[inline]{Write a piece about what to look out for with memoization}

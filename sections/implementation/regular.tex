@@ -1,0 +1,28 @@
+\subsection{Regular}
+\todo[inline]{Write about why Regular is chosen}
+\todo[inline]{Write about the implementation of Regular and what had to change compared to the prototype language}
+
+\begin{haskell}
+newtype K a r    = K { unK :: a}     -- Constant value
+newtype I r      = I { unI :: r }    -- Recursive value
+data U r         = U                 -- Empty Constructor
+data (f :+: g) r = L (f r) | R (g r) -- Alternatives
+data (f :*: g) r = f r :*: g r       -- Combine
+data C c f r     = C { unC :: f r }  -- Name of a constructor
+data S l f r     = S { unS :: f r }  -- Name of a record selector
+\end{haskell}
+
+\begin{minted}{haskell}
+merkle :: (Regular a, Hashable (PF a), Functor (PF a))
+       => a -> Merkle (PF a)
+merkle = In . merkleG . fmap merkle . from
+\end{minted}
+
+\begin{minted}{haskell}
+cataSum :: Merkle (PF (Tree Int)) -> (Int, M.Map Digest Int)
+cataSum = cataMerkle
+  (\case
+    L (C (K x))                 -> x
+    R (C (I l :*: K x :*: I r)) -> l + x + r
+  )
+\end{minted}
