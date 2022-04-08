@@ -1,3 +1,4 @@
 {"rule":"ENGLISH_WORD_REPEAT_BEGINNING_RULE","sentence":"^\\QImplementation Cata Merkle.\\E$"}
 {"rule":"ENGLISH_WORD_REPEAT_BEGINNING_RULE","sentence":"^\\QImplementation Zipper Merkle.\\E$"}
 {"rule":"PASSIVE_VOICE","sentence":"^\\QThe fix point is then used to describe the recursion of the datatype on a type-level basis.\\E$"}
+{"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\Qmonthyeardate [],\\E$"}

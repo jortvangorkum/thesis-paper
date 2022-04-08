@@ -9,7 +9,7 @@
 
 \usepackage[urldate=long]{biblatex}
 \addbibresource{references.bib}
-\usepackage[hidelinks]{hyperref}
+\usepackage[hidelinks, linktoc=all]{hyperref}
 
 % Changes the paragraph indentations to newlines
 \usepackage[parfill]{parskip}
@@ -30,14 +30,21 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{} % Clears the default header and footers
-\fancyhead[L]{Jort van Gorkum — Master's Thesis}
+\fancyhead[L]{Incremental Computation for Generic Data Types in Haskell}
 \fancyhead[R]{Page \thepage\ of \pageref{LastPage}}
 
 \linespread{1.2}
 
 \usepackage[inline]{enumitem}
 
+\usepackage{multicol}
+\setlength{\columnsep}{3cm}
+
 \usepackage{multirow}
+
+\usepackage{datetime}
+\newdateformat{monthyeardate}{%
+  \monthname[\THEMONTH], \THEYEAR}
 
 %%%%%%%%%%%%
 % DOCUMENT %
@@ -46,6 +53,7 @@
 
 \input{sections/cover.tex}
 
+\thispagestyle{empty}
 \tableofcontents
 \clearpage
 
@@ -63,7 +71,7 @@
 \input{sections/implementation.tex}
 
 \newpage
-\input{sections/results.tex}
+\input{sections/experiments.tex}
 
 \newpage
 \input{sections/conclusion.tex}
