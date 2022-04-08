@@ -30,7 +30,7 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{} % Clears the default header and footers
-\fancyhead[L]{Incremental Computation for Generic Data Types in Haskell}
+\fancyhead[L]{Incremental Computation for Algebraic Data Types in Haskell}
 \fancyhead[R]{Page \thepage\ of \pageref{LastPage}}
 
 \linespread{1.2}
@@ -54,12 +54,14 @@
 \input{sections/cover.tex}
 
 \thispagestyle{empty}
-\tableofcontents
-\clearpage
-
-\listoftodos
-
 \input{sections/abstract.tex}
+
+\newpage
+\thispagestyle{empty}
+\tableofcontents
+
+\newpage
+\listoftodos
 
 \newpage
 \input{sections/introduction.tex}
