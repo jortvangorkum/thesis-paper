@@ -27,12 +27,6 @@
 \usepackage{graphicx}
 \graphicspath{ {images} }
 
-\usepackage{fancyhdr}
-\pagestyle{fancy}
-\fancyhf{} % Clears the default header and footers
-\fancyhead[L]{Incremental Computation for Algebraic Datatypes in Haskell}
-\fancyhead[R]{Page \thepage\ of \pageref{LastPage}}
-
 \linespread{1.2}
 
 \usepackage[inline]{enumitem}
@@ -45,6 +39,19 @@
 \usepackage{datetime}
 \newdateformat{monthyeardate}{%
   \monthname[\THEMONTH], \THEYEAR}
+
+%% Fancy Chapter Headers
+\usepackage{quotchap}
+\qsetcnfont{lmr}
+\renewcommand{\chapterheadstartvskip}{\vspace*{-7\baselineskip}} 
+
+%% Hacking quotchap
+% \renewcommand{\chapnumfont}{%
+%   \fontsize{100}{130}\selectfont% Default: 100/130
+%   \color{chaptergrey}%
+% }
+% \renewcommand*{\chapterheadstartvskip}{\vspace*{-4\baselineskip}}
+% \renewcommand*{\chapterheadendvskip}{\vspace{0.8\baselineskip}}
 
 %%%%%%%%%%%%
 % DOCUMENT %
