@@ -1,8 +1,7 @@
 \appendix
+\chapter{Implementation Memo Cata}
 
-\section{Implementation Memo Cata}
-
-\subsection{Definition Generic Datatypes}
+\section{Definition Generic Datatypes}
 \label{app-def-generic-datatypes}
 \begin{minted}{haskell}
 data U r         = U
@@ -15,7 +14,7 @@ data C c f r     = C (f r)
 newtype Fix f = In { out :: f (Fix f) }
 \end{minted}
 
-\subsection{Implementation Hashable}
+\section{Implementation Hashable}
 \label{app-impl-hashable}
 \begin{minted}{haskell}
 class Hashable f where
@@ -44,7 +43,7 @@ instance (Hashable f) => Hashable (C c f) where
   hash (C x) = digestConcat [digest "C", hash x]
 \end{minted}
 
-\subsection{Implementation Merkle}
+\section{Implementation Merkle}
 \label{app-impl-merkle}
 \begin{minted}{haskell}
 type Merkle f = Fix (f :*: K Digest)
@@ -59,7 +58,7 @@ merkle :: (Regular a, Hashable (PF a), Functor (PF a))
 merkle = In . merkleG . fmap merkle . from
 \end{minted}
 
-\subsection{Implementation Cata Merkle}
+\section{Implementation Cata Merkle}
 \label{app-impl-cata-merkle}
 \begin{minted}{haskell}
 cataMerkleState :: (Functor f, Traversable f)
@@ -77,7 +76,7 @@ cataMerkle :: (Functor f, Traversable f)
 cataMerkle alg t = runState (cataMerkleState alg t) M.empty
 \end{minted}
 
-\subsection{Implementation Zipper Merkle}
+\section{Implementation Zipper Merkle}
 \label{app-impl-zipper-merkle}
 \begin{minted}{haskell}
 data Loc :: * -> * where
@@ -107,9 +106,9 @@ updateLoc f loc = if   top loc'
     loc' = modify f loc
 \end{minted}
 
-\section{Regular}
+\chapter{Regular}
 
-\subsection{Zipper}
+\section{Zipper}
 \begin{minted}{haskell}
 data instance Ctx (K a) r
 data instance Ctx U r
