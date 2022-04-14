@@ -67,7 +67,8 @@
         }
     ],
     "ltex.latex.environments": {
-        "haskell": "ignore"
+        "haskell": "ignore",
+        "minted": "ignore"
     },
     "ltex.additionalRules.enablePickyRules": true,
     "python.linting.pylintEnabled": true,

@@ -7,3 +7,5 @@ Gorkum
 datatypes
 cata
 memoization
+Memoization
+recomputation

@@ -1,5 +1,124 @@
 \chapter{Specific Implementation}
 
-\todo[inline]{Write a piece about the use of Merkle Trees introduced by the Hdiff paper}
+\begin{minted}{haskell}
+data Tree a = Leaf a
+            | Node (Leaf a) a (Leaf a)
+\end{minted}
 
-\input{sections/specific_implementation/zipper.tex}
+\begin{minted}{haskell}
+sumTree :: Tree Int -> Int
+sumTree (Leaf x)     = x
+sumTree (Node l x r) = x + (sumTree l) + (sumTree r)
+\end{minted}
+
+Computing a value of a data structure can easily be defined in Haskell, but every time there is a small change in the \texttt{Tree}, the entire \texttt{Tree} needs to be recomputed. This is inefficient, because most of the computation has already been performed in the previous computation. 
+
+To prevent recomputation of already computed values, the technique memoization is introduced. Memoization is a technique where the results of computational intensive tasks are stored and when the same input occurs, the results are reused. 
+
+Implementing memoization for incrementally computing a value over a data structure, we need a way to efficiently represent the data structure. We do this by using hashes. Hashing is a process of transforming any string of characters into a fixed-length value, where the same input always generates the same output. Using hashes, we can efficiently store the data structure and check in constant time if two data structures are equal.
+
+\begin{minted}{haskell}
+sumTreeInc :: Tree Int -> (Int, Map Hash Int)
+sumTreeInc l@(Leaf x)     = (x, insert (hash l) x empty)
+sumTreeInc n@(Node l x r) = (y, insert (hash n) y (ml <> mr))
+    where
+        y = x + xl + xr
+        (xl, ml) = sumTreeInc l
+        (xr, mr) = sumTreeInc r
+\end{minted}
+
+Generating a hash for every subset of the data structure for every execution is time-consuming and is unnecessary because most of the data structure stays the same. So, the Merkle Tree concept is used, which is inspired by the work of \citeauthor{miraldo2019efficient}\cite{miraldo2019efficient}. The Merkle Tree integrates the hashes with the data structure.
+
+First we introduce a new datatype \texttt{TreeH}, which contains a \texttt{Hash} for every constructor in \texttt{Tree}. Then to convert the \texttt{Tree} datatype into the \texttt{TreeH} datatype, the structure of the Tree is hashed and stored into the datatype using the \texttt{merkle} function.
+
+\begin{minted}{haskell}
+data TreeH a = LeafH Hash a
+             | NodeH Hash (Leaf a) a (Leaf a)
+\end{minted}
+
+\begin{minted}{haskell}
+merkle :: Tree Int -> TreeH Int
+merkle (Leaf x) = LeafH h x
+    where
+        h = hash ["Leaf", x]
+merkle (Node l x r) = NodeH h l' x r'
+    where
+        h = hash ["Node", x, getHash l', getHash r']
+        l' = merkle l
+        r' = merkle r
+\end{minted}
+
+The precomputed hashes can then be used to easily create a \texttt{Map}, without computing the hashes every time the \texttt{sumTreeIncH} function is called.
+
+\begin{minted}{haskell}
+sumTreeIncH :: TreeH Int -> (Int, Map Hash Int)
+sumTreeIncH (LeafH h x)     = (x, insert h x empty)
+sumTreeIncH (NodeH h l x r) = (y, insert h y (ml <> mr))
+    where
+        y = x + xl + xr
+        (xl, ml) = sumTreeInc l
+        (xr, mr) = sumTreeInc r
+\end{minted}
+
+The problem with this implementation is, that when the \texttt{Tree} datatype is updated, the entire \texttt{Tree} needs to be converted into a \texttt{TreeH}, which is linear in time. This can be done more efficiently, by only updating the hashes which are impacted by the changes. Which means that only the hashes of the change and the parents need to be updated. 
+
+The first intuition to fixing this would be using a pointer to the value that needs to be changed. But because Haskell is a functional programming language, there are no pointers. Luckily, there is a data structure which can be used to efficiently update the data structure, namely the Zipper\cite{huet1997zipper} data structure.
+
+\newpage
+\section{Zipper}
+
+The Zipper data structure works by keeping track of how the data structure is being traversed through. The Zipper keeps track by using a \textit{context}. The context is the inverse of the direction which the data structure is traversed through. Meaning that when we traverse to the left side of the \texttt{Tree} the right side of the \texttt{Tree} gets stored in the context. 
+
+\begin{minted}{haskell}
+data Cxt a = Top
+           | L (Cxt a) (Tree a) a
+           | R (Cxt a) (Tree a) a
+\end{minted}
+
+Then combining the \texttt{Tree} and the \texttt{Cxt}, we can traverse through the \texttt{Tree} and keeping the \textit{context} of how we got to the current point.
+
+\begin{minted}{haskell}
+type Loc a = (Tree a, Cxt a)
+\end{minted}
+
+Using the \texttt{Loc}, we can define multiple function on how to traverse through the \texttt{Tree}.
+
+\begin{minted}{haskell}
+left :: Loc a -> Loc a
+left (Node l x r, c) = (l, L c r x)
+
+right :: Loc a -> Loc a
+right (Node l x r, c) = (r, R c l x)
+
+up :: Loc a -> Loc a
+up (t, L c r x) = (Node t x r, c)
+up (t, R c l x) = (Node l x t, c)
+\end{minted}
+
+When we get to the desired point in the \texttt{Tree} which needs to be updated, we call the \texttt{modify} function.
+
+\begin{minted}{haskell}
+modify :: (Tree a -> Tree a) -> Loc a -> Loc a
+modify f (t, c) = (f t, c)
+\end{minted}
+
+Then to get the entire updated tree back, we only need to call the \texttt{up} function indefinitely until the \texttt{Loc} is at the top.
+
+\begin{minted}{haskell}
+top :: Loc a -> Loc a
+top l@(t, Top) = l
+top l = top (up l)
+\end{minted}
+
+\newpage
+\subsection{Zipper \texttt{TreeH}}
+
+To implement the Zipper for \texttt{TreeH}, to same setup can be used as in the previous section, but when modifying the \texttt{TreeH} we also need to update all the parent nodes. But, first the \texttt{Cxt} needs to be updated to additionally store the hashes.
+
+\begin{minted}[escapeinside=!!]{haskell}
+data Cxt a = Top
+           | L (Cxt a) (Tree a) !\colorbox{YellowGreen}{Hash}! a
+           | R (Cxt a) (Tree a) !\colorbox{YellowGreen}{Hash}! a
+\end{minted}
+
+% \input{sections/specific_implementation/zipper.tex}

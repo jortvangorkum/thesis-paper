@@ -2,3 +2,4 @@
 {"rule":"ENGLISH_WORD_REPEAT_BEGINNING_RULE","sentence":"^\\QImplementation Zipper Merkle.\\E$"}
 {"rule":"PASSIVE_VOICE","sentence":"^\\QThe fix point is then used to describe the recursion of the datatype on a type-level basis.\\E$"}
 {"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\Qmonthyeardate [],\\E$"}
+{"rule":"PASSIVE_VOICE","sentence":"^\\QFirst, we present an implementation of incrementally computing a value over a data structure, then in Chapter \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q a generic version of the implementation is presented.\\E$"}
