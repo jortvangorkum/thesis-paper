@@ -15,6 +15,9 @@ Computing a value of a data structure can easily be defined in Haskell, but ever
 
 To prevent recomputation of already computed values, the technique memoization is introduced. Memoization is a technique where the results of computational intensive tasks are stored and when the same input occurs, the results are reused. 
 
+\todo[inline]{Write more about the equality and storage of data structure compared to hashes}
+\todo[inline]{Write about the bad side of using hashes}
+
 Implementing memoization for incrementally computing a value over a data structure, we need a way to efficiently represent the data structure. We do this by using hashes. Hashing is a process of transforming any string of characters into a fixed-length value, where the same input always generates the same output. Using hashes, we can efficiently store the data structure and check in constant time if two data structures are equal.
 
 \begin{minted}{haskell}
@@ -27,8 +30,26 @@ sumTreeInc n@(Node l x r) = (y, insert (hash n) y (ml <> mr))
         (xr, mr) = sumTreeInc r
 \end{minted}
 
+\todo[inline]{Write about the reuse of the Map}
+
+\todo[inline]{Maybe add the more efficient implementation of merging maps?}
+\begin{minted}{haskell}
+sumTreeIncMap :: Map Hash Int -> Tree Int -> (Int, Map Hash Int)
+sumTreeIncMap m l@(Leaf x) = case lookup (hash l) m of
+    Just x  -> (x, m) 
+    Nothing -> (x, insert (hash l) x empty)
+sumTreeIncMap m n@(Node l x r) = case lookup (hash n) m of
+    Just x  -> (x, m)
+    Nothing -> (y, insert (hash n) y (ml <> mr))
+        where
+            y = x + xl + xr
+            (xl, ml) = sumTreeIncMap m l
+            (xr, mr) = sumTreeIncMap m r
+\end{minted}
+
 Generating a hash for every subset of the data structure for every execution is time-consuming and is unnecessary because most of the data structure stays the same. So, the Merkle Tree concept is used, which is inspired by the work of \citeauthor{miraldo2019efficient}\cite{miraldo2019efficient}. The Merkle Tree integrates the hashes with the data structure.
 
+\section{Merkle Tree (\texttt{TreeH})}
 First we introduce a new datatype \texttt{TreeH}, which contains a \texttt{Hash} for every constructor in \texttt{Tree}. Then to convert the \texttt{Tree} datatype into the \texttt{TreeH} datatype, the structure of the Tree is hashed and stored into the datatype using the \texttt{merkle} function.
 
 \begin{minted}{haskell}
@@ -67,6 +88,8 @@ The first intuition to fixing this would be using a pointer to the value that ne
 \newpage
 \section{Zipper}
 
+\todo[inline]{Add a visual example}
+
 The Zipper data structure works by keeping track of how the data structure is being traversed through. The Zipper keeps track by using a \textit{context}. The context is the inverse of the direction which the data structure is traversed through. Meaning that when we traverse to the left side of the \texttt{Tree} the right side of the \texttt{Tree} gets stored in the context. 
 
 \begin{minted}{haskell}
@@ -79,6 +102,13 @@ Then combining the \texttt{Tree} and the \texttt{Cxt}, we can traverse through t
 
 \begin{minted}{haskell}
 type Loc a = (Tree a, Cxt a)
+\end{minted}
+
+To use the Loc, first we need to create a \texttt{Cxt}.
+
+\begin{minted}{haskell}
+enter :: Tree a -> Loc a
+enter t = (t, Top)
 \end{minted}
 
 Using the \texttt{Loc}, we can define multiple function on how to traverse through the \texttt{Tree}.
@@ -105,20 +135,40 @@ modify f (t, c) = (f t, c)
 Then to get the entire updated tree back, we only need to call the \texttt{up} function indefinitely until the \texttt{Loc} is at the top.
 
 \begin{minted}{haskell}
-top :: Loc a -> Loc a
-top l@(t, Top) = l
-top l = top (up l)
+leave :: Loc a -> Loc a
+leave l@(t, Top) = l
+leave l = top (up l)
 \end{minted}
 
 \newpage
 \subsection{Zipper \texttt{TreeH}}
 
-To implement the Zipper for \texttt{TreeH}, to same setup can be used as in the previous section, but when modifying the \texttt{TreeH} we also need to update all the parent nodes. But, first the \texttt{Cxt} needs to be updated to additionally store the hashes.
+To implement the Zipper for \texttt{TreeH}, the same setup can be used as in the previous section, but when modifying the \texttt{TreeH} we also need to update all the parent nodes. First the \texttt{Cxt} needs to be updated to additionally store the hashes. Then the direction functions need to be updated to also store the \texttt{Hash} in the \texttt{Cxt}.
 
 \begin{minted}[escapeinside=!!]{haskell}
 data Cxt a = Top
            | L (Cxt a) (Tree a) !\colorbox{YellowGreen}{Hash}! a
            | R (Cxt a) (Tree a) !\colorbox{YellowGreen}{Hash}! a
+\end{minted}
+
+When modifying the value in the \texttt{TreeH}, the parents nodes hashes also needs to be updated.
+
+\begin{minted}{haskell}
+updateLoc :: (TreeH a -> TreeH a) -> Loc a -> Loc a
+updateLoc f l = if top l' then l' else updateParents (up l')
+    where
+        l' = modify f l
+
+        updateParents :: Loc a -> Loc a
+        updateParents (Loc x Top) = Loc (updateHash x) Top
+        updateParents (Loc x cs)  = updateParents $ up (Loc (updateHash x) cs)
+\end{minted}
+
+\begin{minted}{haskell}
+update :: (TreeH a -> TreeH a) -> [Loc a -> Loc a] -> TreeH a -> TreeH a 
+update f dirs t = leave $ updateLoc f l'
+    where
+        l' = applyDirs dirs (enter t)
 \end{minted}
 
 % \input{sections/specific_implementation/zipper.tex}
