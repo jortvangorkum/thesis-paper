@@ -1,0 +1,78 @@
+\chapter{Datatype-Generic Programming in Haskell}
+
+The implementation in Chapter \ref{chap-spec-impl} is an efficient implementation for incrementally computing the summation over a \texttt{Tree} datatype. However, when we want to implement this functionality for a different datatype, a lot of code needs to be copied while the process remains the same. This entails to poor maintainability and a lot of redundant code.
+
+In this Chapter, we introduce Datatype-Generic Programming, also known as \textit{generic programming} or \textit{generics} in Haskell, as a technique that allows defining functions which can operate on a large class of datatypes. 
+\todo[inline]{Add an example of the usage of generics, e.g., the deriving mechanism in GHC}
+
+\section{Introduction}
+In this Section, we explain the inner-workings of generic-programming by use of an example. This example is inspired by the Haskell library \texttt{regular}.
+\todo[inline]{Introduce generic programming and how it works}
+\begin{minted}{haskell}
+data I r         = I r                   -- Recursion
+data K a r       = K a                   -- Constants
+data (:+:) f g r = Inl (f r) | Inr (g r) -- Sums
+data (:*:) f g r = Pair (f r, g r)       -- Products
+\end{minted}
+
+Using these datatypes, we can define the \texttt{Tree} datatype used in Chapter \ref{chap-spec-impl} as:
+
+\begin{minted}{haskell}
+type TreeG a = Fix (PF (Tree a))
+type PFTree a = K a                  -- Leaf
+             :+: ((I :*: K a) :*: I) -- Node
+type instance PF (Tree a) = PFTree a
+\end{minted}
+
+\begin{minted}{haskell}
+class GSize f where
+    gsize :: (a -> Int) -> f a -> Int
+\end{minted}
+
+\begin{minted}{haskell}
+instance GSize I where
+    gsize f (I x) = f x
+
+instance GSize (K a) where
+    gsize _ _ = 0
+
+instance (GSize f, GSize g) => GSize (f :+: g) where
+    gsize f (Inl x) = gsize f x
+    gsize f (Inr x) = gsize f x
+
+instance (GSize f, GSize g) => GSize (f :*: g) where
+    gsize f (Pair (x, y)) = gsize f x + gsize f y
+\end{minted}
+
+\begin{minted}{haskell}
+size :: (Generic a, GSize (PF a)) => a -> Int
+size = 1 + gsize size (from x)
+\end{minted}
+
+\subsection{Deep vs Shallow recursion}
+\begin{minted}{haskell}
+data Fix f = In { unFix :: f (Fix f) }
+\end{minted}
+    
+\begin{minted}{haskell}
+from' :: (Generic a, Functor (PF a)) => a -> Fix (PF a)
+from' = In . fmap from' . from
+\end{minted}
+
+\begin{minted}{haskell}
+cata :: Functor f => (f a -> a) -> Fix f -> a
+cata = f . fmap (cata f) . unFix
+\end{minted}
+
+\begin{minted}{haskell}
+size' :: (Generic a, GSize (PF a), Functor (PF a), Foldable (PF a)) 
+      => a -> Int
+size' = cata ((1+) . sum) . from'
+\end{minted}
+
+\section{Comparison Generic Libraries}
+\subsection{Pattern Functors vs Sums of products}
+\todo[inline]{Describe the differences between defining generic data types}
+
+\subsection{Mutually recursive datatypes}
+\todo[inline]{Describe what mutually recursive datatypes are and why do we need to know about it}

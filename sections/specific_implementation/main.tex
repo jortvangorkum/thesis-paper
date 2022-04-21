@@ -1,4 +1,5 @@
 \chapter{Specific Implementation}
+\label{chap-spec-impl}
 
 \begin{minted}{haskell}
 data Tree a = Leaf a
@@ -15,8 +16,6 @@ Computing a value of a data structure can easily be defined in Haskell, but ever
 
 To prevent recomputation of already computed values, the technique memoization is introduced. Memoization is a technique where the results of computational intensive tasks are stored and when the same input occurs, the result is reused. 
 
-\todo[inline]{Write about the bad side of using hashes}
-
 The comparison of two values in Haskell is done with the \texttt{Eq} typeclass, which implements the equality operator \inlinehaskell{(==) :: a -> a -> Bool}. So, an example implementation of the \texttt{Eq} typeclass for the \texttt{Tree} datatype would be:
 
 \begin{minted}{haskell}
@@ -27,8 +26,12 @@ instance Eq a => Eq (Tree a) where
 \end{minted}
 
 The problem with using this implementation of the \texttt{Eq} typeclass for Memoization is that for every comparison of the \texttt{Tree} datatype the equality is computed. This is inefficient because the equality implementation has to traverse the complete \texttt{Tree} data structure to know if the \texttt{Tree}'s are equal. 
+\todo{Rewrite}
 
-To efficiently compare the \texttt{Tree} datatypes, we need to represent the structure in a manner which does not lead to traversing to the complete \texttt{Tree} data structure. This can be accomplished using a \texttt{hash} function. A hash function is a process of transforming a data structure into an arbitrary fixed-size value, where the same input always generates the same output. One of the disadvantages of using hashes is \textit{hash collisions}. Hash collisions happen when two different pieces of data have the same hash. This is because a hash function has a limited amount of bits to represent every possible combination of data. However, common hash functions have such a low chance of getting a hash collision it is negligible. %\footnote{A hash function has a $50\%$ chance of a hash collision occurring with records of size $1.2 \times 2^(L/2)$ where $L$ is the amount of bits. For example, the MD5 hash function needs }
+To efficiently compare the \texttt{Tree} datatypes, we need to represent the structure in a manner which does not lead to traversing to the complete \texttt{Tree} data structure. This can be accomplished using a \texttt{hash} function. A hash function is a process of transforming a data structure into an arbitrary fixed-size value, where the same input always generates the same output. 
+
+One of the disadvantages of using hashes is \textit{hash collisions}. Hash collisions happen when two different pieces of data have the same hash. This is because a hash function has a limited amount of bits to represent every possible combination of data. However, common hash functions have such a low chance of getting a hash collision, it is negligible. 
+\todo[inline]{Add an example of hash collision for popular hash function}
 
 \begin{minted}{haskell}
 class Hashable a where
@@ -51,7 +54,7 @@ sumTreeInc n@(Node l x r) = (y, insert (hash n) y (ml <> mr))
         (xr, mr) = sumTreeInc r
 \end{minted}
 
-\todo[inline]{Write about the reuse of the Map}
+Then after the first computation over the entire \texttt{Tree}, we can recompute the \texttt{Tree} using the previously created \texttt{Map}. Thus, when we recompute the \texttt{Tree}, we first look in the \texttt{Map} if the computation has already been performed then return the result. Otherwise, compute the result and store it in the \texttt{Map}.
 
 \todo[inline]{Maybe add the more efficient implementation of merging maps?}
 \begin{minted}{haskell}
@@ -68,7 +71,7 @@ sumTreeIncMap m n@(Node l x r) = case lookup (hash n) m of
             (xr, mr) = sumTreeIncMap m r
 \end{minted}
 
-Generating a hash for every subset of the data structure for every execution is time-consuming and is unnecessary because most of the data structure stays the same. So, the Merkle Tree concept is used, which is inspired by the work of \citeauthor{miraldo2019efficient}\cite{miraldo2019efficient}. The Merkle Tree integrates the hashes with the data structure.
+Generating a hash for every computation over the data structure is time-consuming and unnecessary, because most of the \texttt{Tree} data structure stays the same. The work of \citeauthor{miraldo2019efficient}\cite{miraldo2019efficient} inspired the use of the Merkle Tree. A Merkle Tree is a data structure which integrates the hashes within the data structure.
 
 \section{Merkle Tree (\texttt{TreeH})}
 First we introduce a new datatype \texttt{TreeH}, which contains a \texttt{Hash} for every constructor in \texttt{Tree}. Then to convert the \texttt{Tree} datatype into the \texttt{TreeH} datatype, the structure of the Tree is hashed and stored into the datatype using the \texttt{merkle} function.
@@ -104,5 +107,4 @@ The problem with this implementation is, that when the \texttt{Tree} datatype is
 
 The first intuition to fixing this would be using a pointer to the value that needs to be changed. But because Haskell is a functional programming language, there are no pointers. Luckily, there is a data structure which can be used to efficiently update the data structure, namely the Zipper\cite{huet1997zipper} data structure.
 
-\newpage
 \input{sections/specific_implementation/zipper.tex}

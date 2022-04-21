@@ -75,5 +75,5 @@ cataMerkle :: (Traversable f, Container c, Show (c a), Show a)
 cataMerkle alg t = runState (cataMerkleState alg t) empty
 \end{haskell}
 
-\subsubsection{Zipper}
+\subsection{Zipper}
 \todo[inline]{Describe the use of the Zipper and how the hashes are updated}

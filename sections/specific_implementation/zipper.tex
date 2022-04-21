@@ -16,7 +16,7 @@ Then combining the \texttt{Tree} and the \texttt{Cxt}, we can traverse through t
 type Loc a = (Tree a, Cxt a)
 \end{minted}
 
-To use the Loc, first we need to create a \texttt{Cxt}.
+To use the \texttt{Loc}, first we need to create a \texttt{Cxt}.
 
 \begin{minted}{haskell}
 enter :: Tree a -> Loc a
@@ -52,7 +52,6 @@ leave l@(t, Top) = l
 leave l = top (up l)
 \end{minted}
 
-\newpage
 \subsection{Zipper \texttt{TreeH}}
 
 To implement the Zipper for \texttt{TreeH}, the same setup can be used as in the previous section, but when modifying the \texttt{TreeH} we also need to update all the parent nodes. First the \texttt{Cxt} needs to be updated to additionally store the hashes. Then the direction functions need to be updated to also store the \texttt{Hash} in the \texttt{Cxt}.
