@@ -84,7 +84,7 @@ def plot_all_benchmarks(df: pd.DataFrame, x_name: str, y_name: str) -> None:
 
 
 def plot_compare_runs(df_time_run1: pd.DataFrame, df_time_run2: pd.DataFrame, df_mem_run1: pd.DataFrame, df_mem_run2: pd.DataFrame) -> None:
-    (fig, ((ax1, ax2), (ax3, ax4))) = plt.subplots(2, 2, sharex=True)  # type: ignore
+    (fig, ((ax1, ax2), (ax3, ax4))) = plt.subplots(2, 2, sharex=True, sharey='row')  # type: ignore
 
     ax1.set_title('Run 1')
     ax2.set_title('Run 2')

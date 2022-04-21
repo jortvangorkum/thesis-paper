@@ -9,8 +9,8 @@ from generate_graphs.memory import (parse_memory_data_file)
 DATA_TIME_PATH = './data/time'
 DATA_MEMORY_PATH = './data/memory'
 IMAGES_PATH = '../images'
-RUN = 'run-2'
-RUN_2 = 'run-1'
+RUN = 'run-3'
+RUN_2 = 'run-2'
 RUN_IMAGES_PATH = f'plots/{RUN}'
 TIME_IMAGES_PATH = f'{RUN_IMAGES_PATH}/time'
 MEMORY_IMAGES_PATH = f'{RUN_IMAGES_PATH}/memory'
@@ -40,7 +40,7 @@ def plot_memory(df_data_memory: pd.DataFrame, mem_images_path: str) -> None:
     if not os.path.exists(f'{IMAGES_PATH}/{RUN_IMAGES_PATH}'):
         os.makedirs(f'{IMAGES_PATH}/{mem_images_path}')
 
-    plot_linear_benchmark(df_data_memory, 'Cata Sum Memory', 'Amount Nodes', 'Memory Usage')
+    plot_linear_benchmark(df_data_memory, 'Cata Sum', 'Amount Nodes', 'Memory Usage')
     save_benchmark(f'{mem_images_path}/benchmark_cata_sum')
 
     plot_linear_benchmark(df_data_memory, 'Generic Cata Sum', 'Amount Nodes', 'Memory Usage')
@@ -58,9 +58,9 @@ if __name__ == "__main__":
     df_time_1 = parse_time_data_file(DATA_TIME_PATH, RUN)
     df_data_memory_1 = parse_memory_data_file(DATA_MEMORY_PATH, RUN)
 
-    # plot_time(df_time_1, TIME_IMAGES_PATH)
+    plot_time(df_time_1, TIME_IMAGES_PATH)
 
-    # plot_memory(df_data_memory_1, MEMORY_IMAGES_PATH)
+    plot_memory(df_data_memory_1, MEMORY_IMAGES_PATH)
 
     df_time_2 = parse_time_data_file(DATA_TIME_PATH, RUN_2)
     df_data_memory_2 = parse_memory_data_file(DATA_MEMORY_PATH, RUN_2)
