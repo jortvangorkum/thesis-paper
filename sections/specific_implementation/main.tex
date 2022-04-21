@@ -11,14 +11,35 @@ sumTree (Leaf x)     = x
 sumTree (Node l x r) = x + (sumTree l) + (sumTree r)
 \end{minted}
 
-Computing a value of a data structure can easily be defined in Haskell, but every time there is a small change in the \texttt{Tree}, the entire \texttt{Tree} needs to be recomputed. This is inefficient, because most of the computation has already been performed in the previous computation. 
+Computing a value of a data structure can easily be defined in Haskell, but every time there is a small change in the \texttt{Tree}, the entire \texttt{Tree} needs to be recomputed. This is inefficient, because most of the computations have already been performed in the previous computation. 
 
-To prevent recomputation of already computed values, the technique memoization is introduced. Memoization is a technique where the results of computational intensive tasks are stored and when the same input occurs, the results are reused. 
+To prevent recomputation of already computed values, the technique memoization is introduced. Memoization is a technique where the results of computational intensive tasks are stored and when the same input occurs, the result is reused. 
 
-\todo[inline]{Write more about the equality and storage of data structure compared to hashes}
 \todo[inline]{Write about the bad side of using hashes}
 
-Implementing memoization for incrementally computing a value over a data structure, we need a way to efficiently represent the data structure. We do this by using hashes. Hashing is a process of transforming any string of characters into a fixed-length value, where the same input always generates the same output. Using hashes, we can efficiently store the data structure and check in constant time if two data structures are equal.
+The comparison of two values in Haskell is done with the \texttt{Eq} typeclass, which implements the equality operator \inlinehaskell{(==) :: a -> a -> Bool}. So, an example implementation of the \texttt{Eq} typeclass for the \texttt{Tree} datatype would be:
+
+\begin{minted}{haskell}
+instance Eq a => Eq (Tree a) where
+    Leaf x1       == Leaf x2       = x1 == x2
+    Node l1 x1 r1 == Node l2 x2 r2 = x1 == x2 && l1 == l2 && r1 == r2
+    _             == _             = False
+\end{minted}
+
+The problem with using this implementation of the \texttt{Eq} typeclass for Memoization is that for every comparison of the \texttt{Tree} datatype the equality is computed. This is inefficient because the equality implementation has to traverse the complete \texttt{Tree} data structure to know if the \texttt{Tree}'s are equal. 
+
+To efficiently compare the \texttt{Tree} datatypes, we need to represent the structure in a manner which does not lead to traversing to the complete \texttt{Tree} data structure. This can be accomplished using a \texttt{hash} function. A hash function is a process of transforming a data structure into an arbitrary fixed-size value, where the same input always generates the same output. One of the disadvantages of using hashes is \textit{hash collisions}. Hash collisions happen when two different pieces of data have the same hash. This is because a hash function has a limited amount of bits to represent every possible combination of data. However, common hash functions have such a low chance of getting a hash collision it is negligible. %\footnote{A hash function has a $50\%$ chance of a hash collision occurring with records of size $1.2 \times 2^(L/2)$ where $L$ is the amount of bits. For example, the MD5 hash function needs }
+
+\begin{minted}{haskell}
+class Hashable a where
+    hash :: a -> Hash
+
+instance Hashable a => Hashable (Tree a) where
+    hash (Leaf x)     = concatHash [hash "Leaf", hash x]
+    hash (Node l x r) = concatHash [hash "Node", hash x, hash l, hash r]
+\end{minted}
+
+The hashes can then be used to efficiently compare two \texttt{Tree} data structures, without having to traverse the entire \texttt{Tree} data structure. To keep track of the intermediate results of the computation, we store the results in a \texttt{Map}. A \texttt{Map}, also known as a dictionary, is an implementation of mapping a key to a value. In our next example the \texttt{Hash} is the key and the value is the intermediate result.
 
 \begin{minted}{haskell}
 sumTreeInc :: Tree Int -> (Int, Map Hash Int)
@@ -59,9 +80,7 @@ data TreeH a = LeafH Hash a
 
 \begin{minted}{haskell}
 merkle :: Tree Int -> TreeH Int
-merkle (Leaf x) = LeafH h x
-    where
-        h = hash ["Leaf", x]
+merkle l@(Leaf x) = LeafH (hash l) x
 merkle (Node l x r) = NodeH h l' x r'
     where
         h = hash ["Node", x, getHash l', getHash r']
@@ -86,89 +105,4 @@ The problem with this implementation is, that when the \texttt{Tree} datatype is
 The first intuition to fixing this would be using a pointer to the value that needs to be changed. But because Haskell is a functional programming language, there are no pointers. Luckily, there is a data structure which can be used to efficiently update the data structure, namely the Zipper\cite{huet1997zipper} data structure.
 
 \newpage
-\section{Zipper}
-
-\todo[inline]{Add a visual example}
-
-The Zipper data structure works by keeping track of how the data structure is being traversed through. The Zipper keeps track by using a \textit{context}. The context is the inverse of the direction which the data structure is traversed through. Meaning that when we traverse to the left side of the \texttt{Tree} the right side of the \texttt{Tree} gets stored in the context. 
-
-\begin{minted}{haskell}
-data Cxt a = Top
-           | L (Cxt a) (Tree a) a
-           | R (Cxt a) (Tree a) a
-\end{minted}
-
-Then combining the \texttt{Tree} and the \texttt{Cxt}, we can traverse through the \texttt{Tree} and keeping the \textit{context} of how we got to the current point.
-
-\begin{minted}{haskell}
-type Loc a = (Tree a, Cxt a)
-\end{minted}
-
-To use the Loc, first we need to create a \texttt{Cxt}.
-
-\begin{minted}{haskell}
-enter :: Tree a -> Loc a
-enter t = (t, Top)
-\end{minted}
-
-Using the \texttt{Loc}, we can define multiple function on how to traverse through the \texttt{Tree}.
-
-\begin{minted}{haskell}
-left :: Loc a -> Loc a
-left (Node l x r, c) = (l, L c r x)
-
-right :: Loc a -> Loc a
-right (Node l x r, c) = (r, R c l x)
-
-up :: Loc a -> Loc a
-up (t, L c r x) = (Node t x r, c)
-up (t, R c l x) = (Node l x t, c)
-\end{minted}
-
-When we get to the desired point in the \texttt{Tree} which needs to be updated, we call the \texttt{modify} function.
-
-\begin{minted}{haskell}
-modify :: (Tree a -> Tree a) -> Loc a -> Loc a
-modify f (t, c) = (f t, c)
-\end{minted}
-
-Then to get the entire updated tree back, we only need to call the \texttt{up} function indefinitely until the \texttt{Loc} is at the top.
-
-\begin{minted}{haskell}
-leave :: Loc a -> Loc a
-leave l@(t, Top) = l
-leave l = top (up l)
-\end{minted}
-
-\newpage
-\subsection{Zipper \texttt{TreeH}}
-
-To implement the Zipper for \texttt{TreeH}, the same setup can be used as in the previous section, but when modifying the \texttt{TreeH} we also need to update all the parent nodes. First the \texttt{Cxt} needs to be updated to additionally store the hashes. Then the direction functions need to be updated to also store the \texttt{Hash} in the \texttt{Cxt}.
-
-\begin{minted}[escapeinside=!!]{haskell}
-data Cxt a = Top
-           | L (Cxt a) (Tree a) !\colorbox{YellowGreen}{Hash}! a
-           | R (Cxt a) (Tree a) !\colorbox{YellowGreen}{Hash}! a
-\end{minted}
-
-When modifying the value in the \texttt{TreeH}, the parents nodes hashes also needs to be updated.
-
-\begin{minted}{haskell}
-updateLoc :: (TreeH a -> TreeH a) -> Loc a -> Loc a
-updateLoc f l = if top l' then l' else updateParents (up l')
-    where
-        l' = modify f l
-
-        updateParents :: Loc a -> Loc a
-        updateParents (Loc x Top) = Loc (updateHash x) Top
-        updateParents (Loc x cs)  = updateParents $ up (Loc (updateHash x) cs)
-\end{minted}
-
-\begin{minted}{haskell}
-update :: (TreeH a -> TreeH a) -> [Loc a -> Loc a] -> TreeH a -> TreeH a 
-update f dirs t = leave $ updateLoc f l'
-    where
-        l' = applyDirs dirs (enter t)
-\end{minted}
-
-% \input{sections/specific_implementation/zipper.tex}
+\input{sections/specific_implementation/zipper.tex}

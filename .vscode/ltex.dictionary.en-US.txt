@@ -9,3 +9,5 @@ cata
 memoization
 Memoization
 recomputation
+typeclass
+Eq

@@ -1,0 +1,84 @@
+\section{Zipper}
+
+\todo[inline]{Add a visual example}
+
+The Zipper data structure works by keeping track of how the data structure is being traversed through. The Zipper keeps track by using a \textit{context}. The context is the inverse of the direction which the data structure is traversed through. Meaning that when we traverse to the left side of the \texttt{Tree} the right side of the \texttt{Tree} gets stored in the context. 
+
+\begin{minted}{haskell}
+data Cxt a = Top
+           | L (Cxt a) (Tree a) a
+           | R (Cxt a) (Tree a) a
+\end{minted}
+
+Then combining the \texttt{Tree} and the \texttt{Cxt}, we can traverse through the \texttt{Tree} and keeping the \textit{context} of how we got to the current point.
+
+\begin{minted}{haskell}
+type Loc a = (Tree a, Cxt a)
+\end{minted}
+
+To use the Loc, first we need to create a \texttt{Cxt}.
+
+\begin{minted}{haskell}
+enter :: Tree a -> Loc a
+enter t = (t, Top)
+\end{minted}
+
+Using the \texttt{Loc}, we can define multiple function on how to traverse through the \texttt{Tree}.
+
+\begin{minted}{haskell}
+left :: Loc a -> Loc a
+left (Node l x r, c) = (l, L c r x)
+
+right :: Loc a -> Loc a
+right (Node l x r, c) = (r, R c l x)
+
+up :: Loc a -> Loc a
+up (t, L c r x) = (Node t x r, c)
+up (t, R c l x) = (Node l x t, c)
+\end{minted}
+
+When we get to the desired point in the \texttt{Tree} which needs to be updated, we call the \texttt{modify} function.
+
+\begin{minted}{haskell}
+modify :: (Tree a -> Tree a) -> Loc a -> Loc a
+modify f (t, c) = (f t, c)
+\end{minted}
+
+Then to get the entire updated tree back, we only need to call the \texttt{up} function indefinitely until the \texttt{Loc} is at the top.
+
+\begin{minted}{haskell}
+leave :: Loc a -> Loc a
+leave l@(t, Top) = l
+leave l = top (up l)
+\end{minted}
+
+\newpage
+\subsection{Zipper \texttt{TreeH}}
+
+To implement the Zipper for \texttt{TreeH}, the same setup can be used as in the previous section, but when modifying the \texttt{TreeH} we also need to update all the parent nodes. First the \texttt{Cxt} needs to be updated to additionally store the hashes. Then the direction functions need to be updated to also store the \texttt{Hash} in the \texttt{Cxt}.
+
+\begin{minted}[escapeinside=!!]{haskell}
+data Cxt a = Top
+           | L (Cxt a) (Tree a) !\colorbox{YellowGreen}{Hash}! a
+           | R (Cxt a) (Tree a) !\colorbox{YellowGreen}{Hash}! a
+\end{minted}
+
+When modifying the value in the \texttt{TreeH}, the parents nodes hashes also needs to be updated.
+
+\begin{minted}{haskell}
+updateLoc :: (TreeH a -> TreeH a) -> Loc a -> Loc a
+updateLoc f l = if top l' then l' else updateParents (up l')
+    where
+        l' = modify f l
+
+        updateParents :: Loc a -> Loc a
+        updateParents (Loc x Top) = Loc (updateHash x) Top
+        updateParents (Loc x cs)  = updateParents $ up (Loc (updateHash x) cs)
+\end{minted}
+
+\begin{minted}{haskell}
+update :: (TreeH a -> TreeH a) -> [Loc a -> Loc a] -> TreeH a -> TreeH a 
+update f dirs t = leave $ updateLoc f l'
+    where
+        l' = applyDirs dirs (enter t)
+\end{minted}
