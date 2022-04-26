@@ -31,7 +31,7 @@ The problem with using this implementation of the \texttt{Eq} typeclass for Memo
 To efficiently compare the \texttt{Tree} datatypes, we need to represent the structure in a manner which does not lead to traversing to the complete \texttt{Tree} data structure. This can be accomplished using a \texttt{hash} function. A hash function is a process of transforming a data structure into an arbitrary fixed-size value, where the same input always generates the same output. 
 
 One of the disadvantages of using hashes is \textit{hash collisions}. Hash collisions happen when two different pieces of data have the same hash. This is because a hash function has a limited amount of bits to represent every possible combination of data. However, common hash functions have such a low chance of getting a hash collision, it is negligible. 
-\todo[inline]{Add an example of hash collision for popular hash function}
+\todo[inline]{Add an example of hash collision probability for popular hash function}
 
 \begin{minted}{haskell}
 class Hashable a where

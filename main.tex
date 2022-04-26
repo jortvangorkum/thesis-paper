@@ -3,6 +3,7 @@
 %%%%%%%%%%%%
 % PACKAGES %
 %%%%%%%%%%%%
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{lastpage}
 
@@ -44,9 +45,22 @@
   \monthname[\THEMONTH], \THEYEAR}
 
 %% Fancy Chapter Headers
-\usepackage{quotchap}
-\qsetcnfont{lmr}
-\renewcommand{\chapterheadstartvskip}{\vspace*{-7\baselineskip}} 
+\usepackage{titlesec}
+
+\newcommand{\chapnumfont}{%     % define font for chapter number
+  \usefont{T1}{lmr}{b}{n}%      % choose New Chancery, bold, normal shape
+  \fontsize{100}{100}%          % font size 100pt, baselineskip 100pt
+  \selectfont%                  % activate font
+}
+\colorlet{chapnumcol}{gray!75}  % color for chapter number
+
+\titleformat{\chapter}[display]
+  {\filleft\bfseries}
+  {\filleft\chapnumfont\textcolor{chapnumcol}{\thechapter}}
+  {-24pt}
+  {\huge}
+
+\titlespacing*{\chapter}{0pt}{-70pt}{40pt}
 
 \usepackage[dvipsnames]{xcolor}
 
