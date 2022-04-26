@@ -1,24 +1,25 @@
 \chapter{Datatype-Generic Programming in Haskell}
 
-The implementation in Chapter \ref{chap-spec-impl} is an efficient implementation for incrementally computing the summation over a \texttt{Tree} datatype. However, when we want to implement this functionality for a different datatype, a lot of code needs to be copied while the process remains the same. This entails to poor maintainability and a lot of redundant code.
+The implementation in Chapter \ref{chap-spec-impl} is an efficient implementation for incrementally computing the summation over a \texttt{Tree} datatype. However, when we want to implement this functionality for a different datatype, a lot of code needs to be copied while the process remains the same. This entails poor maintainability and a lot of redundant code.
 
-In this Chapter, we introduce Datatype-Generic Programming, also known as \textit{generic programming} or \textit{generics} in Haskell, as a technique that allows defining functions which can operate on a large class of datatypes. 
 \todo[inline]{Add an example of the usage of generics, e.g., the deriving mechanism in GHC}
+\info{Could use deriving mechanism, but it is not the same as generic programming. Maybe use it as a precursor for generic programming.}
 
-\info{Could use deriving mechanism, but it is not the same as generic programming. Use it as a precursor for generic programming.}
-
-% For example, the \texttt{deriving} mechanism in GHC, is using the concepts of generic programming to automatically derive instances for known type classes to the GHC compiler. 
+In this Chapter, we introduce Datatype-Generic Programming\cite*{gibbons2006datatype}, also known as \textit{generic programming} or \textit{generics} in Haskell, as a technique that allows defining functions which can operate on a large class of datatypes. This prevents the need to write the previously defined functionality for every datatype.
 
 \section{Introduction}
-In this Section, we explain the inner-workings of generic-programming by use of an example. This example is inspired by the Haskell library \texttt{regular}.
+Datatype-Generic programming is 
+
+
 \todo[inline]{Introduce generic programming and how it works}
 \begin{minted}{haskell}
-data I r         = I r                   -- Recursion
+data I r         = I r                   -- Recursive call
 data K a r       = K a                   -- Constants
-data (:+:) f g r = Inl (f r) | Inr (g r) -- Sums
-data (:*:) f g r = Pair (f r, g r)       -- Products
+data (:+:) f g r = Inl (f r) | Inr (g r) -- Sums (Choice)
+data (:*:) f g r = Pair (f r, g r)       -- Products (Combine)
 \end{minted}
 
+% This example is inspired by the Haskell library \texttt{regular}.
 Using these datatypes, we can define the \texttt{Tree} datatype used in Chapter \ref{chap-spec-impl} as:
 
 \begin{minted}{haskell}
@@ -66,6 +67,11 @@ size t !$\equiv$! 2
 \end{minted}
 
 \subsection{Deep vs Shallow recursion}
+
+All the datatypes defined in the previous section are pattern functors.  
+
+\info{A pattern functor is the stripped-down description of a data type: only the shape of the constructors remain, but all the recursive structure is gone.}
+
 \begin{minted}{haskell}
 data Fix f = In { unFix :: f (Fix f) }
 \end{minted}

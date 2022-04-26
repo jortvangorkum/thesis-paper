@@ -26,7 +26,6 @@ instance Eq a => Eq (Tree a) where
 \end{minted}
 
 The problem with using this implementation of the \texttt{Eq} typeclass for Memoization is that for every comparison of the \texttt{Tree} datatype the equality is computed. This is inefficient because the equality implementation has to traverse the complete \texttt{Tree} data structure to know if the \texttt{Tree}'s are equal. 
-\todo{Rewrite}
 
 To efficiently compare the \texttt{Tree} datatypes, we need to represent the structure in a manner which does not lead to traversing to the complete \texttt{Tree} data structure. This can be accomplished using a \texttt{hash} function. A hash function is a process of transforming a data structure into an arbitrary fixed-size value, where the same input always generates the same output. 
 
