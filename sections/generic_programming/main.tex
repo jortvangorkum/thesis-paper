@@ -5,6 +5,10 @@ The implementation in Chapter \ref{chap-spec-impl} is an efficient implementatio
 In this Chapter, we introduce Datatype-Generic Programming, also known as \textit{generic programming} or \textit{generics} in Haskell, as a technique that allows defining functions which can operate on a large class of datatypes. 
 \todo[inline]{Add an example of the usage of generics, e.g., the deriving mechanism in GHC}
 
+\info{Could use deriving mechanism, but it is not the same as generic programming. Use it as a precursor for generic programming.}
+
+For example, the \texttt{deriving} mechanism in GHC, is using the concepts of generic programming to automatically derive instances for known type classes to the GHC compiler. 
+
 \section{Introduction}
 In this Section, we explain the inner-workings of generic-programming by use of an example. This example is inspired by the Haskell library \texttt{regular}.
 \todo[inline]{Introduce generic programming and how it works}
@@ -18,7 +22,7 @@ data (:*:) f g r = Pair (f r, g r)       -- Products
 Using these datatypes, we can define the \texttt{Tree} datatype used in Chapter \ref{chap-spec-impl} as:
 
 \begin{minted}{haskell}
-type TreeG a = Fix (PF (Tree a))
+type TreeG  a = Fix (PF (Tree a))
 type PFTree a = K a                  -- Leaf
              :+: ((I :*: K a) :*: I) -- Node
 type instance PF (Tree a) = PFTree a
@@ -47,6 +51,18 @@ instance (GSize f, GSize g) => GSize (f :*: g) where
 \begin{minted}{haskell}
 size :: (Generic a, GSize (PF a)) => a -> Int
 size = 1 + gsize size (from x)
+\end{minted}
+
+\question{Maybe remove the results?}
+
+\begin{minted}[escapeinside=!!]{haskell}
+t :: Tree Int
+t = Node (Leaf 1) 2 (Leaf 3)
+
+pt :: PFTree Int
+pt = (Inr (Pair (Pair (I (Inl (K 1)), K 2), I (Inl (K 3)))) 
+
+size t !$\equiv$! 2
 \end{minted}
 
 \subsection{Deep vs Shallow recursion}

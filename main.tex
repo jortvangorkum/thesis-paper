@@ -6,7 +6,9 @@
 \usepackage[utf8]{inputenc}
 \usepackage{lastpage}
 
-\usepackage{todonotes}
+\usepackage[colorinlistoftodos, color=BurntOrange]{todonotes}
+\newcommand{\info}[1]{\todo[inline, color=SkyBlue]{#1}}
+\newcommand{\question}[1]{\todo[inline, color=SeaGreen]{#1}}
 
 \usepackage[urldate=long]{biblatex}
 \addbibresource{references.bib}

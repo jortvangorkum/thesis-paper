@@ -56,7 +56,7 @@ sumTreeInc n@(Node l x r) = (y, insert (hash n) y (ml <> mr))
 
 Then after the first computation over the entire \texttt{Tree}, we can recompute the \texttt{Tree} using the previously created \texttt{Map}. Thus, when we recompute the \texttt{Tree}, we first look in the \texttt{Map} if the computation has already been performed then return the result. Otherwise, compute the result and store it in the \texttt{Map}.
 
-\todo[inline]{Maybe add the more efficient implementation of merging maps?}
+\question{Maybe add the more efficient implementation of merging maps?}
 \begin{minted}{haskell}
 sumTreeIncMap :: Map Hash Int -> Tree Int -> (Int, Map Hash Int)
 sumTreeIncMap m l@(Leaf x) = case lookup (hash l) m of
@@ -105,6 +105,6 @@ sumTreeIncH (NodeH h l x r) = (y, insert h y (ml <> mr))
 
 The problem with this implementation is, that when the \texttt{Tree} datatype is updated, the entire \texttt{Tree} needs to be converted into a \texttt{TreeH}, which is linear in time. This can be done more efficiently, by only updating the hashes which are impacted by the changes. Which means that only the hashes of the change and the parents need to be updated. 
 
-The first intuition to fixing this would be using a pointer to the value that needs to be changed. But because Haskell is a functional programming language, there are no pointers. Luckily, there is a data structure which can be used to efficiently update the data structure, namely the Zipper\cite{huet1997zipper} data structure.
+The first intuition to fixing this would be using a pointer to the value that needs to be changed. But because Haskell is a functional programming language, there are no pointers. Luckily, there is a data structure which can be used to efficiently update the data structure, namely the Zipper\cite{huet1997zipper}.
 
 \input{sections/specific_implementation/zipper.tex}

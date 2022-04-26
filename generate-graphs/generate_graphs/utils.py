@@ -10,6 +10,11 @@ from scipy.optimize import curve_fit
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
 
+def split_benchmark_df_with_iterations(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    cond = df['Benchmark'].str.contains('Iterations')
+    df_iterations = df[cond].reset_index(drop=True)
+    df_non_iterations = df[~cond].reset_index(drop=True)
+    return (df_non_iterations, df_iterations)
 
 def calculate_rsquared(x: pd.Series, y: pd.Series, f, popt) -> float:
     ss_res   = np.dot((y - f(x, *popt)), (y - f(x, *popt)))
