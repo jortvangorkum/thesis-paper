@@ -1,32 +1,36 @@
-\chapter{Datatype-Generic Programming in Haskell}
+\chapter{Datatype-Generic Programming}
 
-The implementation in Chapter \ref{chap-spec-impl} is an efficient implementation for incrementally computing the summation over a \texttt{Tree} datatype. However, when we want to implement this functionality for a different datatype, a lot of code needs to be copied while the process remains the same. This entails poor maintainability and a lot of redundant code.
+The implementation in Chapter \ref{chap-spec-impl} is an efficient implementation for incrementally computing the summation over a \texttt{Tree} datatype. However, when we want to implement this functionality for a different datatype, a lot of code needs to be copied while the process remains the same. This results in poor maintainability, is error-prone and in general just boring.
 
-\todo[inline]{Add an example of the usage of generics, e.g., the deriving mechanism in GHC}
-\info{Could use deriving mechanism, but it is not the same as generic programming. Maybe use it as a precursor for generic programming.}
+An example of reducing manual implementations for datatypes is the \textit{deriving} mechanism in Haskell. The built-in classes of Haskell, such as \texttt{Show, Ord, Read}, can be derived for a large class of datatypes. However, deriving is not supported for custom classes. Therefore, we use \textit{Datatype-Generic Programming}\cite*{gibbons2006datatype} to define functionality for a large class of datatypes.
 
-In this Chapter, we introduce Datatype-Generic Programming\cite*{gibbons2006datatype}, also known as \textit{generic programming} or \textit{generics} in Haskell, as a technique that allows defining functions which can operate on a large class of datatypes. This prevents the need to write the previously defined functionality for every datatype.
+In this chapter, we introduce Datatype-Generic Programming, also known as \textit{generic programming} or \textit{generics} in Haskell, as a technique that allows defining functions which can operate on a large class of datatypes. This prevents the need to write the previously defined functionality for every datatype.
 
 \section{Introduction}
-Datatype-Generic programming is 
+The \texttt{regular} Haskell library is an implementation of generic programming. Here the generic representation of a datatype is called a \textit{pattern functor}. A pattern functor is a stripped-down version of a data type, by only containing the constructor but not the recursive structure. The recursive structure is done explicitly by using a fixed-point operator. 
 
+First, the pattern functors defined in \texttt{regular} are 5 core pattern functors and 2 meta information pattern functors. The core pattern functors describe the datatypes.
 
 \todo[inline]{Introduce generic programming and how it works}
 \begin{minted}{haskell}
+data U r         = U                     -- Empty constructors
 data I r         = I r                   -- Recursive call
 data K a r       = K a                   -- Constants
 data (:+:) f g r = Inl (f r) | Inr (g r) -- Sums (Choice)
 data (:*:) f g r = Pair (f r, g r)       -- Products (Combine)
 \end{minted}
 
-% This example is inspired by the Haskell library \texttt{regular}.
-Using these datatypes, we can define the \texttt{Tree} datatype used in Chapter \ref{chap-spec-impl} as:
+The conversion from regular datatypes into pattern functors is done by the \texttt{Regular} type class. The \texttt{Regular} type class has two functions. The \texttt{from} function converts the datatype into a pattern functor and the \texttt{to} function converts the pattern functor back into a datatype. In \texttt{regular}, the pattern functor is represented by a type family. Then using the \texttt{Regular} conversion to a pattern functor, we can write for example the \texttt{Tree} datatype from Chapter \ref{chap-spec-impl} as:
 
 \begin{minted}{haskell}
-type TreeG  a = Fix (PF (Tree a))
-type PFTree a = K a                  -- Leaf
-             :+: ((I :*: K a) :*: I) -- Node
-type instance PF (Tree a) = PFTree a
+type family PF a :: * -> *
+
+class Regular a where
+    from :: a -> PF a a
+    to   :: PF a a -> a
+
+type instance PF (Tree a) = K a                -- Leaf
+                         :+: (I :*: K a :*: I) -- Node
 \end{minted}
 
 \begin{minted}{haskell}
@@ -68,9 +72,7 @@ size t !$\equiv$! 2
 
 \subsection{Deep vs Shallow recursion}
 
-All the datatypes defined in the previous section are pattern functors.  
-
-\info{A pattern functor is the stripped-down description of a data type: only the shape of the constructors remain, but all the recursive structure is gone.}
+As described earlier, the \texttt{regular} library uses a fixed-point operator to explicitly define recursion. This is done, by \dots
 
 \begin{minted}{haskell}
 data Fix f = In { unFix :: f (Fix f) }
