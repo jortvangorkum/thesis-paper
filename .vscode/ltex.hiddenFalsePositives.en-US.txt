@@ -5,3 +5,4 @@
 {"rule":"PASSIVE_VOICE","sentence":"^\\QFirst, we present an implementation of incrementally computing a value over a data structure, then in Chapter \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q a generic version of the implementation is presented.\\E$"}
 {"rule":"SUBJECT_VERB_AGREEMENT_PLURAL","sentence":"^\\QWhen modifying the value in the TreeH, the parents nodes hashes also needs to be updated.\\E$"}
 {"rule":"COMMA_PARENTHESIS_WHITESPACE","sentence":"^\\Q[display] .\\E$"}
+{"rule":"THREE_NN","sentence":"^\\QThe pattern functor representation can then be used to write\\E$"}

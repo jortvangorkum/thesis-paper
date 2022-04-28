@@ -1,17 +1,16 @@
 \chapter{Datatype-Generic Programming}
 
-The implementation in Chapter \ref{chap-spec-impl} is an efficient implementation for incrementally computing the summation over a \texttt{Tree} datatype. However, when we want to implement this functionality for a different datatype, a lot of code needs to be copied while the process remains the same. This results in poor maintainability, is error-prone and in general just boring.
+The implementation in Chapter \ref{chap-spec-impl} is an efficient implementation for incrementally computing the summation over a \texttt{Tree} datatype. However, when we want to implement this functionality for a different datatype, a lot of code needs to be copied while the process remains the same. This results in poor maintainability, is error-prone and is in general boring work.
 
 An example of reducing manual implementations for datatypes is the \textit{deriving} mechanism in Haskell. The built-in classes of Haskell, such as \texttt{Show, Ord, Read}, can be derived for a large class of datatypes. However, deriving is not supported for custom classes. Therefore, we use \textit{Datatype-Generic Programming}\cite*{gibbons2006datatype} to define functionality for a large class of datatypes.
 
-In this chapter, we introduce Datatype-Generic Programming, also known as \textit{generic programming} or \textit{generics} in Haskell, as a technique that allows defining functions which can operate on a large class of datatypes. This prevents the need to write the previously defined functionality for every datatype.
+In this chapter, we introduce Datatype-Generic Programming, also known as \textit{generic programming} or \textit{generics} in Haskell, as a technique that exploits the structure of datatypes to define functions by induction over the type structure. This prevents the need to write the previously defined functionality for every datatype.
 
 \section{Introduction}
-The \texttt{regular} Haskell library is an implementation of generic programming. Here the generic representation of a datatype is called a \textit{pattern functor}. A pattern functor is a stripped-down version of a data type, by only containing the constructor but not the recursive structure. The recursive structure is done explicitly by using a fixed-point operator. 
+There are multiple generic programming libraries, however to demonstrate the workings of generic programming we will be using a single library as inspiration, named \texttt{regular}\cite*{regular2022}. Here the generic representation of a datatype is called a \textit{pattern functor}. A pattern functor is a stripped-down version of a data type, by only containing the constructor but not the recursive structure. The recursive structure is done explicitly by using a fixed-point operator. 
 
-First, the pattern functors defined in \texttt{regular} are 5 core pattern functors and 2 meta information pattern functors. The core pattern functors describe the datatypes.
+First, the pattern functors defined in \texttt{regular} are 5 core pattern functors and 2 meta information pattern functors. The core pattern functors describe the datatypes. The meta information pattern functors only contain information (e.g., constructor name) but not any structural information.
 
-\todo[inline]{Introduce generic programming and how it works}
 \begin{minted}{haskell}
 data U r         = U                     -- Empty constructors
 data I r         = I r                   -- Recursive call
@@ -20,7 +19,7 @@ data (:+:) f g r = Inl (f r) | Inr (g r) -- Sums (Choice)
 data (:*:) f g r = Pair (f r, g r)       -- Products (Combine)
 \end{minted}
 
-The conversion from regular datatypes into pattern functors is done by the \texttt{Regular} type class. The \texttt{Regular} type class has two functions. The \texttt{from} function converts the datatype into a pattern functor and the \texttt{to} function converts the pattern functor back into a datatype. In \texttt{regular}, the pattern functor is represented by a type family. Then using the \texttt{Regular} conversion to a pattern functor, we can write for example the \texttt{Tree} datatype from Chapter \ref{chap-spec-impl} as:
+The conversion from regular datatypes into pattern functors is done by the \texttt{Regular} type class. The \texttt{Regular} type class has two functions. The \texttt{from} function converts the datatype into a pattern functor and the \texttt{to} function converts the pattern functor back into a datatype. In \texttt{regular}, the pattern functor is represented by a type family. Then using the \texttt{Regular} conversion to a pattern functor, we can write the \texttt{Tree} datatype from Chapter \ref{chap-spec-impl} as:
 
 \begin{minted}{haskell}
 type family PF a :: * -> *
@@ -33,41 +32,55 @@ type instance PF (Tree a) = K a                -- Leaf
                          :+: (I :*: K a :*: I) -- Node
 \end{minted}
 
+To demonstrate the workings of generic programming, we are going to implement a simple generic function which determines the length of an arbitrary datatype. First, we define the length function within a type class. The type class is used, to define how to calculate the length for every pattern functor \texttt{f}. 
+
 \begin{minted}{haskell}
-class GSize f where
-    gsize :: (a -> Int) -> f a -> Int
+class GLength f where
+    glength :: (a -> Int) -> f a -> Int
+\end{minted}
+
+Writing instances for the empty constructor \texttt{U} and the constants \texttt{K} is simple because both pattern functors return zero. The \texttt{U} pattern functor returns zero, because it does not contain any children. The \texttt{K} pattern functor returns zero, because we do not count constants for the length. 
+
+\begin{minted}{haskell}
+instance GLength U where
+    glength _ _ = 0
+
+instance GLength (K a) where
+    glength _ _ = 0
+\end{minted}
+
+The instances for sums and products pattern functors are quite similar. The sums pattern functor recurses into the specified choice. The product pattern functor recurses in both constructors and combines them.
+
+\begin{minted}{haskell}
+instance (GLength f, GLength g) => GLength (f :+: g) where
+    glength f (Inl x) = glength f x
+    glength f (Inr x) = glength f x
+
+instance (GLength f, GLength g) => GLength (f :*: g) where
+    glength f (Pair (x, y)) = glength f x + glength f y
+\end{minted}
+
+The instance for the recursive call \texttt{I} needs an additional argument. Because, we do not know the type of \texttt{x}, so an additional function needs to be given which converts \texttt{x} into the length for that type.
+
+\begin{minted}{haskell}
+instance GLength I where
+    glength f (I x) = f x
+\end{minted}
+
+Then using the \texttt{GLength} instances for all pattern functors, a function can be defined using the generic length function. By first, converting the datatype into a pattern functor representation, then calling \texttt{glength} given recursively itself, and for every recursive call increase the length by one. 
+
+\begin{minted}{haskell}
+length :: (Generic a, GLength (PF a)) => a -> Int
+length = 1 + glength length (from x)
 \end{minted}
 
 \begin{minted}{haskell}
-instance GSize I where
-    gsize f (I x) = f x
-
-instance GSize (K a) where
-    gsize _ _ = 0
-
-instance (GSize f, GSize g) => GSize (f :+: g) where
-    gsize f (Inl x) = gsize f x
-    gsize f (Inr x) = gsize f x
-
-instance (GSize f, GSize g) => GSize (f :*: g) where
-    gsize f (Pair (x, y)) = gsize f x + gsize f y
-\end{minted}
-
-\begin{minted}{haskell}
-size :: (Generic a, GSize (PF a)) => a -> Int
-size = 1 + gsize size (from x)
-\end{minted}
-
-\question{Maybe remove the results?}
-
-\begin{minted}[escapeinside=!!]{haskell}
-t :: Tree Int
-t = Node (Leaf 1) 2 (Leaf 3)
-
-pt :: PFTree Int
-pt = (Inr (Pair (Pair (I (Inl (K 1)), K 2), I (Inl (K 3)))) 
-
-size t !$\equiv$! 2
+> length [1, 2, 3]
+    3
+> length (Node (Leaf 1) 2 (Leaf 3))
+    3
+> length {"1": 1, "2": 2, "3": 3}
+    3
 \end{minted}
 
 \subsection{Deep vs Shallow recursion}
