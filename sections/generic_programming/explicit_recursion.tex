@@ -4,7 +4,7 @@
 
 The previous implementation of the \texttt{length} function is implemented for a shallow representation. A shallow representation means that the recursion of the datatype is not explicitly marked. Therefore, we can only convert one layer of the value into a generic representation using the \texttt{from} function. 
 
-Alternatively, by marking the recursion of the datatype explicitly, the entire value can be converted into a generic representation in one go. To mark the recursion, a fixed-point operator (\texttt{Fix}) is introduced. Then, using the fixed-point operator we can define a from function that given the pattern functors have an instance of Functor\footnote{The Functor instances for the pattern functors can be found in Section \ref{app-inst-functor-patfun}}, return a generic representation of the entire value.
+Alternatively, by marking the recursion of the datatype explicitly, also called the deep representation, the entire value can be converted into a generic representation in one go. To mark the recursion, a fixed-point operator (\texttt{Fix}) is introduced. Then, using the fixed-point operator we can define a from function that given the pattern functors have an instance of Functor\footnote{The Functor instances for the pattern functors can be found in Section \ref{app-inst-functor-patfun}}, return a generic representation of the entire value.
 
 \begin{minted}{haskell}
 data Fix f = In { unFix :: f (Fix f) }
@@ -13,13 +13,13 @@ deepFrom :: (Regular a, Functor (PF a)) => a -> Fix (PF a)
 deepFrom = In . fmap deepFrom . from
 \end{minted}
 
-Subsequently, we can define a \texttt{cata} function which can use the explicitly marked recursion by applying a function at every level of the recursion. Then using the \texttt{cata} function we can define the same \texttt{length} function as in the previous section, but just in a single line.
+Subsequently, we can define a \texttt{cata} function which can use the explicitly marked recursion by applying a function at every level of the recursion. Then using the \texttt{cata} function we can define the same \texttt{length} function as in the previous section, but just in a single line. However, this deep representation does come at the cost that the implementation is less efficient than the shallow representation. 
 
 \begin{minted}{haskell}
 cata :: Functor f => (f a -> a) -> Fix f -> a
 cata = f . fmap (cata f) . unFix
 
 length' :: (Regular a, GLength (PF a), Functor (PF a), Foldable (PF a)) 
-      => a -> Int
+        => a -> Int
 length' = cata ((1+) . sum) . deepFrom
 \end{minted}

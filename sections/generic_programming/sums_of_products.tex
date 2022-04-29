@@ -1,0 +1,8 @@
+\subsection{Sums of Products}
+A different way of describing datatypes in a generic representation, besides pattern functors, are \textit{Sums of Products}\cite{vries2014sums} (SOP). SOP is a generic representation with additional constrictions which more faithfully reflects the Haskell datatypes. The definition of the SOP is done using a \texttt{Code} of kind \texttt{[[*]]}. The outer list describes the sum and each inner list the products. The \inlinehaskell{`} sign lifts the list to a type, instead of a value. The defined \texttt{Code} is then induced to a generic representation. 
+
+\begin{minted}{haskell}
+Code (Tree a) = `[`[a], `[Tree a, a, Tree a]]
+\end{minted}
+
+The usage of SOP makes it easier for developers to implement generic functionality. However, whereas pattern functors do not have structural constraints, SOP has, making it more complex to add extra functionality to SOP.

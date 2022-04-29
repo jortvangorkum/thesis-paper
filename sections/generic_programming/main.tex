@@ -67,7 +67,7 @@ instance GLength I where
     glength f (I x) = f x
 \end{minted}
 
-Then using the \texttt{GLength} instances for all pattern functors, a function can be defined using the generic length function. By first, converting the datatype into a pattern functor representation, then calling \texttt{glength} given recursively itself, and for every recursive call increase the length by one. 
+Then using the \texttt{GLength} instances for all pattern functors, a function can be defined using the generic length function. By first, converting the datatype into a generic representation, then calling \texttt{glength} given recursively itself, and for every recursive call increase the length by one. 
 
 \begin{minted}{haskell}
 length :: (Regular a, GLength (PF a)) => a -> Int
@@ -85,11 +85,8 @@ length = 1 + glength length (from x)
 
 \input{sections/generic_programming/explicit_recursion.tex}
 
-\subsection{Sums of products}
-\todo[inline]{Describe the differences between defining generic data types}
+\input{sections/generic_programming/sums_of_products.tex}
 
-\subsection{Mutually recursive datatypes}
-\todo[inline]{Describe what mutually recursive datatypes are and why do we need to know about it}
+\input{sections/generic_programming/mult_rec_datatypes.tex}
 
-\section{Comparison Generic Libraries}
-\citetitle{rodriguez2008comparing}\cite{rodriguez2008comparing}
+\input{sections/generic_programming/comp_gen_lib.tex}
