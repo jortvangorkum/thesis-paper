@@ -12,11 +12,11 @@ There are multiple generic programming libraries, however to demonstrate the wor
 First, the pattern functors defined in \texttt{regular} are 5 core pattern functors and 2 meta information pattern functors. The core pattern functors describe the datatypes. The meta information pattern functors only contain information (e.g., constructor name) but not any structural information.
 
 \begin{minted}{haskell}
-data U r         = U                     -- Empty constructors
-data I r         = I r                   -- Recursive call
-data K a r       = K a                   -- Constants
-data (:+:) f g r = Inl (f r) | Inr (g r) -- Sums (Choice)
-data (:*:) f g r = Pair (f r, g r)       -- Products (Combine)
+data U r         = U                 -- Empty constructors
+data I r         = I r               -- Recursive call
+data K a r       = K a               -- Constants
+data (f :+: g) r = L (f r) | R (g r) -- Sums (Choice)
+data (f :*: g) r = (f r) :*: (g r)   -- Products (Combine)
 \end{minted}
 
 The conversion from regular datatypes into pattern functors is done by the \texttt{Regular} type class. The \texttt{Regular} type class has two functions. The \texttt{from} function converts the datatype into a pattern functor and the \texttt{to} function converts the pattern functor back into a datatype. In \texttt{regular}, the pattern functor is represented by a type family. Then using the \texttt{Regular} conversion to a pattern functor, we can write the \texttt{Tree} datatype from Chapter \ref{chap-spec-impl} as:
@@ -53,14 +53,14 @@ The instances for sums and products pattern functors are quite similar. The sums
 
 \begin{minted}{haskell}
 instance (GLength f, GLength g) => GLength (f :+: g) where
-    glength f (Inl x) = glength f x
-    glength f (Inr x) = glength f x
+    glength f (L x) = glength f x
+    glength f (R x) = glength f x
 
 instance (GLength f, GLength g) => GLength (f :*: g) where
-    glength f (Pair (x, y)) = glength f x + glength f y
+    glength f (x :*: y) = glength f x + glength f y
 \end{minted}
 
-The instance for the recursive call \texttt{I} needs an additional argument. Because, we do not know the type of \texttt{x}, so an additional function needs to be given which converts \texttt{x} into the length for that type.
+The instance for the recursive call \texttt{I} needs an additional argument. Because, we do not know the type of \texttt{x}, so an additional function (\inlinehaskell{f :: a -> Int}) needs to be given which converts \texttt{x} into the length for that type.
 
 \begin{minted}{haskell}
 instance GLength I where
@@ -70,7 +70,7 @@ instance GLength I where
 Then using the \texttt{GLength} instances for all pattern functors, a function can be defined using the generic length function. By first, converting the datatype into a pattern functor representation, then calling \texttt{glength} given recursively itself, and for every recursive call increase the length by one. 
 
 \begin{minted}{haskell}
-length :: (Generic a, GLength (PF a)) => a -> Int
+length :: (Regular a, GLength (PF a)) => a -> Int
 length = 1 + glength length (from x)
 \end{minted}
 
@@ -79,37 +79,17 @@ length = 1 + glength length (from x)
     3
 > length (Node (Leaf 1) 2 (Leaf 3))
     3
-> length {"1": 1, "2": 2, "3": 3}
+> length (Map.fromList [("1", 1), ("2", 2), ("3", 3)])
     3
 \end{minted}
 
-\subsection{Deep vs Shallow recursion}
+\input{sections/generic_programming/explicit_recursion.tex}
 
-As described earlier, the \texttt{regular} library uses a fixed-point operator to explicitly define recursion. This is done, by \dots
-
-\begin{minted}{haskell}
-data Fix f = In { unFix :: f (Fix f) }
-\end{minted}
-    
-\begin{minted}{haskell}
-from' :: (Generic a, Functor (PF a)) => a -> Fix (PF a)
-from' = In . fmap from' . from
-\end{minted}
-
-\begin{minted}{haskell}
-cata :: Functor f => (f a -> a) -> Fix f -> a
-cata = f . fmap (cata f) . unFix
-\end{minted}
-
-\begin{minted}{haskell}
-size' :: (Generic a, GSize (PF a), Functor (PF a), Foldable (PF a)) 
-      => a -> Int
-size' = cata ((1+) . sum) . from'
-\end{minted}
-
-\section{Comparison Generic Libraries}
-\subsection{Pattern Functors vs Sums of products}
+\subsection{Sums of products}
 \todo[inline]{Describe the differences between defining generic data types}
 
 \subsection{Mutually recursive datatypes}
 \todo[inline]{Describe what mutually recursive datatypes are and why do we need to know about it}
+
+\section{Comparison Generic Libraries}
+\citetitle{rodriguez2008comparing}\cite{rodriguez2008comparing}

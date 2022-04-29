@@ -1,19 +1,27 @@
 \appendix
-\chapter{Implementation Memo Cata}
-
-\section{Definition Generic Datatypes}
-\label{app-def-generic-datatypes}
+\chapter{Generic Programming}
+\section{Instances Functor for Pattern Functors}
+\label{app-inst-functor-patfun}
 \begin{minted}{haskell}
-data U r         = U
-data I r         = I r                  
-data K a r       = K a                  
-data (:+:) f g r = L (f r) | R (g r)
-data (:*:) f g r = (f r) :*: (g r) 
-data C c f r     = C (f r)
+instance Functor I where
+  fmap f (I r) = I (f r)
 
-newtype Fix f = In { out :: f (Fix f) }
+instance Functor (K a) where
+  fmap _ (K a) = K a
+
+instance Functor U where
+  fmap _ U = U
+
+instance (Functor f, Functor g) => Functor (f :+: g) where
+  fmap f (L x) = L (fmap f x)
+  fmap f (R y) = R (fmap f y)
+
+instance (Functor f, Functor g) => Functor (f :*: g) where
+  fmap f (x :*: y) = fmap f x :*: fmap f y
 \end{minted}
 
+
+\chapter{Implementation Memo Cata}
 \section{Implementation Hashable}
 \label{app-impl-hashable}
 \begin{minted}{haskell}
