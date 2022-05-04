@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 import numpy as np
 import pandas as pd
 
@@ -9,6 +9,10 @@ import seaborn as sns
 from scipy.optimize import curve_fit
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
+
+def save_benchmark(file_path: str) -> None:
+    plt.savefig(f'{file_path}.pdf')
+    plt.clf()
 
 def split_benchmark_df_with_iterations(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
     cond = df['Benchmark'].str.contains('Iterations')
@@ -87,63 +91,47 @@ def plot_all_benchmarks(df: pd.DataFrame, x_name: str, y_name: str) -> None:
     plt.xscale('log')
     plt.yscale('log')
 
+def plot_comparison_runs(run_mem_dict: Dict[str, pd.DataFrame], run_time_dict: Dict[str, pd.DataFrame], runs: List[str]) -> None:
+    (fig, axs) = plt.subplots(2, len(runs), sharex=True, sharey='row')
 
-def plot_compare_runs(df_time_run1: pd.DataFrame, df_time_run2: pd.DataFrame, df_mem_run1: pd.DataFrame, df_mem_run2: pd.DataFrame) -> None:
-    (fig, ((ax1, ax2), (ax3, ax4))) = plt.subplots(2, 2, sharex=True, sharey='row')  # type: ignore
+    # Set titles
+    for (i, run) in enumerate(runs):
+        axs[0][i].set_title(run)  # type: ignore
 
-    ax1.set_title('Run 1')
-    ax2.set_title('Run 2')
+        df_mem_run = run_mem_dict[run]
+        df_time_run = run_time_dict[run]
 
-    l1 = sns.lineplot(
-        data=df_mem_run1,
-        ax=ax1,
-        x='Amount Nodes',
-        y='Memory Usage',
-        style='Benchmark',
-        hue='Benchmark',
-        markers=True,
-        dashes=False,
-    )
+        sns.lineplot(
+            data = df_mem_run,
+            ax = axs[0][i],  # type: ignore
+            x = 'Amount Nodes',
+            y = 'Memory Usage',
+            style = 'Benchmark',
+            hue = 'Benchmark',
+            markers = True,
+            dashes = False,
+        )
 
-    l2 = sns.lineplot(
-        data=df_mem_run2,
-        ax=ax2,
-        x='Amount Nodes',
-        y='Memory Usage',
-        style='Benchmark',
-        hue='Benchmark',
-        markers=True,
-        dashes=False,
-    )
+        sns.lineplot(
+            data = df_time_run,
+            ax = axs[1][i],  # type: ignore
+            x = 'Amount Nodes',
+            y = 'Execution Time',
+            style = 'Benchmark',
+            hue = 'Benchmark',
+            markers = True,
+            dashes = False,
+        )
 
-    l3 = sns.lineplot(
-        data=df_time_run1,
-        ax=ax3,
-        x='Amount Nodes',
-        y='Execution Time',
-        style='Benchmark',
-        hue='Benchmark',
-        markers=True,
-        dashes=False,
-    )
+    for y in [0, 1]:
+        for x in range(len(runs)):
+            l = axs[y][x]  # type: ignore
 
-    l4 = sns.lineplot(
-        data=df_time_run2,
-        ax=ax4,
-        x='Amount Nodes',
-        y='Execution Time',
-        style='Benchmark',
-        hue='Benchmark',
-        markers=True,
-        dashes=False,
-    )
+            l.set_xscale('log')
+            l.set_yscale('log')
 
-    for l in [l1, l2, l3, l4]:
-        l.set_xscale('log')
-        l.set_yscale('log')
-    
-    for l in [l2, l3, l4]:
-        l.get_legend().remove()
+            if x != 0:
+                l.get_legend().remove()
 
     zoom = 2
     w, h = fig.get_size_inches()
