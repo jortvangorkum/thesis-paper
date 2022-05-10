@@ -1,19 +1,57 @@
 \section{Regular}
 
-In the section \ref*{sec-comp-gen-libs}, a comparison is made between different generic programming libraries. 
+The \texttt{regular} generic programming library was chosen, because it was the simplest generic programming library to implement the generic implementation and supports a significant part of the datatypes.
 
 \todo[inline]{Write about why Regular is chosen}
-\todo[inline]{Write about the implementation of Regular and what had to change compared to the prototype language}
 
-\begin{haskell}
-newtype K a r    = K { unK :: a}     -- Constant value
-newtype I r      = I { unI :: r }    -- Recursive value
-data U r         = U                 -- Empty Constructor
-data (f :+: g) r = L (f r) | R (g r) -- Alternatives
-data (f :*: g) r = f r :*: g r       -- Combine
-data C c f r     = C { unC :: f r }  -- Name of a constructor
-data S l f r     = S { unS :: f r }  -- Name of a record selector
-\end{haskell}
+The first step of the incremental computation was computing the Merkle Tree. For this we need to know how to hash the generic datatypes. We introduce a typeclass named \texttt{Hashable} which defines a function \texttt{hash}, which converts the \texttt{f} datatype into a \texttt{Digest} (also known as a \textit{hash value}). The \inlinehaskell{Fix (g :*: K Digest)} means that the recursive positions of \texttt{f} already have a \texttt{Digest} stored with its structure. 
+
+\begin{minted}{haskell}
+class Hashable f where
+  hash :: f (Fix (g :*: K Digest)) -> Digest
+\end{minted}
+
+To convert datatypes into a \texttt{Digest}, a new typeclass \texttt{Digestable} is defined, which converts an arbitrary datatype into a \texttt{Digest}. We can then define an instance for the datatypes which already have the \texttt{Show} typeclass instance and use that to create a \texttt{Digest}.
+
+\begin{minted}{haskell}
+class Digestible a where
+  digest :: a -> Digest
+
+instance Show a => Digestible a where
+  digest = digestStr . show
+\end{minted}
+
+The Hashable instance of \texttt{U} is simple. The \texttt{digest} function is used to convert the constructor name \texttt{U} into a \texttt{Digest}. The \texttt{K} also uses the \texttt{digest} function to convert the constructor name into a \texttt{Digest}, but it also calls \texttt{digest} on the constant value of \texttt{K}. Therefore, the type of the value of \texttt{K} needs an instance for \texttt{Show}. Then both digests are combined into a single digest. 
+
+\begin{minted}{haskell}
+instance Hashable U where
+  hash _ = digest "U"
+
+instance (Show a) => Hashable (K a) where
+  hash (K x) = digestConcat [digest "K", digest x]
+\end{minted}
+
+The instances for \inlinehaskell{:+:} and \inlinehaskell{:*:} are quite similar as the instance for the \texttt{K} datatype. However, the value inside the constructor are recursively called.
+
+\begin{minted}{haskell}
+instance (Hashable f, Hashable g) => Hashable (f :+: g) where
+  hash (L x) = digestConcat [digest "L", hash x]
+  hash (R x) = digestConcat [digest "R", hash x]
+
+instance (Hashable f, Hashable g) => Hashable (f :*: g) where
+  hash (x :*: y) = digestConcat [digest "P", hash x, hash y]
+\end{minted}
+
+\begin{minted}{haskell}
+instance Hashable I where
+  hash (I x) = digestConcat [digest "I", getDigest x]
+    where
+      getDigest :: Fix (f :*: K Digest) -> Digest
+      getDigest (In (_ :*: K h)) = h
+
+instance (Hashable f) => Hashable (C c f) where
+  hash (C x) = digestConcat [digest "C", hash x]
+\end{minted}
 
 \begin{minted}{haskell}
 merkle :: (Regular a, Hashable (PF a), Functor (PF a))
@@ -29,5 +67,9 @@ cataSum = cataMerkle
     R (C (I l :*: K x :*: I r)) -> l + x + r
   )
 \end{minted}
+
+
+
+
 
 \subsection{Zipper}

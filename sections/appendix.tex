@@ -22,35 +22,6 @@ instance (Functor f, Functor g) => Functor (f :*: g) where
 
 
 \chapter{Implementation Memo Cata}
-\section{Implementation Hashable}
-\label{app-impl-hashable}
-\begin{minted}{haskell}
-class Hashable f where
-  hash :: f (Fix (g :*: K Digest)) -> Digest
-
-instance Hashable U where
-  hash _ = digest "U"
-
-instance (Show a) => Hashable (K a) where
-  hash (K x) = digestConcat [digest "K", digest x]
-
-instance Hashable I where
-  hash (I x) = digestConcat [digest "I", getDigest x]
-    where
-      getDigest :: Fix (f :*: K Digest) -> Digest
-      getDigest (In (_ :*: K h)) = h
-
-instance (Hashable f, Hashable g) => Hashable (f :+: g) where
-  hash (L x) = digestConcat [digest "L", hash x]
-  hash (R x) = digestConcat [digest "R", hash x]
-
-instance (Hashable f, Hashable g) => Hashable (f :*: g) where
-  hash (x :*: y) = digestConcat [digest "P", hash x, hash y]
-
-instance (Hashable f) => Hashable (C c f) where
-  hash (C x) = digestConcat [digest "C", hash x]
-\end{minted}
-
 \section{Implementation Merkle}
 \label{app-impl-merkle}
 \begin{minted}{haskell}

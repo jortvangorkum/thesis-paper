@@ -8,11 +8,12 @@ There are a multitude of generic programming libraries in Haskell. Choosing betw
     \item and complexity.
 \end{enumerate*}
 
+\question{Maybe use another word than \textit{Complexity}?}
 \begin{table}[H]
     \centering
     \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}|l c c c|} 
         \hline
-        \textbf{Library} & \textbf{Representation} & \textbf{Mutually Recursive} & \textbf{Complexity} \\ 
+        \textbf{Library} & \textbf{Representation} & \textbf{Mutual Recursion} & \textbf{Complexity} \\ 
         \hline
         \texttt{regular}\cite{regular2022} & Pattern Functor & $\times$ & Low \\ 
         \hline
@@ -25,5 +26,9 @@ There are a multitude of generic programming libraries in Haskell. Choosing betw
     \end{tabular*}
     \caption{An overview of the characteristics of multiple generic programming libraries in Haskell}
 \end{table}
+
+\question{How to compare the different libraries based on complexity?}
+
+The \texttt{regular} library is the easiest to understand generic programming library. This is because the library uses pattern functors and does not support mutually recursive datatypes.  
 
 % The paper \citetitle{rodriguez2008comparing}\cite{rodriguez2008comparing} by \citeauthor{rodriguez2008comparing} also makes a comparison of the current landscape of generic programming libraries in \citeyear{rodriguez2008comparing}. 
