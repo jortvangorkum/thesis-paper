@@ -1,19 +1,29 @@
 \section{Comparison Generic Libraries}
-\citetitle{rodriguez2008comparing}\cite{rodriguez2008comparing}
+\label{sec-comp-gen-libs}
+
+There are a multitude of generic programming libraries in Haskell. Choosing between the generic programming libraries is an assessment between different characteristics. The most interesting characteristics for a generic programming library for this paper is
+\begin{enumerate*}[label=(\alph*)]
+    \item the generic representation,
+    \item support of mutual recursion
+    \item and complexity.
+\end{enumerate*}
 
 \begin{table}[H]
-\centering
-\begin{tabular}{|l c c c|} 
-    \hline
-    \textbf{Library} & \textbf{Representation} & \textbf{Mutually Recursive} & \textbf{Complexity} \\ 
-    \hline
-    \texttt{regular} & Pattern Functor & $\times$ & Low \\ 
-    \hline
-    \texttt{multirec} & Pattern Functor & $\checkmark$ & Medium \\
-    \hline
-    \texttt{generics-sop} & SOP & $\times$ & Medium-High \\
-    \hline 
-    \texttt{generics-mrsop} & SOP & $\checkmark$ & High \\
-    \hline
-\end{tabular}
+    \centering
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}|l c c c|} 
+        \hline
+        \textbf{Library} & \textbf{Representation} & \textbf{Mutually Recursive} & \textbf{Complexity} \\ 
+        \hline
+        \texttt{regular}\cite{regular2022} & Pattern Functor & $\times$ & Low \\ 
+        \hline
+        \texttt{multirec}\cite{multirec2022} & Pattern Functor & $\checkmark$ & Low-Medium \\
+        \hline
+        \texttt{generics-sop}\cite{genericssop2022} & SOP & $\times$ & Medium-High \\
+        \hline 
+        \texttt{generics-mrsop}\cite{genericsmrsop2022} & SOP & $\checkmark$ & High \\
+        \hline
+    \end{tabular*}
+    \caption{An overview of the characteristics of multiple generic programming libraries in Haskell}
 \end{table}
+
+% The paper \citetitle{rodriguez2008comparing}\cite{rodriguez2008comparing} by \citeauthor{rodriguez2008comparing} also makes a comparison of the current landscape of generic programming libraries in \citeyear{rodriguez2008comparing}. 
