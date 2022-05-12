@@ -1,5 +1,5 @@
 \subsection{Mutually recursive datatypes}
-A large class of datatypes is supported by the previous section, namely \textit{regular} datatypes. Regular datatypes are datatypes in which the recursion only goes into the same datatype. However, if we want to support the syntax of many programming languages, we need to support datatypes which can recurse over different datatypes, namely mutually recursive datatypes.
+A large class of datatypes is supported by the previous section, namely \textit{regular} datatypes. Regular datatypes are datatypes in which the recursion only goes into the same datatype. However, if we want to support the abstract syntax tree of many programming languages, we need to support datatypes which can recurse over different datatypes, namely mutually recursive datatypes.
 
 \begin{minted}{haskell}
 data Tree a = Empty 
@@ -9,4 +9,4 @@ data Forest a = Nil
               | Cons (Tree a) (Forest a)
 \end{minted}
 
-\todo[inline]{Describe what the challenges are with supporting mutually recursive datatypes}
+To support mutually recursive datatypes, we need to keep track of which recursive position points to which datatype. This is accomplished by using \textit{indexed fixed-points}\cite{yakushev2009generic}. The indexed fixed-points works by creating a type family $\varphi$ with \textit{n} different types, where the types inside the family represent the indices for different kinds (\inlinehaskell{*!$_{\varphi}$!}). Using the limited set of kinds we can determine the type for the recursive positions. Thus, supporting mutually recursive datatypes is possible, but it adds a lot more complexity.   

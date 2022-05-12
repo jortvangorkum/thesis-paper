@@ -1,22 +1,22 @@
 \subsection{Sums of Products}
-A different way of describing datatypes in a generic representation, besides pattern functors, are \textit{Sums of Products}\cite{vries2014sums} (SOP). SOP is a generic representation with additional constraints which more faithfully reflects the Haskell datatypes: each datatype is a single n-ary sum, where each component of the sum is a single n-ary product. The SOP universe is described using \textit{codes} of kind \texttt{[[*]]}. The outer list describes an n-ary sum, representing the choice between constructors and each inner list an n-ary products, representing the constructor arguments. 
+\todo[inline]{Add a description of what a universe is}
 
-The code of kind \inlinehaskell{[[*]]} can then be interpreted to describe Haskell datatypes of kind \inlinehaskell{*}. To define a code, the tick mark \inlinehaskell{`} is used to lift the list to a type-level. 
+A different way of describing datatypes in a generic representation, besides pattern functors, are \textit{Sums of Products}\cite{vries2014sums} (SOP). SOP is a generic representation with additional constraints which more faithfully reflects the Haskell datatypes: each datatype is a single n-ary sum, where each component of the sum is a single n-ary product. The SOP universe is described using \textit{codes} of kind \texttt{[[*]]}. The outer list describes an n-ary sum, representing the choice between constructors and each inner list an n-ary products, representing the constructor arguments.  The code of kind \inlinehaskell{[[*]]} can then be interpreted to describe Haskell datatypes of kind \inlinehaskell{*}. To define a code, the tick mark \inlinehaskell{`} is used to lift the list to a type-level. 
 
 \begin{minted}{haskell}
 Code (Tree a) = `[`[a], `[Tree a, a, Tree a]]
 \end{minted}
 
-The usage of SOP makes it easier for developers to implement generic functionality. However, whereas pattern functors do not have structural constraints, SOP has, making it more complex to add extra functionality to SOP.
+The usage of SOP has a positive effect on expressing generic functions easily or at all. Additionally, the SOP completely divides the structural representation from the metadata. As a result, you do not have to deal with metadata while writing generic functions. However, the additional constraints on the generic representation makes the SOP universe size comparatively bigger than pattern functors. Therefore, it is more complex to extend the SOP than for pattern functors.
 
-\begin{itemize}
-    \item While many of the libraries that are
-    commonly in use today represent datatypes as arbitrary combinations of binary sums and products, SOP reflects the structure of datatypes more faithfully: each datatype is a single n-ary sum, where each component of the sum is a single n-ary product.
-    \item A major plus of the SOP view is that it allows separating function-specific metadata from the main structural representation and recombining this information later.
-    \item In this paper, we introduce a view (which we call SOP) which is based on a single, n-ary, sum, where each component of the sum is a single, n-ary, product.
-    \item The SOP view also takes a very interesting approach to metadata. In most generic views, metadata is intertwined with the structural representation, which means that every generic function has to deal with it in some way—even if it is just ignored, as in the M1 case for \texttt{garities} shown above. Furthermore, metadata sometimes leads to additional implicit assumptions about the shape of the data.
-    \item In the SOP view, metadata is completely independent from the data representation. This means that functions which do not need it, don't have to deal with it; conversely, it also means that we can easily define application-specific metadata, i.e., type-directed additional information that “configures” how a particular generic function should behave.
-    \item The tick marks are used to explicitly indicate that we mean the promoted type.
-    \item The fundamental idea of the SOP universe is that the kind of codes is a (promoted) list of list of types, written [[*]]. The goal of the universe is to provide descriptions of Haskell datatypes (of kind *)
-\end{itemize}
+% \begin{itemize}
+%     \item While many of the libraries that are
+%     commonly in use today represent datatypes as arbitrary combinations of binary sums and products, SOP reflects the structure of datatypes more faithfully: each datatype is a single n-ary sum, where each component of the sum is a single n-ary product.
+%     \item A major plus of the SOP view is that it allows separating function-specific metadata from the main structural representation and recombining this information later.
+%     \item In this paper, we introduce a view (which we call SOP) which is based on a single, n-ary, sum, where each component of the sum is a single, n-ary, product.
+%     \item The SOP view also takes a very interesting approach to metadata. In most generic views, metadata is intertwined with the structural representation, which means that every generic function has to deal with it in some way—even if it is just ignored, as in the M1 case for \texttt{garities} shown above. Furthermore, metadata sometimes leads to additional implicit assumptions about the shape of the data.
+%     \item In the SOP view, metadata is completely independent from the data representation. This means that functions which do not need it, don't have to deal with it; conversely, it also means that we can easily define application-specific metadata, i.e., type-directed additional information that “configures” how a particular generic function should behave.
+%     \item The tick marks are used to explicitly indicate that we mean the promoted type.
+%     \item The fundamental idea of the SOP universe is that the kind of codes is a (promoted) list of list of types, written [[*]]. The goal of the universe is to provide descriptions of Haskell datatypes (of kind *)
+% \end{itemize}
 
