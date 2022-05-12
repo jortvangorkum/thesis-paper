@@ -1,34 +1,36 @@
 \section{Comparison Generic Libraries}
 \label{sec-comp-gen-libs}
 
-There are a multitude of generic programming libraries in Haskell. Choosing between the generic programming libraries is an assessment between different characteristics. The most interesting characteristics for a generic programming library for this paper is
+There are a multitude of generic programming libraries in Haskell. Choosing between the generic programming libraries is an assessment between different criteria. The criteria for a generic programming library for this paper are
 \begin{enumerate*}[label=(\alph*)]
     \item the generic representation,
-    \item support of mutual recursion
-    \item and complexity.
+    \item support of mutually recursive datatypes and
+    \item ease of use.
 \end{enumerate*}
 
-\question{Maybe use another word than \textit{Complexity}?}
 \begin{table}[H]
     \centering
     \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}|l c c c|} 
         \hline
-        \textbf{Library} & \textbf{Representation} & \textbf{Mutual Recursion} & \textbf{Complexity} \\ 
+        \textbf{Library} & \textbf{Representation} & \textbf{Mutually Recursive} & \textbf{Ease of Use} \\ 
         \hline
-        \texttt{regular}\cite{regular2022} & Pattern Functor & $\times$ & Low \\ 
+        \texttt{regular}\cite{regular2022} & Pattern Functor & $\times$ & Easy \\ 
         \hline
-        \texttt{multirec}\cite{multirec2022} & Pattern Functor & $\checkmark$ & Low-Medium \\
+        \texttt{multirec}\cite{multirec2022} & Pattern Functor & $\checkmark$ & Medium \\
         \hline
-        \texttt{generics-sop}\cite{genericssop2022} & SOP & $\times$ & Medium-High \\
+        \texttt{generics-sop}\cite{genericssop2022} & SOP & $\times$ & Difficult \\
         \hline 
-        \texttt{generics-mrsop}\cite{genericsmrsop2022} & SOP & $\checkmark$ & High \\
+        \texttt{generics-mrsop}\cite{genericsmrsop2022} & SOP & $\checkmark$ & Complex \\
         \hline
     \end{tabular*}
-    \caption{An overview of the characteristics of multiple generic programming libraries in Haskell}
+    \caption{Criteria overview of generic programming libraries in Haskell}
 \end{table}
 
 \question{How to compare the different libraries based on complexity?}
 
 The \texttt{regular} library is the easiest to understand generic programming library. This is because the library uses pattern functors and does not support mutually recursive datatypes.  
+
+% More complex universe, does support mutually recursive datatypes, but it becomes more complex.
+
 
 % The paper \citetitle{rodriguez2008comparing}\cite{rodriguez2008comparing} by \citeauthor{rodriguez2008comparing} also makes a comparison of the current landscape of generic programming libraries in \citeyear{rodriguez2008comparing}. 

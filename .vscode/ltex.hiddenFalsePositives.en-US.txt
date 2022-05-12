@@ -6,3 +6,4 @@
 {"rule":"SUBJECT_VERB_AGREEMENT_PLURAL","sentence":"^\\QWhen modifying the value in the TreeH, the parents nodes hashes also needs to be updated.\\E$"}
 {"rule":"COMMA_PARENTHESIS_WHITESPACE","sentence":"^\\Q[display] .\\E$"}
 {"rule":"THREE_NN","sentence":"^\\QThe pattern functor representation can then be used to write\\E$"}
+{"rule":"PUNCTUATION_PARAGRAPH_END","sentence":"^\\QThe criteria for a generic programming library for this paper are The generic representation Support of mutually recursive datatypes Extensibility\\E$"}

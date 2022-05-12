@@ -1,17 +1,25 @@
 \section{Regular}
 
-The \texttt{regular} generic programming library was chosen, because it was the simplest generic programming library to implement the generic implementation and supports a significant part of the datatypes.
+The \texttt{regular} generic programming library was chosen, because it has the smallest universe size and still supports enough datatypes. Therefore, implementing the generic implementation is less complex than the other libraries.
 
 \todo[inline]{Write about why Regular is chosen}
 
-The first step of the incremental computation was computing the Merkle Tree. For this we need to know how to hash the generic datatypes. We introduce a typeclass named \texttt{Hashable} which defines a function \texttt{hash}, which converts the \texttt{f} datatype into a \texttt{Digest} (also known as a \textit{hash value}). The \inlinehaskell{Fix (g :*: K Digest)} means that the recursive positions of \texttt{f} already have a \texttt{Digest} stored with its structure. 
+The first step of the incremental computation was computing the Merkle Tree. In other terms, we need to store the hash of the data structure inside the data structure. We accomplish this by defining a new type \texttt{Merkle} which is a fixed-point over the data structure where each of the recursive positions contains a hash (\inlinehaskell{K Digest}).
+
+\begin{minted}{haskell}
+type Merkle f = Fix (f :*: K Digest)
+\end{minted}
+
+However, before the hash can be stored inside the data structure, the hash needs to be computed from the data structure. For this we need to know how to hash the generic datatypes. We introduce a typeclass named \texttt{Hashable} which defines a function \texttt{hash}, which converts the \texttt{f} datatype into a \texttt{Digest} (also known as a \textit{hash value}). The \inlinehaskell{Fix (g :*: K Digest)} means that the recursive positions of \texttt{f} already have a \texttt{Digest} stored with its structure. 
 
 \begin{minted}{haskell}
 class Hashable f where
-  hash :: f (Fix (g :*: K Digest)) -> Digest
+  hash :: f (Merkle g) -> Digest
 \end{minted}
 
 To convert datatypes into a \texttt{Digest}, a new typeclass \texttt{Digestable} is defined, which converts an arbitrary datatype into a \texttt{Digest}. We can then define an instance for the datatypes which already have the \texttt{Show} typeclass instance and use that to create a \texttt{Digest}.
+
+\question{Maybe make this just a single function :: Show a => a -> Digest?}
 
 \begin{minted}{haskell}
 class Digestible a where
@@ -31,7 +39,7 @@ instance (Show a) => Hashable (K a) where
   hash (K x) = digestConcat [digest "K", digest x]
 \end{minted}
 
-The instances for \inlinehaskell{:+:} and \inlinehaskell{:*:} are quite similar as the instance for the \texttt{K} datatype. However, the value inside the constructor are recursively called.
+The instances for \inlinehaskell{:+:}, \inlinehaskell{:*:} and \inlinehaskell{C} are quite similar as the instance for the \texttt{K} datatype. However, the value inside the constructor are recursively called.
 
 \begin{minted}{haskell}
 instance (Hashable f, Hashable g) => Hashable (f :+: g) where
@@ -40,7 +48,12 @@ instance (Hashable f, Hashable g) => Hashable (f :+: g) where
 
 instance (Hashable f, Hashable g) => Hashable (f :*: g) where
   hash (x :*: y) = digestConcat [digest "P", hash x, hash y]
+
+instance (Hashable f) => Hashable (C c f) where
+  hash (C x) = digestConcat [digest "C", hash x]
 \end{minted}
+
+The \texttt{I} instance is different from the previous instances, because the recursive position is already converted into a Merkle Tree. Thus, we need to get the computed hash from the recursive position, digest the datatype name and combine the digests. 
 
 \begin{minted}{haskell}
 instance Hashable I where
@@ -48,9 +61,11 @@ instance Hashable I where
     where
       getDigest :: Fix (f :*: K Digest) -> Digest
       getDigest (In (_ :*: K h)) = h
+\end{minted}
 
-instance (Hashable f) => Hashable (C c f) where
-  hash (C x) = digestConcat [digest "C", hash x]
+\begin{minted}{haskell}
+merkleG :: Hashable f => f (Merkle g) -> (f :*: K Digest) (Merkle g)
+merkleG f = f :*: K (hash f)
 \end{minted}
 
 \begin{minted}{haskell}
@@ -60,16 +75,12 @@ merkle = In . merkleG . fmap merkle . from
 \end{minted}
 
 \begin{minted}{haskell}
-cataSum :: Merkle (PF (Tree Int)) -> (Int, M.Map Digest Int)
+cataSum :: Merkle (PF (Tree Int)) -> (Int, Map Digest Int)
 cataSum = cataMerkle
   (\case
     L (C (K x))                 -> x
     R (C (I l :*: K x :*: I r)) -> l + x + r
   )
 \end{minted}
-
-
-
-
 
 \subsection{Zipper}

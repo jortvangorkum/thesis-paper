@@ -25,12 +25,7 @@ instance (Functor f, Functor g) => Functor (f :*: g) where
 \section{Implementation Merkle}
 \label{app-impl-merkle}
 \begin{minted}{haskell}
-type Merkle f = Fix (f :*: K Digest)
 
-merkleG :: Hashable f 
-        => f (Fix (g :*: K Digest)) 
-        -> (f :*: K Digest) (Fix (g :*: K Digest))
-merkleG f = f :*: K (hash f)
 
 merkle :: (Regular a, Hashable (PF a), Functor (PF a)) 
        => a -> Merkle (PF a)

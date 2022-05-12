@@ -13,3 +13,4 @@ typeclass
 Eq
 recurses
 recurse
+n-ary
