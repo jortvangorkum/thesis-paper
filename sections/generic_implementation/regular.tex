@@ -112,23 +112,14 @@ data Loc :: * -> * where
   Loc :: (Zipper a) => Merkle a 
                     -> [Ctx (a :*: K Digest) (Merkle a)] 
                     -> Loc (Merkle a) 
-\end{minted}
 
-\begin{minted}{haskell}
 data family Ctx (f :: * -> *) :: * -> *
 \end{minted}
 
 \begin{minted}{haskell}
-data instance Ctx (K a)     r
-data instance Ctx U         r
-data instance Ctx (f :+: g) r = CL (Ctx f r)
-                              | CR (Ctx g r)
-data instance Ctx (f :*: g) r = C1 (Ctx f r) (g r)
-                              | C2 (f r) (Ctx g r)
-data instance Ctx I         r = CId
-data instance Ctx (C c f)   r = CC (Ctx f r)
-data instance Ctx (S s f)   r = CS (Ctx f r)
-
-instance Zipper f => Functor (Ctx f) where
-  fmap = cmap
+class Functor f => Zipper f where
+  cmap        :: (a -> b) -> Ctx f a -> Ctx f b
+  fill        :: Ctx f a -> a -> f a
+  first, last :: f a -> Maybe (a, Ctx f a)
+  next, prev  :: Ctx f a -> a -> Maybe (a, Ctx f a)
 \end{minted}

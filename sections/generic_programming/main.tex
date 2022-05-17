@@ -13,6 +13,8 @@ There are multiple generic programming libraries, however to demonstrate the wor
 
 First, the pattern functors defined in \texttt{regular} are 5 core pattern functors and 2 meta information pattern functors. The core pattern functors describe the datatypes. The meta information pattern functors only contain information (e.g., constructor name) but not any structural information.
 
+\todo[inline]{Use "representation types" instead of "pattern functor" for these datatypes}
+
 \begin{minted}{haskell}
 data U r         = U                 -- Empty constructors
 data I r         = I r               -- Recursive call
@@ -32,9 +34,16 @@ class Regular a where
 
 type instance PF (Tree a) = K a                -- Leaf
                          :+: (I :*: K a :*: I) -- Node
+
+class Regular (Tree a) where
+    from (Leaf x)     = L (K x)
+    from (Node l x r) = R (I l :*: K x :*: I r)                 
+
+    to (L (K x))                 = Leaf x
+    to (R (I l :*: K x :*: I r)) = Node l x r
 \end{minted}
 
-To demonstrate the workings of generic programming, we are going to implement a simple generic function which determines the length of an arbitrary datatype. First, we define the length function within a type class. The type class is used, to define how to calculate the length for every pattern functor \texttt{f}. 
+To demonstrate the workings of generic programming, we are going to implement a simple generic function which determines the length of an arbitrary datatype. First, we define the length function within a type class. The type class is used, to define how to determine the length for every pattern functor \texttt{f}. 
 
 \begin{minted}{haskell}
 class GLength f where
