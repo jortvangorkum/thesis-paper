@@ -98,9 +98,37 @@ cataSum = cataMerkle
     L (C (K x))                 -> x
     R (C (I l :*: K x :*: I r)) -> l + x + r
   )
-  
+
 > cataSum $ merkle $ Node (Leaf 1) 2 (Leaf 3)
   (6, {"931090e5": 1, "7d1ef1c9": 3, "ba811ed5": 6})
 \end{minted}
 
 \subsection{Zipper}
+
+\citetitle{bransen2013generic} by \citeauthor{bransen2013generic}\cite{bransen2013generic}
+
+\begin{minted}{haskell}
+data Loc :: * -> * where
+  Loc :: (Zipper a) => Merkle a 
+                    -> [Ctx (a :*: K Digest) (Merkle a)] 
+                    -> Loc (Merkle a) 
+\end{minted}
+
+\begin{minted}{haskell}
+data family Ctx (f :: * -> *) :: * -> *
+\end{minted}
+
+\begin{minted}{haskell}
+data instance Ctx (K a)     r
+data instance Ctx U         r
+data instance Ctx (f :+: g) r = CL (Ctx f r)
+                              | CR (Ctx g r)
+data instance Ctx (f :*: g) r = C1 (Ctx f r) (g r)
+                              | C2 (f r) (Ctx g r)
+data instance Ctx I         r = CId
+data instance Ctx (C c f)   r = CC (Ctx f r)
+data instance Ctx (S s f)   r = CS (Ctx f r)
+
+instance Zipper f => Functor (Ctx f) where
+  fmap = cmap
+\end{minted}
