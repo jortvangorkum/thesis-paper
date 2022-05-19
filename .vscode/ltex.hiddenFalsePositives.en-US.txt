@@ -7,3 +7,4 @@
 {"rule":"COMMA_PARENTHESIS_WHITESPACE","sentence":"^\\Q[display] .\\E$"}
 {"rule":"THREE_NN","sentence":"^\\QThe pattern functor representation can then be used to write\\E$"}
 {"rule":"PUNCTUATION_PARAGRAPH_END","sentence":"^\\QThe criteria for a generic programming library for this paper are The generic representation Support of mutually recursive datatypes Extensibility\\E$"}
+{"rule":"TOO_LONG_SENTENCE","sentence":"^\\QFor the implementation of a generic zipper, we need to define a datatype which keeps track of the location inside the data structure, a context which keeps track of the locations which have been traversed through and functions which facilitate traversing through the data structure.\\E$"}

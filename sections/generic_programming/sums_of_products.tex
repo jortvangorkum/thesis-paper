@@ -1,4 +1,4 @@
-\subsection{Sums of Products}
+\section{Sums of Products}
 \todo[inline]{Add a description of what a universe is}
 
 A different way of describing datatypes in a generic representation, besides pattern functors, are \textit{Sums of Products}\cite{vries2014sums} (SOP). SOP is a generic representation with additional constraints which more faithfully reflects the Haskell datatypes: each datatype is a single n-ary sum, where each component of the sum is a single n-ary product. The SOP universe is described using \textit{codes} of kind \texttt{[[*]]}. The outer list describes an n-ary sum, representing the choice between constructors and each inner list an n-ary products, representing the constructor arguments.  The code of kind \inlinehaskell{[[*]]} can then be interpreted to describe Haskell datatypes of kind \inlinehaskell{*}. To define a code, the tick mark \inlinehaskell{`} is used to lift the list to a type-level. 

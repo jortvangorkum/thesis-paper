@@ -1,0 +1,54 @@
+\section{Generic Zipper}
+
+For the implementation of a generic zipper, we need to define
+\begin{enumerate*}[label=(\Alph*)]
+  \item a datatype which keeps track of the location inside the data structure,
+  \item a context which keeps track of the locations which have been traversed through
+  \item and functions which facilitate traversing through the data structure.
+\end{enumerate*}
+The implementation of the general zipper is based on the paper \citetitle{bransen2013generic} by \citeauthor{bransen2013generic}\cite{bransen2013generic}.
+
+\begin{itemize}
+  \item A location is the point currently in focus in the zipper (of type $\alpha$), and the path to the focal point. 
+  \item This path is stored as a stack of one-hole contexts. 
+  \item The context is given by the derivative of the pattern functor representing the datatype (McBride 2001). 
+  \item This type-indexed datatype is encoded in regular as a data family, indexed over the five representation types.
+\end{itemize}
+
+\begin{minted}{haskell}
+data family Ctx (f :: * -> *) :: * -> *
+
+data instance Ctx (K a)     r
+data instance Ctx U         r
+data instance Ctx (f :+: g) r = CL (Ctx f r)
+                              | CR (Ctx g r)
+data instance Ctx (f :*: g) r = C1 (Ctx f r) (g r)
+                              | C2 (f r) (Ctx g r)
+data instance Ctx I         r = CId
+data instance Ctx (C c f)   r = CC (Ctx f r)
+\end{minted}
+
+\begin{minted}{haskell}
+data Loc :: * -> * where
+  Loc :: (Regular a, Zipper (PF a)) => a -> [Ctx (PF a) a] -> Loc a
+\end{minted}
+
+\begin{minted}{haskell}
+type instance PF (Merkle f) = f :*: K Digest
+instance Regular (Merkle f) where
+  from = out
+  to   = In
+\end{minted}
+
+\begin{itemize}
+  \item The cmap function encodes the functorial map over contexts. 
+  \item Filling the hole in a context with a specific value is the role of fill, while first, last, next, and prev are primitive navigation operations.
+\end{itemize}
+
+\begin{minted}{haskell}
+class Functor f => Zipper f where
+  cmap        :: (a -> b) -> Ctx f a -> Ctx f b
+  fill        :: Ctx f a -> a -> f a
+  first, last :: f a -> Maybe (a, Ctx f a)
+  next, prev  :: Ctx f a -> a -> Maybe (a, Ctx f a)
+\end{minted}

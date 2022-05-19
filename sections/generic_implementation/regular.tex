@@ -1,6 +1,6 @@
 \section{Regular}
 
-The \texttt{regular} generic programming library was chosen, because it has the smallest universe size. Therefore, implementing the generic implementation is less complex than the other libraries. However, \texttt{regular} supports enough datatypes to accumulate meaningful data.
+The \texttt{regular} generic programming library was chosen, because it has the smallest universe size compared to other libraries. Therefore, implementing the generic implementation is less complex. However, \texttt{regular} does not support \textit{Sums of Products} and \textit{mutually recursive datatypes}, but we expect that the results will be meaningful without supporting these features.
 
 \todo[inline]{Write about why Regular is chosen}
 
@@ -103,23 +103,3 @@ cataSum = cataMerkle
   (6, {"931090e5": 1, "7d1ef1c9": 3, "ba811ed5": 6})
 \end{minted}
 
-\subsection{Zipper}
-
-\citetitle{bransen2013generic} by \citeauthor{bransen2013generic}\cite{bransen2013generic}
-
-\begin{minted}{haskell}
-data Loc :: * -> * where
-  Loc :: (Zipper a) => Merkle a 
-                    -> [Ctx (a :*: K Digest) (Merkle a)] 
-                    -> Loc (Merkle a) 
-
-data family Ctx (f :: * -> *) :: * -> *
-\end{minted}
-
-\begin{minted}{haskell}
-class Functor f => Zipper f where
-  cmap        :: (a -> b) -> Ctx f a -> Ctx f b
-  fill        :: Ctx f a -> a -> f a
-  first, last :: f a -> Maybe (a, Ctx f a)
-  next, prev  :: Ctx f a -> a -> Maybe (a, Ctx f a)
-\end{minted}
