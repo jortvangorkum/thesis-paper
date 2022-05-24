@@ -20,9 +20,9 @@ The comparison of two values in Haskell is done with the \texttt{Eq} typeclass, 
 
 \begin{minted}{haskell}
 instance Eq a => Eq (Tree a) where
-    Leaf x1       == Leaf x2       = x1 == x2
-    Node l1 x1 r1 == Node l2 x2 r2 = x1 == x2 && l1 == l2 && r1 == r2
-    _             == _             = False
+  Leaf x1       == Leaf x2       = x1 == x2
+  Node l1 x1 r1 == Node l2 x2 r2 = x1 == x2 && l1 == l2 && r1 == r2
+  _             == _             = False
 \end{minted}
 
 The problem with using this implementation of the \texttt{Eq} typeclass for Memoization is that for every comparison of the \texttt{Tree} datatype the equality is computed. This is inefficient because the equality implementation has to traverse the complete \texttt{Tree} data structure to know if the \texttt{Tree}'s are equal. 
@@ -33,11 +33,11 @@ One of the disadvantages of using hashes is \textit{hash collisions}. Hash colli
 
 \begin{minted}{haskell}
 class Hashable a where
-    hash :: a -> Hash
+  hash :: a -> Hash
 
 instance Hashable a => Hashable (Tree a) where
-    hash (Leaf x)     = concatHash [hash "Leaf", hash x]
-    hash (Node l x r) = concatHash [hash "Node", hash x, hash l, hash r]
+  hash (Leaf x)     = concatHash [hash "Leaf", hash x]
+  hash (Node l x r) = concatHash [hash "Node", hash x, hash l, hash r]
 \end{minted}
 
 The hashes can then be used to efficiently compare two \texttt{Tree} data structures, without having to traverse the entire \texttt{Tree} data structure. To keep track of the intermediate results of the computation, we store the results in a \texttt{Map}. A \texttt{Map}, also known as a dictionary, is an implementation of mapping a key to a value. In our next example the \texttt{Hash} is the key and the value is the intermediate result.
@@ -46,10 +46,10 @@ The hashes can then be used to efficiently compare two \texttt{Tree} data struct
 sumTreeInc :: Tree Int -> (Int, Map Hash Int)
 sumTreeInc l@(Leaf x)     = (x, insert (hash l) x empty)
 sumTreeInc n@(Node l x r) = (y, insert (hash n) y (ml <> mr))
-    where
-        y = x + xl + xr
-        (xl, ml) = sumTreeInc l
-        (xr, mr) = sumTreeInc r
+  where
+    y = x + xl + xr
+    (xl, ml) = sumTreeInc l
+    (xr, mr) = sumTreeInc r
 \end{minted}
 
 Then after the first computation over the entire \texttt{Tree}, we can recompute the \texttt{Tree} using the previously created \texttt{Map}. Thus, when we recompute the \texttt{Tree}, we first look in the \texttt{Map} if the computation has already been performed then return the result. Otherwise, compute the result and store it in the \texttt{Map}.
@@ -58,15 +58,15 @@ Then after the first computation over the entire \texttt{Tree}, we can recompute
 \begin{minted}{haskell}
 sumTreeIncMap :: Map Hash Int -> Tree Int -> (Int, Map Hash Int)
 sumTreeIncMap m l@(Leaf x) = case lookup (hash l) m of
-    Just x  -> (x, m) 
-    Nothing -> (x, insert (hash l) x empty)
+  Just x  -> (x, m) 
+  Nothing -> (x, insert (hash l) x empty)
 sumTreeIncMap m n@(Node l x r) = case lookup (hash n) m of
-    Just x  -> (x, m)
-    Nothing -> (y, insert (hash n) y (ml <> mr))
-        where
-            y = x + xl + xr
-            (xl, ml) = sumTreeIncMap m l
-            (xr, mr) = sumTreeIncMap m r
+  Just x  -> (x, m)
+  Nothing -> (y, insert (hash n) y (ml <> mr))
+    where
+      y = x + xl + xr
+      (xl, ml) = sumTreeIncMap m l
+      (xr, mr) = sumTreeIncMap m r
 \end{minted}
 
 Generating a hash for every computation over the data structure is time-consuming and unnecessary, because most of the \texttt{Tree} data structure stays the same. The work of \citeauthor{miraldo2019efficient}\cite{miraldo2019efficient} inspired the use of the Merkle Tree. A Merkle Tree is a data structure which integrates the hashes within the data structure.
@@ -83,10 +83,10 @@ data TreeH a = LeafH Hash a
 merkle :: Tree Int -> TreeH Int
 merkle l@(Leaf x) = LeafH (hash l) x
 merkle (Node l x r) = NodeH h l' x r'
-    where
-        h = hash ["Node", x, getHash l', getHash r']
-        l' = merkle l
-        r' = merkle r
+  where
+    h = hash ["Node", x, getHash l', getHash r']
+    l' = merkle l
+    r' = merkle r
 \end{minted}
 
 The precomputed hashes can then be used to easily create a \texttt{Map}, without computing the hashes every time the \texttt{sumTreeIncH} function is called.
@@ -95,10 +95,10 @@ The precomputed hashes can then be used to easily create a \texttt{Map}, without
 sumTreeIncH :: TreeH Int -> (Int, Map Hash Int)
 sumTreeIncH (LeafH h x)     = (x, insert h x empty)
 sumTreeIncH (NodeH h l x r) = (y, insert h y (ml <> mr))
-    where
-        y = x + xl + xr
-        (xl, ml) = sumTreeInc l
-        (xr, mr) = sumTreeInc r
+  where
+    y = x + xl + xr
+    (xl, ml) = sumTreeInc l
+    (xr, mr) = sumTreeInc r
 \end{minted}
 
 The problem with this implementation is, that when the \texttt{Tree} datatype is updated, the entire \texttt{Tree} needs to be converted into a \texttt{TreeH}, which is linear in time. This can be done more efficiently, by only updating the hashes which are impacted by the changes. Which means that only the hashes of the change and the parents need to be updated. 

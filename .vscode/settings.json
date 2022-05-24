@@ -77,5 +77,6 @@
     "ltex.additionalRules.enablePickyRules": true,
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
-    "latex-workshop.latex.autoBuild.run": "onSave"
+    "latex-workshop.latex.autoBuild.run": "onSave",
+    "editor.tabSize": 2
 }
