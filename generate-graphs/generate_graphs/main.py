@@ -5,7 +5,7 @@ if __name__ == "__main__":
     sns.set_palette("pastel")
 
     plotter = Plotter(
-        images_path='../images',
+        images_path='../images/plots',
         df_mem_path='./data/memory',
         df_time_path='./data/time',
         runs=['run-14']

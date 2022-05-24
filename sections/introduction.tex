@@ -1,8 +1,6 @@
 \chapter{Introduction}
 
 \section{Motivation}
-When computing a result over a data type, a small change would lead to completely recomputing the result. Parts of the recomputation give the same results as the previous computation. By keeping track of the intermediate results and reusing the results when the input is the same, fewer computations have to be performed. 
-
 An example of computing a result over a data type is computing the \textbf{maximum path sum} over a binary tree. Given a \inlinehaskell{BinTree}, starting at the root node, find a path from the root node to the leaves that leads to the maximum total.
 
 The implementation of the computation is done in \texttt{Haskell}. And the definition of the binary tree and example tree is:
@@ -22,7 +20,7 @@ exampleTree = Node (Node (Leaf 8) 7 (Leaf 9)) 3 (Node (Leaf 5) 4 (Leaf 2))
     \caption{Graphic visualization of the \inlinehaskell{exampleTree}}
 \end{figure}
 
-An implementation of computing the max path sum over data type \inlinehaskell{BinTree} can been seen below and has a complexity of $\mathcal{O}(N)$, where $N$ is the number of nodes in the tree.
+An implementation of computing the max path sum over data type \inlinehaskell{BinTree} can be seen below and has a complexity of $\mathcal{O}(N)$, where $N$ is the number of nodes in the tree.
 \begin{haskell}
 maxPathSum :: BinTree -> Int
 maxPathSum (Leaf x)     = x
@@ -69,7 +67,7 @@ merkle (Node l x r) = NodeH (hash ["Node", x, hl, hr]) l' x r'
 
 To compute the max path sum and its intermediate results, we can use the precomputed hashes of the \inlinehaskell{MerkleTree} to efficiently generate a \inlinehaskell{Map Hash Int}. The complexity of computing the max path sum and the intermediate results is $\mathcal{O}(N)$.   
 
-The example implementation of computing the max path sum and its intermediate results can be seen below. However this implementation uses a \texttt{union} (\inlinehaskell{<>}) to combine the \inlinehaskell{Map}'s which has a complexity of $\mathcal{O}(m*log(n/m + 1)), m <= n$\cite{HaskellDataUnion}. This can be implemented more efficiently by giving the \inlinehaskell{Map} to the left side and then to the right side of the Tree, which makes it a constant operation. Except, this would make the code more complex. So, for clarity, the example is implemented with a union.
+The example implementation of computing the max path sum and its intermediate results can be seen below. However, this implementation uses a \texttt{union} (\inlinehaskell{<>}) to combine the \inlinehaskell{Map}'s which has a complexity of $\mathcal{O}(m*log(n/m + 1)), m <= n$\cite{HaskellDataUnion}. This can be implemented more efficiently by giving the \inlinehaskell{Map} to the left side and then to the right side of the Tree, which makes it a constant operation. Except, this would make the code more complex. So, for clarity, the example is implemented with a union.
 
 \begin{haskell}
 maxPathSumInc :: MerkleTree -> (Int, Map Hash Int)    
@@ -142,7 +140,7 @@ In Table \ref{table:function-compl-inc} and \ref{table:function-compl} the funct
     \centering
     \begin{tabular}{|l|r|r|}
         \hline
-        \textbf{Function} & \textbf{Average} & \textbf{Upperbound} \\
+        \textbf{Function} & \textbf{Average} & \textbf{Upper bound} \\
         \hline
         \inlinehaskell{merkle} & $\Theta(N)$ & $\mathcal{O}(N)$ \\
         \hline
@@ -161,7 +159,7 @@ In Table \ref{table:function-compl-inc} and \ref{table:function-compl} the funct
     \centering
     \begin{tabular}{|l|r|r|}
         \hline
-        \textbf{Function} & \textbf{Average} & \textbf{Upperbound} \\
+        \textbf{Function} & \textbf{Average} & \textbf{Upper bound} \\
         \hline
         \inlinehaskell{maxPathSum} & $\mathcal{O}(N)$ & $\mathcal{O}(N)$ \\
         \hline

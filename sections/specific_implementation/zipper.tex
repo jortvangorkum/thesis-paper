@@ -19,6 +19,8 @@ enter t = (t, Top)
 
 Using the \texttt{Loc}, we can define multiple functions on how to traverse through the \texttt{Tree}. Then, when we get to the desired location in the \texttt{Tree}, we can call the \texttt{modify} function to change the \texttt{Tree} at the current location.
 
+Eventually, when every value in the \texttt{Tree} has been changed, the entire \texttt{Tree} can then be rebuilt using the \texttt{Cxt}. By recursively calling the \texttt{up} function until the top is reached, the current subtree gets rebuilt. And when the top is reached, the entire tree is then returned.
+
 \begin{minted}{haskell}
 left :: Loc a -> Loc a
 left (Node l x r, c) = (l, L c r x)
@@ -32,15 +34,15 @@ up (t, R c l x) = (Node l x t, c)
 
 modify :: (Tree a -> Tree a) -> Loc a -> Loc a
 modify f (t, c) = (f t, c)
+
+leave :: Loc a -> a
+leave (t, Top) = t
+leave l        = top (up l)
+
+> leave $ modify (const (Leaf 4)) $ left $ enter (Node (Leaf 1) 2 (Leaf 3))
+    (Node (Leaf 4) 2 (Leaf 3))
 \end{minted}
 
-Eventually, when every value in the \texttt{Tree} has been changed, the entire \texttt{Tree} can then be rebuilt using the \texttt{Cxt}. By recursively calling the \texttt{up} function until the top is reached, the current subtree gets rebuilt. And when the top is reached, the entire tree is then returned.
-
-\begin{minted}{haskell}
-leave :: Loc a -> Loc a
-leave l@(t, Top) = l
-leave l = top (up l)
-\end{minted}
 
 \subsection{Zipper \texttt{TreeH}}
 \label{subsec-zipper-treeh}
@@ -66,7 +68,4 @@ update :: (TreeH a -> TreeH a) -> [Loc a -> Loc a] -> TreeH a -> TreeH a
 update f dirs t = leave $ updateLoc f l'
   where
     l' = applyDirs dirs (enter t)
-
-> update (const (merkle (Leaf 4))) [down, left] (merkle (Node (Leaf 1) 2 (Leaf 3))) 
-    
 \end{minted}
