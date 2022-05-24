@@ -1,8 +1,10 @@
 \section{Pattern Synonyms}
-\todo[inline]{Explain Pattern Synonyms}
-\begin{minted}{haskell}
-{-# COMPLETE Leaf_, Node_ #-}
 
+The developer experience using \texttt{cataMerkle} is difficult, because the developer needs to know the pattern functor of its datatype to define a function and the function definitions are quite verbose. To make the use of \texttt{cataMerkle} easier, we introduce \textit{pattern synonyms}\cite{pickering2016pattern}. 
+
+Pattern synonyms add an abstraction over patterns, which allows the user to move additional logic from guards and case expressions into patterns. For example, the pattern functor of the \texttt{Tree} datatype can be represented using a \texttt{pattern}.
+
+\begin{minted}{haskell}
 pattern Leaf_ :: a -> PF (Tree a) r
 pattern Leaf_ x <- L (C (K x)) where
   Leaf_ x = L (C (K x))
@@ -12,8 +14,10 @@ pattern Node_ l x r <- R (C (I l :*: K x :*: I r)) where
   Node_ l x r = R (C (I l :*: K x :*: I r))
 \end{minted}
 
+The previously defined \texttt{pattern}s can then be used to define the \texttt{cataSum} as the original datatype \texttt{Tree}, but the constructor names leading with an additional underscore. However, writing all the patterns for all pattern functors is an arduous task. Luckily, we can use \texttt{TemplateHaskell} to generate the pattern synonyms\footnote{An example of using \texttt{TemplateHaskell} to generate pattern synonyms can be found at \href{https://hackage.haskell.org/package/generics-mrsop-2.3.0/docs/Generics-MRSOP-TH.html}{\textit{Generics-MRSOP-TH}}}.
+
 \begin{minted}{haskell}
-cataSum :: MerklePF (Tree Int) -> (Int, M.Map Digest Int)
+cataSum :: Merkle (PF (Tree Int)) -> (Int, M.Map Digest Int)
 cataSum = cataMerkle
   (\case
     Leaf_ x     -> x

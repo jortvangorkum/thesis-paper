@@ -8,3 +8,5 @@
 {"rule":"THREE_NN","sentence":"^\\QThe pattern functor representation can then be used to write\\E$"}
 {"rule":"PUNCTUATION_PARAGRAPH_END","sentence":"^\\QThe criteria for a generic programming library for this paper are The generic representation Support of mutually recursive datatypes Extensibility\\E$"}
 {"rule":"TOO_LONG_SENTENCE","sentence":"^\\QFor the implementation of a generic zipper, we need to define a datatype which keeps track of the location inside the data structure, a context which keeps track of the locations which have been traversed through and functions which facilitate traversing through the data structure.\\E$"}
+{"rule":"THREE_NN","sentence":"^\\QThe developer experience using \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q is difficult, because the developer needs to know the pattern functor representation of its datatype to\\E$"}
+{"rule":"AGREEMENT_SENT_START_2","sentence":"^\\QPattern synonyms adds an abstraction over patterns,\\E$"}
