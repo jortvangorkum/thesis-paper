@@ -76,5 +76,6 @@
     },
     "ltex.additionalRules.enablePickyRules": true,
     "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true
+    "python.linting.enabled": true,
+    "latex-workshop.latex.autoBuild.run": "onSave"
 }

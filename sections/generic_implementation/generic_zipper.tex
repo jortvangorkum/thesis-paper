@@ -8,42 +8,40 @@ For the implementation of a generic zipper, we need to define
 \end{enumerate*}
 The implementation of the general zipper is based on the paper \citetitle{bransen2013generic} by \citeauthor{bransen2013generic}\cite{bransen2013generic}.
 
-\begin{itemize}
-  \item A location is the point currently in focus in the zipper (of type $\alpha$), and the path to the focal point. 
-  \item This path is stored as a stack of one-hole contexts. 
-  \item The context is given by the derivative of the pattern functor representing the datatype (McBride 2001). 
-  \item This type-indexed datatype is encoded in regular as a data family, indexed over the five representation types.
-\end{itemize}
+The context (\texttt{Ctx}) is implemented using a type family\footnote{``\textit{Type families are to vanilla data types what type class methods are to regular functions.}''\cite{haskellwiki2022typefamilies}}. Type families can be defined in two manners, standalone or associated with a type class. For the explanation we use the standalone definition because the code is less clumped, making it easier to explain. However, the actual implementation uses type synonym families, which is makes it clearer how the type should be used and has better error messages.
+
+The standalone definition uses a \inlinehaskell{data family}. Then, we want to write for every representation type an instance on how to represent the representation type in the context. 
 
 \begin{minted}{haskell}
 data family Ctx (f :: * -> *) :: * -> *
-
-data instance Ctx (K a)     r
-data instance Ctx U         r
-data instance Ctx (f :+: g) r = CL (Ctx f r)
-                              | CR (Ctx g r)
-data instance Ctx (f :*: g) r = C1 (Ctx f r) (g r)
-                              | C2 (f r) (Ctx g r)
-data instance Ctx I         r = CId
-data instance Ctx (C c f)   r = CC (Ctx f r)
 \end{minted}
+
+The \texttt{K} and \texttt{U} representation-types do not have a datatype, because these representation-types cannot be traversed through.
 
 \begin{minted}{haskell}
-data Loc :: * -> * where
-  Loc :: (Regular a, Zipper (PF a)) => a -> [Ctx (PF a) a] -> Loc a
+data instance Ctx (K a) r
+data instance Ctx U     r
 \end{minted}
+
+The sum representation-type does get traversed, but only has one choice by either traversing the left \inlinehaskell{CL} or the right \inlinehaskell{CR} side.
 
 \begin{minted}{haskell}
-type instance PF (Merkle f) = f :*: K Digest
-instance Regular (Merkle f) where
-  from = out
-  to   = In
+data instance Ctx (f :+: g) r = CL (Ctx f r) | CR (Ctx g r)
 \end{minted}
 
-\begin{itemize}
-  \item The cmap function encodes the functorial map over contexts. 
-  \item Filling the hole in a context with a specific value is the role of fill, while first, last, next, and prev are primitive navigation operations.
-\end{itemize}
+The product representation-type does have a choice between two traversals, either traverse through the left side and store the right side or traverse through the right side and store the left side.
+
+\begin{minted}{haskell}
+data instance Ctx (f :*: g) r = C1 (Ctx f r) (g r) | C2 (f r) (Ctx g r)
+\end{minted}
+
+The recursive representation-type does not recursively go into a new \texttt{Ctx}, but into the recursive type \texttt{r}, thus we only need to define datatype which indicates that it is a recursive position.
+
+\begin{minted}{haskell}
+data instance Ctx I r = CId
+\end{minted}
+
+The \texttt{Zipper} type class can now be defined using the \texttt{Ctx}. There are 6 primary functions, which we need to build navigating functions. The \texttt{cmap} function works like the \texttt{fmap}, but over contexts. The \texttt{fill} function fills the hole in a context with a given value, which is used to reconstruct the data structure. The final 4 functions (\texttt{first}, \texttt{last}, \texttt{next} and \texttt{prev}) are the \textit{primary} navigation operations used to build \textit{interface} functions such as \texttt{left}, \texttt{right}, \texttt{up}, \texttt{down}, etc.
 
 \begin{minted}{haskell}
 class Functor f => Zipper f where
@@ -52,3 +50,23 @@ class Functor f => Zipper f where
   first, last :: f a -> Maybe (a, Ctx f a)
   next, prev  :: Ctx f a -> a -> Maybe (a, Ctx f a)
 \end{minted}
+
+Finally, we can define the location \texttt{Loc} using the \texttt{Ctx} and the \texttt{Zipper}. The location takes a datatype with the constraints that it has an instance for \texttt{Regular} and a pattern functor which works with the \texttt{Zipper} type class, a list of contexts and returns a location datatype \texttt{Loc}.
+
+\begin{minted}{haskell}
+data Loc :: * -> * where
+  Loc :: (Regular a, Zipper (PF a)) => a -> [Ctx (PF a) a] -> Loc a
+\end{minted}
+
+To use the \texttt{Merkle} type, we need to fulfill the previous constraints. Thus, we need to define a type instance for the pattern functor and an instance for the \texttt{Regular} typeclass. The pattern functor type instance is the same definition as the \texttt{Merkle} type but without the fixed-point. The \texttt{Regular} instance for the \texttt{Merkle} type is folding/unfolding the fixed-point. Moreover, the \texttt{Merkle} type also needs to update the digests of its parents when a value is changed. This is accomplished in the same manner as in Section \ref*{subsec-zipper-treeh}.
+
+\begin{minted}{haskell}
+type instance PF (Merkle f) = f :*: K Digest
+instance Regular (Merkle f) where
+  from = out
+  to   = In
+\end{minted}
+
+
+
+

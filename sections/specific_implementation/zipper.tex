@@ -43,6 +43,7 @@ leave l = top (up l)
 \end{minted}
 
 \subsection{Zipper \texttt{TreeH}}
+\label{subsec-zipper-treeh}
 
 The implementation of the Zipper for the \texttt{TreeH} datatype is the same as for the \texttt{Tree} datatype. However, the \texttt{TreeH} also contains the hash of the current and underlying data structure. Therefore, when a value is modified in the \texttt{TreeH}, all the parent nodes of the modified value needs to be updated. 
 
@@ -53,7 +54,6 @@ updateLoc :: (TreeH a -> TreeH a) -> Loc a -> Loc a
 updateLoc f l = if top l' then l' else updateParents (up l')
     where
         l' = modify f l
-
         updateParents :: Loc a -> Loc a
         updateParents (Loc x Top) = Loc (updateHash x) Top
         updateParents (Loc x cs)  = updateParents $ up (Loc (updateHash x) cs)
