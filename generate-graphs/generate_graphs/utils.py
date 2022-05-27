@@ -84,7 +84,7 @@ def plot_all_benchmarks(df: pd.DataFrame, x_name: str, y_name: str) -> None:
         y=y_name,
         style='Benchmark',
         hue='Benchmark',
-        markers=True,
+        marker="o",
         dashes=False,
     )
 
@@ -108,7 +108,7 @@ def plot_comparison_runs(run_mem_dict: Dict[str, pd.DataFrame], run_time_dict: D
             y = 'Memory Usage',
             style = 'Benchmark',
             hue = 'Benchmark',
-            markers = True,
+            marker = "o",
             dashes = False,
         )
 
@@ -119,7 +119,7 @@ def plot_comparison_runs(run_mem_dict: Dict[str, pd.DataFrame], run_time_dict: D
             y = 'Execution Time',
             style = 'Benchmark',
             hue = 'Benchmark',
-            markers = True,
+            marker = "o",
             dashes = False,
         )
 

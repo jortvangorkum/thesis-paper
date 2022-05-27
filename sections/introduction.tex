@@ -1,5 +1,7 @@
 \chapter{Introduction}
 
+\todo[inline]{Use forward references from the narrative in the introduction. The introduction (including the contributions) should survey the whole paper, and therefore forward reference every important part.}
+
 \section{Motivation}
 An example of computing a result over a data type is computing the \textbf{maximum path sum} over a binary tree. Given a \inlinehaskell{BinTree}, starting at the root node, find a path from the root node to the leaves that leads to the maximum total.
 
@@ -176,8 +178,10 @@ cataMerkle :: (f a -> a) -> Map Hash a -> Fix (f :*: K Hash) -> (a, Map Hash a)
 
 Using the \inlinehaskell{cataMerkle} function would lead to only needing to implement the \inlinehaskell{maxPathSum} function and the intermediate results are then automatically stored.
 
-\section{Research Questions}
-\todo[inline]{Write the research questions}
-
 \section{Contributions}
-\todo[inline]{Write the contributions}
+\begin{itemize}
+    \item We define a solution for implementing incremental computation for a single datatype. This solution has a better time complexity than recomputing the entire datatype.
+    \item We implement a generic version of the specific solution. This is accomplished by using the \texttt{regular} library.
+    \item We compare storing the incremental computations in a HashMap or a Trie.
+    \item We show multiple strategies on how to store incremental results and which strategy has the best \textit{time execution/memory} ratio.
+\end{itemize}

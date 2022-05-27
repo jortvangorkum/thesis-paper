@@ -8,7 +8,7 @@ For the implementation of a generic zipper, we need to define
 \end{enumerate*}
 The implementation of the general zipper is based on the paper \citetitle{bransen2013generic} by \citeauthor{bransen2013generic}\cite{bransen2013generic}.
 
-The context (\texttt{Ctx}) is implemented using a type family\footnote{``\textit{Type families are to vanilla data types what type class methods are to regular functions.}''\cite{haskellwiki2022typefamilies}}. Type families can be defined in two manners, standalone or associated with a type class. For the explanation we use the standalone definition because the code is less clumped, making it easier to explain. However, the actual implementation uses type synonym families, which is makes it clearer how the type should be used and has better error messages.
+The context (\texttt{Ctx}) is implemented using a type family\footnote{``\textit{Type families are to vanilla data types what type class methods are to regular functions.}''\cite{haskellwiki2022typefamilies}}\cite{kiselyov2010fun}. Type families can be defined in two manners, standalone or associated with a type class. For the explanation we use the standalone definition because the code is less clumped, making it easier to explain. However, the actual implementation uses type synonym families, which is makes it clearer how the type should be used and has better error messages.
 
 The standalone definition uses a \inlinehaskell{data family}. Then, we want to write for every representation type an instance on how to represent the representation type in the context. 
 
