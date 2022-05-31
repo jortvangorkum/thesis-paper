@@ -5,7 +5,7 @@ Incremental computation is an approach to efficiently update the result by only 
 
 The task of implementing memoization for Haskell is explained in Chapter \ref*{chap-spec-impl}. However, the task, when implementing for multiple datatypes, becomes repetitive and error-prone. To prevent writing memoization implementation for every datatype, we use datatype-generic programming. Datatype-generic programming is a technique that uses the structure of a datatype to define functions for a large class of datatypes, which is explained in more detail in Chapter \ref*{chap-dat-gen-program}. Then, using the Haskell generics library \texttt{regular}, we implement the generic memoization functionality. In Chapter \ref*{chap-gen-impl}, the generic implementation is explained and additionally: complexity, different garbage collection strategies and storage of results. 
 
-To illustrate how the final functionality is going to work, a \textit{default} implementation  and the \textit{generic memoization} implementation of \textbf{max-path-sum} is defined. The \textit{default} implementation traverses through the tree and adds the max value of either side of the node. When the tree gets updated the entire tree is traversed through to compute the result.
+To illustrate how the final functionality is going to work, a \textit{default} implementation  and the \textit{generic memoization} implementation of \textbf{max-path-sum} is defined. The \textit{default} implementation traverses through the tree and adds the max value of either side of the node. When the tree gets updated, the entire tree is traversed through to compute the result.
 
 \begin{minted}{haskell}
 data BinTree = Leaf Int
