@@ -1,4 +1,5 @@
 \chapter{Datatype-Generic Programming}
+\label{chap-dat-gen-program}
 
 \todo[inline]{Compare paper \citetitle{van2008lightweight}}
 
@@ -6,7 +7,7 @@ The implementation in Chapter \ref{chap-spec-impl} is an efficient implementatio
 
 An example of reducing manual implementations for datatypes is the \textit{deriving} mechanism in Haskell. The built-in classes of Haskell, such as \texttt{Show, Ord, Read}, can be derived for a large class of datatypes. However, deriving is not supported for custom classes. Therefore, we use \textit{Datatype-Generic Programming}\cite*{gibbons2006datatype} to define functionality for a large class of datatypes.
 
-In this chapter, we introduce Datatype-Generic Programming, also known as \textit{generic programming} or \textit{generics} in Haskell, as a technique that exploits the structure of datatypes to define functions by induction over the type structure. This prevents the need to write the previously defined functionality for every datatype.
+In this chapter, we introduce Datatype-Generic Programming, also known as \textit{generic programming} or \textit{generics} in Haskell, as a technique that uses the structure of a datatype to define functions for a large class of datatypes. This prevents the need to write the previously defined functionality for every datatype.
 
 \section{Introduction}
 There are multiple generic programming libraries, however to demonstrate the workings of generic programming we will be using a single library as inspiration, named \texttt{regular}\cite*{regular2022}. Here the generic representation of a datatype is called a \textit{pattern functor}. A pattern functor is a stripped-down version of a data type, by only containing the constructor but not the recursive structure. The recursive structure is done explicitly by using a fixed-point operator. 
