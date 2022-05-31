@@ -2,48 +2,43 @@
 
 \todo[inline]{Use forward references from the narrative in the introduction. The introduction (including the contributions) should survey the whole paper, and therefore forward reference every important part.}
 
-\section{Motivation}
-An example of computing a result over a data type is computing the \textbf{maximum path sum} over a binary tree. Given a \inlinehaskell{BinTree}, starting at the root node, find a path from the root node to the leaves that leads to the maximum total.
+\section{Motivation 2.0}
+Incremental computation is an approach to efficiently update the result by only updating the old output, instead of the recomputing the entire output. A lot of different systems use incremental computation to improve performance, for example, syntax highlighting, parsers, formatting, and spreadsheets. These system take advantage of the fact that results of already performed computations can be reused. A popular technique for reusing results based on input is \textit{memoization}. Memoization works by checking the input of a function has already been computed, if it already has been computed return the result, otherwise compute the result of the function and store it. 
 
-The implementation of the computation is done in \texttt{Haskell}. And the definition of the binary tree and example tree is:
+An example where memoization improves the performance, is computing the \textbf{max-path-sum} over a binary tree. The max-path-sum computes the maximum sum from a path from the root node to a leave. An implementation of the max-path-sum without memoization would look like this:
+
 \begin{haskell}
 data BinTree = Leaf Int
              | Node BinTree Int BinTree 
-\end{haskell}
-
-\begin{haskell}
+             
 exampleTree :: BinTree    
 exampleTree = Node (Node (Leaf 8) 7 (Leaf 9)) 3 (Node (Leaf 5) 4 (Leaf 2))
-\end{haskell}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=.4\textwidth]{introduction/Tree.pdf}
-    \caption{Graphic visualization of the \inlinehaskell{exampleTree}}
-\end{figure}
-
-An implementation of computing the max path sum over data type \inlinehaskell{BinTree} can be seen below and has a complexity of $\mathcal{O}(N)$, where $N$ is the number of nodes in the tree.
-\begin{haskell}
 maxPathSum :: BinTree -> Int
 maxPathSum (Leaf x)     = x
 maxPathSum (Node l x r) = x + max (maxPathSum l, maxPathSum r)
-\end{haskell}
 
-And computing the max path sum over the \inlinehaskell{exampleTree} results in 19.
+> maxPathSum exampleTree
+    19
+\end{haskell}
 
 \begin{figure}[H]
-\begin{minipage}[c]{0.35\textwidth}
-\begin{haskell}
-maxPathSum exampleTree !$\equiv$! 19
-\end{haskell}
-\end{minipage}
-\hspace{0.1\textwidth}
-\begin{minipage}[c]{0.55\textwidth}
-\includegraphics[width=0.7\textwidth]{introduction/SolvedTree.pdf}
-\end{minipage}
+    \begin{minipage}[c]{0.45\textwidth}
+        \centering
+        \includegraphics[width=.7\textwidth]{introduction/Tree.pdf}
+        \caption{Graphic visualization of the \inlinehaskell{exampleTree}}
+    \end{minipage}
+    \hspace{0.1\textwidth}
+    \begin{minipage}[c]{0.45\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{introduction/SolvedTree.pdf}
+        \caption{The result path of max-path-sum over \texttt{exampleTree}}
+    \end{minipage}
 \end{figure}
 
-To reduce the number of recomputations, first, we need to compare the structure of the data type for equality. When comparing the data type structure for equality, if they are equal, the previously computed result can be reused. Otherwise, the result needs to be recomputed. To compare the structure of the data type efficiently, we introduce the use of hash functions. Generating a hash every time a comparison takes place would be inefficient because part of the structure does not change, which leads to the same hash. Thus, every substructure in the data type stores the hash of its structure. Using hash functions and storing them to compare the structures of the data type for equality is performed in constant time ($\mathcal{O}(1)$).
+To implement memoization, first, we need to implement the equality for the input. Luckily, Haskell already has a \texttt{Derive} for equality, so we do not have to write any code to implement equality. However, the problem with this implementation is that for every comparison the node and all its leaves have to be traversed. In other words, checking equality is linear in the size of the tree.  
+
+To compare the structure of the data type efficiently, we introduce the use of hash functions. Generating a hash every time a comparison takes place would be inefficient because part of the structure does not change, which leads to the same hash. Thus, every substructure in the data type stores the hash of its structure. Using hash functions and storing them to compare the structures of the data type for equality is performed in constant time ($\mathcal{O}(1)$).
 
 In the example, a new data type is introduced: the \inlinehaskell{MerkleTree}. This data type is the same as the \inlinehaskell{BinTree}, but the constructors also contain a \inlinehaskell{Hash}. To create a \inlinehaskell{MerkleTree}, we traverse through a \inlinehaskell{BinTree} and hash the structure and store it. Creating a \inlinehaskell{MerkleTree} has a time complexity of $\mathcal{O}(N)$.
 
@@ -69,7 +64,7 @@ merkle (Node l x r) = NodeH (hash ["Node", x, hl, hr]) l' x r'
 
 To compute the max path sum and its intermediate results, we can use the precomputed hashes of the \inlinehaskell{MerkleTree} to efficiently generate a \inlinehaskell{Map Hash Int}. The complexity of computing the max path sum and the intermediate results is $\mathcal{O}(N)$.   
 
-The example implementation of computing the max path sum and its intermediate results can be seen below. However, this implementation uses a \texttt{union} (\inlinehaskell{<>}) to combine the \inlinehaskell{Map}'s which has a complexity of $\mathcal{O}(m*log(n/m + 1)), m <= n$\cite{HaskellDataUnion}. This can be implemented more efficiently by giving the \inlinehaskell{Map} to the left side and then to the right side of the Tree, which makes it a constant operation. Except, this would make the code more complex. So, for clarity, the example is implemented with a union.
+The example implementation of computing the max path sum and its intermediate results can be seen below. However, this implementation uses a \texttt{union} (\inlinehaskell{<>}) to combine the \inlinehaskell{Map}'s which has a complexity of $\mathcal{O}(m*log(n/m + 1)), m <= n$. This can be implemented more efficiently by giving the \inlinehaskell{Map} to the left side and then to the right side of the Tree, which makes it a constant operation. Except, this would make the code more complex. So, for clarity, the example is implemented with a union.
 
 \begin{haskell}
 maxPathSumInc :: MerkleTree -> (Int, Map Hash Int)    
