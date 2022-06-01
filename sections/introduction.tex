@@ -1,5 +1,11 @@
 \chapter{Introduction}
 
+\todo[inline]{Write more context}
+\todo[inline]{Add a problem statement}
+\todo[inline]{Additional optimization by adding the hashes to data structure}
+\todo[inline]{Can store the intermediate results compared to memoization}
+\todo[inline]{Memory strategies}
+
 \section{Motivation}
 Incremental computation is an approach to efficiently update the result by only updating the old output, instead of the recomputing the entire output. A lot of different systems use incremental computation to improve performance, for example, syntax highlighting, parsers, formatting, and spreadsheets. These system take advantage of the fact that results of already performed computations can be reused. A popular technique for reusing results based on input is \textit{memoization}. Memoization works by checking the input of a function has already been computed, if it already has been computed return the result, otherwise compute the result of the function and store it. 
 
@@ -47,5 +53,5 @@ The \textit{generic memoization} implementation, first adds hashes of the intern
     \item We define a solution for implementing incremental computation for a single datatype. This solution has a better time complexity than recomputing the entire datatype.
     \item We implement a generic version of the specific solution. This is accomplished by using the \texttt{regular} library.
     \item We compare storing the incremental computations in a HashMap or a Trie.
-    \item We show multiple strategies on how to store incremental results and which strategy has the best \textit{time execution/memory} ratio.
+    \item We show multiple strategies on how to store incremental results and which strategy has the best \textit{time execution/memory} ratio. % Garbage collection/retention rate for items in the map 
 \end{itemize}

@@ -32,10 +32,10 @@ class Plotter:
         print("Parsing Data Files...")
         for run in runs:
             df_mem_run  = parse_memory_data_file(self.df_mem_path, run)
-            # df_time_run = parse_time_data_file(self.df_time_path, run)
+            df_time_run = parse_time_data_file(self.df_time_path, run)
 
             self.run_mem_dict[run]  = df_mem_run
-            # self.run_time_dict[run] = df_time_run
+            self.run_time_dict[run] = df_time_run
 
         self.__create_images_directories()
 
@@ -75,25 +75,25 @@ class Plotter:
     # Plot all benchmarks for a single run
     def plot_run_benchmarks(self, run: str) -> None:
         df_mem_run  = self.run_mem_dict[run]
-        # df_time_run = self.run_time_dict[run]
+        df_time_run = self.run_time_dict[run]
 
         print(f"Plotting memory benchmarks for {run}")
         for benchmark_name in df_mem_run['Benchmark']:
             self.plot_memory_benchmark(df_mem_run, benchmark_name)
             self.__save_memory_benchmark(run, benchmark_name)
 
-        # print(f"Plotting time benchmarks for {run}")
-        # for benchmark_name in df_time_run['Benchmark']:
-        #     self.plot_time_benchmark(df_time_run, benchmark_name)
-        #     self.__save_time_benchmark(run, benchmark_name)
+        print(f"Plotting time benchmarks for {run}")
+        for benchmark_name in df_time_run['Benchmark']:
+            self.plot_time_benchmark(df_time_run, benchmark_name)
+            self.__save_time_benchmark(run, benchmark_name)
 
         print(f'Plotting combined memory benchmarks for {run}')
         self.plot_memory_benchmarks(df_mem_run, list(df_mem_run['Benchmark']))
         self.__save_memory_benchmark(run, 'All Benchmarks')
 
-        # print(f'Plotting combined time benchmarks for {run}')
-        # self.plot_time_benchmarks(df_time_run, list(df_time_run['Benchmark']))
-        # self.__save_time_benchmark(run, 'All Benchmarks')
+        print(f'Plotting combined time benchmarks for {run}')
+        self.plot_time_benchmarks(df_time_run, list(df_time_run['Benchmark']))
+        self.__save_time_benchmark(run, 'All Benchmarks')
 
     def plot_comparison_runs(self, runs: List[str]) -> None:
         runs_images_path = '_'.join(runs)

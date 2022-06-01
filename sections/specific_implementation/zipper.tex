@@ -2,7 +2,7 @@
 
 % \question{Add a visual example?}
 
-The Zipper is a technique of representing a data structure by keeping track of how the data structure is being traversed through. The Zipper was first described by \citeauthor{huet1997zipper}\cite{huet1997zipper} and is a solution for efficiently updating pure recursive data structures in a purely functional programming language (e.g., Haskell). This is accomplished by keeping track of the downward current subtree and the upward path, also known as the \textit{location}. 
+The Zipper is a technique for keeping track of how the data structure is being traversed through. The Zipper was first described by \citeauthor{huet1997zipper}\cite{huet1997zipper} and is a solution for efficiently updating pure recursive data structures in a purely functional programming language (e.g., Haskell). This is accomplished by keeping track of the downward current subtree and the upward path, also known as the \textit{location}. 
 
 To keep track of the upward path, we need to store the path we traverse to the current subtree. The traversed path is stored in the \texttt{Cxt} datatype. The \texttt{Cxt} datatype represents three options the path could be at: the \texttt{Top}, the path has traversed to the left (\texttt{L}), or the path has traversed to the right (\texttt{R}).
 
