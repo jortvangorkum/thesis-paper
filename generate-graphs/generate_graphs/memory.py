@@ -31,7 +31,7 @@ def parse_memory_data_file(data_memory_path: str, folder_name: str) -> pd.DataFr
 
     df_data_memory.sort_values('Benchmark', inplace=True)
 
-    df_data_memory_single_iteration = df_data_memory[df_data_memory['Benchmark Type'] == 'Single Iteration']
+    df_data_memory_single_iteration = df_data_memory[df_data_memory['Benchmark Type'] == 'Multi Iterations 10']
     df_data_memory_single_iteration = df_data_memory_single_iteration.drop('Benchmark Type', axis=1)
     print(df_data_memory_single_iteration)
 
