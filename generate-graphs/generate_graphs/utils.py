@@ -49,13 +49,15 @@ def plot_linear_line(x: pd.Series, y: pd.Series) -> None:
     
     ax1.legend(title="Equation", loc='upper left', labels=["y={0:.2e} * x, R²={1:.2f}".format(slope, rsquared)])
 
-def plot_linear_benchmark(df: pd.DataFrame, benchmark_name: str, x_name: str, y_name: str) -> None:
+def plot_linear_benchmark(df: pd.DataFrame, benchmark_case: str, benchmark_iteration: str, benchmark_name: str, x_name: str, y_name: str) -> None:
     data = df[df['Benchmark'] == benchmark_name]
     x = data[x_name]
     y = data[y_name]
 
     plot_linear_line(x, y)
-    ax2 = sns.scatterplot(x=x, y=y, label="_nolegend_")
+    ax = sns.scatterplot(x=x, y=y, label="_nolegend_")
+
+    ax.set_title(f'Case: {benchmark_case}, Iterations: {benchmark_iteration}')
 
     plt.xlabel(x_name)
     plt.ylabel(y_name)
@@ -77,7 +79,7 @@ def plot_log_benchmark(df: pd.DataFrame, benchmark_name: str, x_name: str, y_nam
     plt.xscale('log')
     plt.ticklabel_format(axis='y', style='sci', scilimits=(0,3), useMathText=True)
 
-def plot_all_benchmarks(df: pd.DataFrame, x_name: str, y_name: str) -> None:
+def plot_all_benchmarks(df: pd.DataFrame, benchmark_case: str, benchmark_iteration: str, x_name: str, y_name: str) -> None:
     ax = sns.lineplot(
         data=df,
         x=x_name,
@@ -87,6 +89,8 @@ def plot_all_benchmarks(df: pd.DataFrame, x_name: str, y_name: str) -> None:
         marker="o",
         dashes=False,
     )
+
+    ax.set_title(f'Case: {benchmark_case}, Iterations: {benchmark_iteration}')
 
     plt.xscale('log')
     plt.yscale('log')

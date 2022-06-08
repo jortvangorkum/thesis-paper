@@ -31,6 +31,8 @@ To efficiently compare the \texttt{Tree} datatypes, we need to represent the str
 
 One of the disadvantages of using hashes is \textit{hash collisions}. Hash collisions happen when two different pieces of data have the same hash. This is because a hash function has a limited amount of bits to represent every possible combination of data. Using the formula $p = \epsilon^{\frac{-k(k-1)}{2N}}$ from \citetitle{hashcoll2011}\cite{hashcoll2011}, we can calculate a $50\%$ chance of getting a hash collision with a collection of $k$. The hash function CRC-32 needs a collection of 77163 hash values. The hash function MD5 needs a collection of $\num{5.06e9}$ hash values. And, the hash function SHA-1 needs a collection of $\num{1.42e24}$ hash values. As a result of, we can say that for most popular hash functions, that the hash collisions are negligible.
 
+\todo[inline]{Add which hash is ultimately chosen}
+
 \begin{minted}{haskell}
 class Hashable a where
   hash :: a -> Hash
