@@ -27,25 +27,40 @@ instance Eq a => Eq (Tree a) where
 
 The problem with using this implementation of the \texttt{Eq} typeclass for Memoization is that for every comparison of the \texttt{Tree} datatype the equality is computed. This is inefficient because the equality implementation has to traverse the complete \texttt{Tree} data structure to know if the \texttt{Tree}'s are equal. 
 
+\todo[inline]{Check if hash and hash values are correctly used}
 To efficiently compare the \texttt{Tree} datatypes, we need to represent the structure in a manner which does not lead to traversing to the complete \texttt{Tree} data structure. This can be accomplished using a \texttt{hash} function. A hash function is a process of transforming a data structure into an arbitrary fixed-size value, where the same input always generates the same output. 
 
-One of the disadvantages of using hashes is \textit{hash collisions}. Hash collisions happen when two different pieces of data have the same hash. This is because a hash function has a limited amount of bits to represent every possible combination of data. Using the formula $p = \epsilon^{\frac{-k(k-1)}{2N}}$ from \citetitle{hashcoll2011}\cite{hashcoll2011}, we can calculate a $50\%$ chance of getting a hash collision with a collection of $k$. The hash function CRC-32 needs a collection of 77163 hash values. The hash function MD5 needs a collection of $\num{5.06e9}$ hash values. And, the hash function SHA-1 needs a collection of $\num{1.42e24}$ hash values. As a result of, we can say that for most popular hash functions, that the hash collisions are negligible.
+One disadvantage of using hashes is \textit{hash collisions}. Hash collisions happen when two different pieces of data have the same hash. This is because a hash function has a limited amount of bits to represent every possible combination of data. To calculate the chance of a hash collision occurring we use the formula $p = \epsilon^{\frac{-k(k-1)}{2N}}$ from \citetitle{hashcoll2011}\cite{hashcoll2011}. So, given a common hash function CRC-32\cite{peterson1961cyclic}, which hash a digest size of 32bits, to get a $50\%$ chance of a hash collision a collection of $0.5 = \epsilon^{\frac{-k(k-1)}{2\times2^{32}}} \rightarrow k = 77163$ hash values is needed.
+
+\begin{table}[H]
+  \centering\begin{tabular}{ | c | c | }
+    \hline
+    Digest size (in bits) & Collection size \\
+    \hline
+    32 & 77163 \\
+    64 & \num{5.06e9} \\
+    128 & \num{2.17e19} \\
+    \hline
+  \end{tabular}
+  \caption{The collection size needed for a $50\%$ chance of getting a hash collision}
+  \label{tab-hash-coll}
+\end{table}
 
 \todo[inline]{Add which hash is ultimately chosen}
 
 \begin{minted}{haskell}
 class Hashable a where
-  hash :: a -> Hash
+  hash :: a -> Digest
 
 instance Hashable a => Hashable (Tree a) where
   hash (Leaf x)     = concatHash [hash "Leaf", hash x]
   hash (Node l x r) = concatHash [hash "Node", hash x, hash l, hash r]
 \end{minted}
 
-The hashes can then be used to efficiently compare two \texttt{Tree} data structures, without having to traverse the entire \texttt{Tree} data structure. To keep track of the intermediate results of the computation, we store the results in a \texttt{Map}. A \texttt{Map}, also known as a dictionary, is an implementation of mapping a key to a value. In our next example the \texttt{Hash} is the key and the value is the intermediate result.
+The hashes can then be used to efficiently compare two \texttt{Tree} data structures, without having to traverse the entire \texttt{Tree} data structure. To keep track of the intermediate results of the computation, we store the results in a \texttt{Map}. A \texttt{Map}, also known as a dictionary, is an implementation of mapping a key to a value. In our next example the \texttt{Digest} is the key and the value is the intermediate result.
 
 \begin{minted}{haskell}
-sumTreeInc :: Tree Int -> (Int, Map Hash Int)
+sumTreeInc :: Tree Int -> (Int, Map Djgest Int)
 sumTreeInc l@(Leaf x)     = (x, insert (hash l) x empty)
 sumTreeInc n@(Node l x r) = (y, insert (hash n) y (ml <> mr))
   where
@@ -57,7 +72,7 @@ sumTreeInc n@(Node l x r) = (y, insert (hash n) y (ml <> mr))
 Then after the first computation over the entire \texttt{Tree}, we can recompute the \texttt{Tree} using the previously created \texttt{Map}. Thus, when we recompute the \texttt{Tree}, we first look in the \texttt{Map} if the computation has already been performed then return the result. Otherwise, compute the result and store it in the \texttt{Map}.
 
 \begin{minted}{haskell}
-sumTreeIncMap :: Map Hash Int -> Tree Int -> (Int, Map Hash Int)
+sumTreeIncMap :: Map Digest Int -> Tree Int -> (Int, Map Digest Int)
 sumTreeIncMap m l@(Leaf x) = case lookup (hash l) m of
   Just x  -> (x, m) 
   Nothing -> (x, insert (hash l) x empty)
@@ -73,11 +88,11 @@ sumTreeIncMap m n@(Node l x r) = case lookup (hash n) m of
 Generating a hash for every computation over the data structure is time-consuming and unnecessary, because most of the \texttt{Tree} data structure stays the same. The work of \citeauthor{miraldo2019efficient}\cite{miraldo2019efficient} inspired the use of the Merkle Tree. A Merkle Tree is a data structure which integrates the hashes within the data structure.
 
 \section{Merkle Tree (\texttt{TreeH})}
-First we introduce a new datatype \texttt{TreeH}, which contains a \texttt{Hash} for every constructor in \texttt{Tree}. Then to convert the \texttt{Tree} datatype into the \texttt{TreeH} datatype, the structure of the Tree is hashed and stored into the datatype using the \texttt{merkle} function.
+First we introduce a new datatype \texttt{TreeH}, which contains a \texttt{Digest} for every constructor in \texttt{Tree}. Then to convert the \texttt{Tree} datatype into the \texttt{TreeH} datatype, the structure of the Tree is hashed and stored into the datatype using the \texttt{merkle} function.
 
 \begin{minted}{haskell}
-data TreeH a = LeafH Hash a
-             | NodeH Hash (Leaf a) a (Leaf a)
+data TreeH a = LeafH Digest a
+             | NodeH Digest (Leaf a) a (Leaf a)
 \end{minted}
 
 \begin{minted}{haskell}
@@ -93,7 +108,7 @@ merkle (Node l x r) = NodeH h l' x r'
 The precomputed hashes can then be used to easily create a \texttt{Map}, without computing the hashes every time the \texttt{sumTreeIncH} function is called.
 
 \begin{minted}{haskell}
-sumTreeIncH :: TreeH Int -> (Int, Map Hash Int)
+sumTreeIncH :: TreeH Int -> (Int, Map Digest Int)
 sumTreeIncH (LeafH h x)     = (x, insert h x empty)
 sumTreeIncH (NodeH h l x r) = (y, insert h y (ml <> mr))
   where
