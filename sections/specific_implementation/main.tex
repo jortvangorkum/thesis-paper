@@ -30,7 +30,7 @@ The problem with using this implementation of the \texttt{Eq} typeclass for Memo
 \todo[inline]{Check if hash and hash values are correctly used}
 To efficiently compare the \texttt{Tree} datatypes, we need to represent the structure in a manner which does not lead to traversing to the complete \texttt{Tree} data structure. This can be accomplished using a \texttt{hash} function. A hash function is a process of transforming a data structure into an arbitrary fixed-size value, where the same input always generates the same output. 
 
-One disadvantage of using hashes is \textit{hash collisions}. Hash collisions happen when two different pieces of data have the same hash. This is because a hash function has a limited amount of bits to represent every possible combination of data. To calculate the chance of a hash collision occurring we use the formula $p = \epsilon^{\frac{-k(k-1)}{2N}}$ from \citetitle{hashcoll2011}\cite{hashcoll2011}. So, given a common hash function CRC-32\cite{peterson1961cyclic}, which hash a digest size of 32bits, to get a $50\%$ chance of a hash collision a collection of $0.5 = \epsilon^{\frac{-k(k-1)}{2\times2^{32}}} \rightarrow k = 77163$ hash values is needed.
+One disadvantage of using hashes is \textit{hash collisions}. Hash collisions happen when two different pieces of data have the same hash. This is because a hash function has a limited amount of bits to represent every possible combination of data. To calculate the chance of a hash collision occurring we use the formula $p = \epsilon^{\frac{-k(k-1)}{2N}}$ from \citetitle{hashcoll2011}\cite{hashcoll2011}. So, given a common hash function CRC-32\cite{peterson1961cyclic}, which has a digest size of 32bits, to get a $50\%$ chance of a hash collision occurring in a collection, it needs $0.5 = \epsilon^{\frac{-k(k-1)}{2\times2^{32}}} \rightarrow k = 77163$ hash values.
 
 \begin{table}[H]
   \centering\begin{tabular}{ | c | c | }
@@ -46,11 +46,14 @@ One disadvantage of using hashes is \textit{hash collisions}. Hash collisions ha
   \label{tab-hash-coll}
 \end{table}
 
-\todo[inline]{Add which hash is ultimately chosen}
+The hash function ultimately chosen in this paper is the \textit{CityHash}\cite{google2022cityhash}. CityHash is a non-cryptographic hash function which works well for hash tables. It supports two different digest sizes: 64- and 128-bit. The digest size used in this paper will be the 64-bit variant. This digest size is chosen, because we think it gives a good balance between performance and the probability of getting a hash collision.
 
 \begin{minted}{haskell}
 class Hashable a where
   hash :: a -> Digest
+
+instance Show a => Hashable a where
+  hash = cityHash64 . show
 
 instance Hashable a => Hashable (Tree a) where
   hash (Leaf x)     = concatHash [hash "Leaf", hash x]
