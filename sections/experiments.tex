@@ -2,39 +2,50 @@
 
 \section{Method}
 
-The benchmarks will compare the \texttt{Cata Sum}, \texttt{Generic Cata Sum} and \texttt{Incremental Cata Sum}. The Cata Sum is the simple function which traverses through the entire tree and sums all the values. The Generic Cata Sum is the initial Incremental Cata Sum, where all benchmarks start with an empty Map. And the Incremental Cata Sum, which already has a Map with intermediate results.
+We conducted experiments over three type of functions: the \texttt{Cata Sum}, \texttt{Generic Cata Sum} and \texttt{Incremental Cata Sum}. The Cata Sum is the simple function which traverses through the entire tree and sums all the values. The Generic Cata Sum is the initial Incremental Cata Sum, which starts with an empty Map. And the Incremental Cata Sum, which already has a Map filled with intermediate results and keeps track over multiple iterations.
 
-The benchmarks performed will measure the execution time and the memory usage. The execution time is in seconds and the memory usage will be the max-bytes-used. Every benchmark is implemented using the Haskell package \texttt{criterion}\cite{hackage2022criterion}. Criterion performs every benchmark multiple times within a time frame (default = 5s) to determine an average execution time. The criterion package is mainly focused on measuring performance, compared with measuring memory usage. It can apply a regression over the allocated bytes, however for these experiments it is not interesting how much memory is allocated, but how much memory is used. Therefore, for measuring the memory usage, the GHC profiler\cite*{ghc2022memoryprofiling} will be used to measure the max-bytes-used. Every benchmark will be individually executed, profiled and store its results in a file. 
+\begin{minted}{haskell}
+cataSum :: Tree Int -> Int
+cataSum (Leaf x)     = x
+cataSum (Node l x r) = x + cataSum l + cataSum r
 
+genericCataSum :: Merkle (PF (Tree Int)) -> (Int, HashMap Digest Int)
+genericCataSum = cataMerkle
+  (\case
+    Leaf_ x     -> x
+    Node_ l x r -> l + x + r
+  )
 
-The benchmarks will perform three types of updates: 
+incCataSum :: HashMap Digest Int 
+           -> Merkle (PF (Tree Int)) -> (Int, HashMap Digest Int)
+incCataSum = cataMerkleMap
+  (\case
+    Leaf_ x     -> x
+    Node_ l x r -> l + x + r
+  )
+\end{minted}
+
+The experiments will be benchmarks executed with the Haskell package \texttt{criterion}\cite{hackage2022criterion}. Criterion performs the benchmarks multiple times to get an average result. The benchmarks will track two metrics: the execution time and the memory usage. The execution time will be in seconds and the memory usage will be the max-bytes used. The results gather for execution time comes from the criterion package, however the memory usage will not come from the package. This is because criterion only keeps track of the memory allocation and not usage. Therefore, we measure the memory usage with the GHC profiler\cite*{ghc2022memoryprofiling} and profile every benchmark individually to know its memory usage.
+
+To test how well the three functions perform, we perform three types of updates, multiple times. These benchmarks will be based on the three type of cases: worst, average and best.
 \begin{enumerate*}[label=(\arabic*)]
-  \item Worst case: the lowest left leaf in the data structure is updated;
-  \item Average case: the node halfway in the data structure is updated;
-  \item Best case: removing the left size of the root node of the data structure.
-\end{enumerate*} Additionally, every computation will be performed multiple times, depending on the amount of iterations given.
+  \item The worst case updates the lowest left leaf to a new leaf.
+  \item The average case updates a node in the middle with a new leaf.
+  \item And the best case replaces the left child of the root-node with a new leaf.
+\end{enumerate*}
 
 \section{Results}
-
-\begin{itemize}
-  \item Time/Memory
-  \item Update
-  \item Iterations
-  \item Function
-\end{itemize}
-
-
 
 \subsection{Execution Time}
 
 \begin{figure}[H]
   \begin{minipage}{.5\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{plots/run-0/time/Best/10/all_benchmarks.pdf}  
+    \includegraphics[width=\textwidth]{plots/run-3/time/Best/10/all_benchmarks.pdf}  
   \end{minipage}
   \begin{minipage}{.5\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{plots/run-0/time/Average/10/all_benchmarks.pdf}  
+    \includegraphics[width=\textwidth]{plots/run-3/time/Average/10/all_benchmarks.pdf}  
   \end{minipage}
 \end{figure}
 
@@ -42,7 +53,7 @@ The benchmarks will perform three types of updates:
   \centering
   \begin{minipage}[c]{.5\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{plots/run-0/time/Worst/10/all_benchmarks.pdf}  
+    \includegraphics[width=\textwidth]{plots/run-3/time/Worst/10/all_benchmarks.pdf}  
   \end{minipage}
 \end{figure}
 
@@ -51,11 +62,11 @@ The benchmarks will perform three types of updates:
 \begin{figure}[H]
   \begin{minipage}{.5\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{plots/run-0/memory/Best/10/all_benchmarks.pdf}  
+    \includegraphics[width=\textwidth]{plots/run-3/memory/Best/10/all_benchmarks.pdf}  
   \end{minipage}
   \begin{minipage}{.5\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{plots/run-0/memory/Average/10/all_benchmarks.pdf}  
+    \includegraphics[width=\textwidth]{plots/run-3/memory/Average/10/all_benchmarks.pdf}  
   \end{minipage}
 \end{figure}
 
@@ -63,7 +74,7 @@ The benchmarks will perform three types of updates:
   \centering
   \begin{minipage}[c]{.5\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{plots/run-0/memory/Worst/10/all_benchmarks.pdf}  
+    \includegraphics[width=\textwidth]{plots/run-3/memory/Worst/10/all_benchmarks.pdf}  
   \end{minipage}
 \end{figure}
 

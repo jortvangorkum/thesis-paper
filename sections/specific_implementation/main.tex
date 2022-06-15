@@ -46,7 +46,7 @@ One disadvantage of using hashes is \textit{hash collisions}. Hash collisions ha
   \label{tab-hash-coll}
 \end{table}
 
-The hash function ultimately chosen in this paper is the \textit{CityHash}\cite{google2022cityhash}. CityHash is a non-cryptographic hash function which works well for hash tables. It supports two different digest sizes: 64- and 128-bit. The digest size used in this paper will be the 64-bit variant. This digest size is chosen, because we think it gives a good balance between performance and the probability of getting a hash collision.
+The hash function ultimately chosen in this paper is the \textit{CityHash}\cite{google2022cityhash}\cite{hackage2022cityhash}. CityHash is a non-cryptographic hash function which works well for hash tables. It supports two different digest sizes: 64- and 128-bit. The digest size used in this paper will be the 64-bit variant. This digest size is chosen, because we think it gives a good balance between performance and the probability of getting a hash collision.
 
 \begin{minted}{haskell}
 class Hashable a where
@@ -60,7 +60,10 @@ instance Hashable a => Hashable (Tree a) where
   hash (Node l x r) = concatHash [hash "Node", hash x, hash l, hash r]
 \end{minted}
 
-The hashes can then be used to efficiently compare two \texttt{Tree} data structures, without having to traverse the entire \texttt{Tree} data structure. To keep track of the intermediate results of the computation, we store the results in a \texttt{Map}. A \texttt{Map}, also known as a dictionary, is an implementation of mapping a key to a value. In our next example the \texttt{Digest} is the key and the value is the intermediate result.
+The hashes can then be used to efficiently compare two \texttt{Tree} data structures, without having to traverse the entire \texttt{Tree} data structure. 
+
+\todo[inline]{Add the implementation HashMap\cite{hackage2022hashmap}}
+To keep track of the intermediate results of the computation, we store the results in a \texttt{Map}. A \texttt{Map}, also known as a dictionary, is an implementation of mapping a key to a value. In our next example the \texttt{Digest} is the key and the value is the intermediate result.
 
 \begin{minted}{haskell}
 sumTreeInc :: Tree Int -> (Int, Map Djgest Int)
