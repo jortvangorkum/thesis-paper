@@ -19,3 +19,60 @@ instance (Functor f, Functor g) => Functor (f :+: g) where
 instance (Functor f, Functor g) => Functor (f :*: g) where
   fmap f (x :*: y) = fmap f x :*: fmap f y
 \end{minted}
+
+\chapter{Results}
+
+\newcommand{\individualbenchmark}[2]{
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{#1}
+    \caption{#2}
+  \end{minipage}
+}
+
+\newcommand{\trendlinebenchmark}[2]{
+  \begin{figure}[H]
+    \individualbenchmark
+      {plots/run-3/time/#1/10/#2/cata_sum.pdf}
+      {Execution Time - Cata Sum}
+    \individualbenchmark
+      {plots/run-3/time/#1/10/#2/generic_cata_sum.pdf}
+      {Execution Time - Generic Cata Sum}  
+  \end{figure}
+  \begin{figure}[H]
+    \individualbenchmark
+      {plots/run-3/time/#1/10/#2/incremental_cata_sum.pdf}
+      {Execution Time - Incremental Cata Sum}
+    \individualbenchmark
+      {plots/run-3/memory/#1/10/#2/cata_sum.pdf}
+      {Memory Usage - Cata Sum}
+  \end{figure}
+  \begin{figure}[H]
+    \individualbenchmark
+      {plots/run-3/memory/#1/10/#2/generic_cata_sum.pdf}
+      {Memory Usage - Generic Cata Sum}
+    \individualbenchmark
+      {plots/run-3/memory/#1/10/#2/incremental_cata_sum.pdf}
+      {Memory Usage - Incremental Cata Sum} 
+  \end{figure}
+}
+
+\newcommand{\casebenchmark}[1]{
+  \subsection{Linear trend line}
+  \trendlinebenchmark{#1}{linear}
+  
+  \subsection{Logarithmic trend line}
+  \trendlinebenchmark{#1}{log}
+}
+
+\section{Individual benchmark results - Worst Case}
+
+\casebenchmark{Worst}
+
+\section{Individual benchmark results - Average Case}
+
+\casebenchmark{Average}
+
+\section{Individual benchmark results - Best Case}
+
+\casebenchmark{Best}

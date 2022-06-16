@@ -34,14 +34,30 @@ To test how well the three functions perform, we perform three types of updates,
   \item And the best case replaces the left child of the root-node with a new leaf.
 \end{enumerate*}
 
+\begin{minted}{haskell}
+worstCase :: Merkle (PF (Tree Int)) -> Merkle (PF (Tree Int))
+worstCase = update (const (Leaf i)) [Bttm]
+
+averageCase :: Merkle (PF (Tree Int)) -> Merkle (PF (Tree Int))
+averageCase = update (const (Leaf i)) (replicate n Dwn)
+  where
+    n = round (logBase 2.0 (fromIntegral n) / 2.0)
+
+bestCase :: Merkle (PF (Tree Int)) -> Merkle (PF (Tree Int))
+bestCase = update (const (Leaf i)) [Dwn]
+\end{minted}
+
+\newpage
 \section{Results}
 
 \subsection{Execution Time}
 
+For all the benchmarks, the Incremental Cata Sum is faster when the tree contains more than $10^3$ nodes. However, for every benchmark the execution time is better or worse depending on the type of update that is performed. The better the type of update the faster the execution is. The execution time for Cata Sum and Generic Cata Sum seems to be linear with the amount of nodes and the Incremental Cata Sum is constant/logarithmic. The discrepancy in the range between $10^2 - 10^3$ is probably because the amount of nodes is too low to get stable results.
+
 \begin{figure}[H]
   \begin{minipage}{.5\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{plots/run-3/time/Best/10/all_benchmarks.pdf}  
+    \includegraphics[width=\textwidth]{plots/run-3/time/Worst/10/all_benchmarks.pdf}  
   \end{minipage}
   \begin{minipage}{.5\textwidth}
     \centering
@@ -53,16 +69,19 @@ To test how well the three functions perform, we perform three types of updates,
   \centering
   \begin{minipage}[c]{.5\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{plots/run-3/time/Worst/10/all_benchmarks.pdf}  
+    \includegraphics[width=\textwidth]{plots/run-3/time/Best/10/all_benchmarks.pdf}  
   \end{minipage}
 \end{figure}
 
+\newpage
 \subsection{Memory Usage}
+
+The memory usage results are all linear with the amount of nodes. The Cata Sum uses the least amount of memory, then the Incremental Cata Sum and the most used bytes is the Generic Cata Sum. We think that the Incremental Cata Sum uses less memory than the Generic Cata Sum, because the Incremental Cata Sum needs to load-in fewer parts of the data structure than the Generic Cata Sum. Also, the same discrepancy occurs in the range between $10^2 - 10^3$ as with the execution time.
 
 \begin{figure}[H]
   \begin{minipage}{.5\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{plots/run-3/memory/Best/10/all_benchmarks.pdf}  
+    \includegraphics[width=\textwidth]{plots/run-3/memory/Worst/10/all_benchmarks.pdf}  
   \end{minipage}
   \begin{minipage}{.5\textwidth}
     \centering
@@ -74,8 +93,9 @@ To test how well the three functions perform, we perform three types of updates,
   \centering
   \begin{minipage}[c]{.5\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{plots/run-3/memory/Worst/10/all_benchmarks.pdf}  
+    \includegraphics[width=\textwidth]{plots/run-3/memory/Best/10/all_benchmarks.pdf}  
   \end{minipage}
 \end{figure}
 
-\subsection{Comparison Memory Strategies}
+\newpage
+\subsection{Comparison Garbage Collection Strategies}

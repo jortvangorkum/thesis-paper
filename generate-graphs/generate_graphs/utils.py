@@ -56,7 +56,6 @@ def plot_linear_benchmark(df: pd.DataFrame, benchmark_case: str, benchmark_itera
 
     plot_linear_line(x, y)
     ax = sns.scatterplot(x=x, y=y, label="_nolegend_")
-
     ax.set_title(f'Case: {benchmark_case}, Iterations: {benchmark_iteration}')
 
     plt.xlabel(x_name)
@@ -65,13 +64,14 @@ def plot_linear_benchmark(df: pd.DataFrame, benchmark_case: str, benchmark_itera
     plt.xscale('log')
     plt.yscale('log')
 
-def plot_log_benchmark(df: pd.DataFrame, benchmark_name: str, x_name: str, y_name: str) -> None:
+def plot_log_benchmark(df: pd.DataFrame, benchmark_case: str, benchmark_iteration: str, benchmark_name: str, x_name: str, y_name: str) -> None:
     data = df[df['Benchmark'] == benchmark_name]
     x = data[x_name]
     y = data[y_name]
 
     plot_log_line(x, y)
-    ax2 = sns.scatterplot(x=x, y=y, label="_nolegend_")
+    ax = sns.scatterplot(x=x, y=y, label="_nolegend_")
+    ax.set_title(f'Case: {benchmark_case}, Iterations: {benchmark_iteration}')
 
     plt.xlabel(x_name)
     plt.ylabel(y_name)

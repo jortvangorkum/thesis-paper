@@ -1,4 +1,5 @@
 import os
+import pathlib
 from typing import Dict, List
 from generate_graphs.time import parse_time_data_file
 from generate_graphs.memory import parse_memory_data_file
@@ -42,22 +43,30 @@ class Plotter:
 
     def __save_memory_benchmark(self, run: str, benchmark_case: str, benchmark_iteration: str, benchmark_name: str):
         benchmark_filename = self.__file_name_converter(benchmark_name)
-        folder_path = f"{self.images_path}/{run}/{self.images_mem_path}/{benchmark_case}/{benchmark_iteration}"
+        file_path = f"{self.images_path}/{run}/{self.images_mem_path}/{benchmark_case}/{benchmark_iteration}/{benchmark_filename}"
+        folder_path = pathlib.PurePath(file_path).parent
         os.makedirs(folder_path, exist_ok=True)
-        utils.save_benchmark(f'{folder_path}/{benchmark_filename}')
+        utils.save_benchmark(file_path)
 
     def __save_time_benchmark(self, run: str, benchmark_case: str, benchmark_iteration: str, benchmark_name: str):
         benchmark_filename = self.__file_name_converter(benchmark_name)
-        folder_path = f"{self.images_path}/{run}/{self.images_time_path}/{benchmark_case}/{benchmark_iteration}"
+        file_path = f"{self.images_path}/{run}/{self.images_time_path}/{benchmark_case}/{benchmark_iteration}/{benchmark_filename}"
+        folder_path = pathlib.PurePath(file_path).parent
         os.makedirs(folder_path, exist_ok=True)
-        utils.save_benchmark(f'{folder_path}/{benchmark_filename}')
+        utils.save_benchmark(file_path)
 
     # Single Benchmark Plot
-    def plot_memory_benchmark(self, df_mem_run: pd.DataFrame, benchmark_case: str, benchmark_iteration: str, benchmark_name: str) -> None:
+    def plot_linear_memory_benchmark(self, df_mem_run: pd.DataFrame, benchmark_case: str, benchmark_iteration: str, benchmark_name: str) -> None:
         utils.plot_linear_benchmark(df_mem_run, benchmark_case, benchmark_iteration, benchmark_name, 'Amount Nodes', 'Max Bytes Used')
     
-    def plot_time_benchmark(self, df_time_run: pd.DataFrame, benchmark_case: str, benchmark_iteration: str, benchmark_name: str) -> None:
+    def plot_linear_time_benchmark(self, df_time_run: pd.DataFrame, benchmark_case: str, benchmark_iteration: str, benchmark_name: str) -> None:
         utils.plot_linear_benchmark(df_time_run, benchmark_case, benchmark_iteration, benchmark_name, 'Amount Nodes', 'Execution Time')
+
+    def plot_log_memory_benchmark(self, df_mem_run: pd.DataFrame, benchmark_case: str, benchmark_iteration: str, benchmark_name: str) -> None:
+        utils.plot_log_benchmark(df_mem_run, benchmark_case, benchmark_iteration, benchmark_name, 'Amount Nodes', 'Max Bytes Used')
+
+    def plot_log_time_benchmark(self, df_time_run: pd.DataFrame, benchmark_case: str, benchmark_iteration: str, benchmark_name: str) -> None:
+        utils.plot_log_benchmark(df_time_run, benchmark_case, benchmark_iteration, benchmark_name, 'Amount Nodes', 'Execution Time')
 
     # Multiple Benchmarks Plot
     def plot_memory_benchmarks(self, df_mem_run: pd.DataFrame, benchmark_case: str, benchmark_iteration: str,  benchmark_names: List[str]) -> None:
@@ -81,8 +90,10 @@ class Plotter:
 
                 print(f"Plotting memory benchmarks for {run}")
                 for benchmark_name in df_benchmark_data['Benchmark'].unique():
-                    self.plot_memory_benchmark(df_benchmark_data, benchmark_case, benchmark_iteration, benchmark_name)
-                    self.__save_memory_benchmark(run, benchmark_case, benchmark_iteration, benchmark_name)
+                    self.plot_linear_memory_benchmark(df_benchmark_data, benchmark_case, benchmark_iteration, benchmark_name)
+                    self.__save_memory_benchmark(run, benchmark_case, benchmark_iteration, f"linear/{benchmark_name}")
+                    self.plot_log_memory_benchmark(df_benchmark_data, benchmark_case, benchmark_iteration, benchmark_name)
+                    self.__save_memory_benchmark(run, benchmark_case, benchmark_iteration, f"log/{benchmark_name}")
 
                 print(f'Plotting combined memory benchmarks for {run}')
                 self.plot_memory_benchmarks(df_benchmark_data, benchmark_case, benchmark_iteration, list(df_benchmark_data['Benchmark']))
@@ -96,8 +107,10 @@ class Plotter:
 
                 print(f"Plotting time benchmarks for {run}")
                 for benchmark_name in df_benchmark_data['Benchmark'].unique():
-                    self.plot_time_benchmark(df_benchmark_data, benchmark_case, benchmark_iteration, benchmark_name)
-                    self.__save_time_benchmark(run, benchmark_case, benchmark_iteration, benchmark_name)
+                    self.plot_linear_time_benchmark(df_benchmark_data, benchmark_case, benchmark_iteration, benchmark_name)
+                    self.__save_time_benchmark(run, benchmark_case, benchmark_iteration, f"linear/{benchmark_name}")
+                    self.plot_log_time_benchmark(df_benchmark_data, benchmark_case, benchmark_iteration, benchmark_name)
+                    self.__save_time_benchmark(run, benchmark_case, benchmark_iteration, f"log/{benchmark_name}")
 
                 print(f'Plotting combined time benchmarks for {run}')
                 self.plot_time_benchmarks(df_benchmark_data, benchmark_case, benchmark_iteration, list(df_benchmark_data['Benchmark']))
