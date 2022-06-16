@@ -1,4 +1,20 @@
-\section{Garbage Collection Strategies}
+\section{Cache Replacement Policies}
 \todo[inline]{Describe multiple memory strategies for keeping memory usage and execution time low}
+
+Self made-up
+\begin{itemize}
+  \item Remove the elements that are not used in the computation.
+  \item Only add elements that have a certain depth.
+  \item Sort the elements based on the \textbf{amount of hits} times \textbf{the computational cost} (e.g., depth of data structure) and remove the lowest rated elements (could also be done with a probability). Additionally, reduce the amount of hits by one after every computation.
+\end{itemize}
+
+Internet
+\begin{itemize}
+  \item Random Replacement
+  \item Queue-based policies
+  \item Recency-based policies
+  \item Frequency-based policies
+  \item RRIP-style policies
+\end{itemize}
 
 \todo[inline]{Write about paper selective memoization}
