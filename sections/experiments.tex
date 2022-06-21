@@ -52,7 +52,7 @@ bestCase = update (const (Leaf i)) [Dwn]
 
 \subsection{Execution Time}
 
-For all the benchmarks, the Incremental Cata Sum is faster when the tree contains more than $10^3$ nodes. However, for every benchmark the execution time is better or worse depending on the type of update that is performed. The better the type of update the faster the execution is. The execution time for Cata Sum and Generic Cata Sum seems to be linear with the amount of nodes and the Incremental Cata Sum is constant/logarithmic. The discrepancy in the range between $10^2 - 10^3$ is probably because the amount of nodes is too low to get stable results.
+For all the benchmarks, the Incremental Cata Sum is faster when the tree contains more than $10^3$ nodes. However, for every benchmark the execution time is better or worse depending on the type of update that is performed. The best case scenario has the biggest difference, then the average case and the closest performance difference is the worst case. The execution time for Cata Sum and Generic Cata Sum seems to be linear with the amount of nodes and the Incremental Cata Sum is constant/logarithmic. The discrepancy in the range between $10^2 - 10^3$ is probably because the amount of nodes is too low to get stable results.
 
 \begin{figure}[H]
   \begin{minipage}{.5\textwidth}
@@ -63,14 +63,13 @@ For all the benchmarks, the Incremental Cata Sum is faster when the tree contain
     \centering
     \includegraphics[width=\textwidth]{plots/run-3/time/Average/10/all_benchmarks.pdf}  
   \end{minipage}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \begin{minipage}[c]{.5\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{plots/run-3/time/Best/10/all_benchmarks.pdf}  
-  \end{minipage}
+  \begin{center}
+    \begin{minipage}[c]{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{plots/run-3/time/Best/10/all_benchmarks.pdf}  
+    \end{minipage}
+  \end{center}
+  \caption{The execution time over 10 executions for the Worst, Average and Best case.}
 \end{figure}
 
 \newpage
@@ -87,14 +86,13 @@ The memory usage results are all linear with the amount of nodes. The Cata Sum u
     \centering
     \includegraphics[width=\textwidth]{plots/run-3/memory/Average/10/all_benchmarks.pdf}  
   \end{minipage}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \begin{minipage}[c]{.5\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{plots/run-3/memory/Best/10/all_benchmarks.pdf}  
-  \end{minipage}
+  \begin{center}
+    \begin{minipage}[c]{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{plots/run-3/memory/Best/10/all_benchmarks.pdf}  
+    \end{minipage}
+  \end{center}
+  \caption{The max-bytes-used over 10 executions for the Worst, Average and Best case.}
 \end{figure}
 
 \newpage

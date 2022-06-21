@@ -11,3 +11,4 @@
 {"rule":"THREE_NN","sentence":"^\\QThe developer experience using \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q is difficult, because the developer needs to know the pattern functor representation of its datatype to\\E$"}
 {"rule":"AGREEMENT_SENT_START_2","sentence":"^\\QPattern synonyms adds an abstraction over patterns,\\E$"}
 {"rule":"THREE_NN","sentence":"^\\QThen to compute the max path sum over the Changed Tree, the previously computed \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q can be used to reduce the amount of recomputation.\\E$"}
+{"rule":"THREE_NN","sentence":"^\\QA cache replacement policy can be chosen to be used.\\E$"}

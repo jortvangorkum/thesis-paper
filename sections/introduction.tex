@@ -23,6 +23,11 @@ maxPathSum (Node l x r) = x + max (maxPathSum l) (maxPathSum r)
 
 > maxPathSum exampleTree
     18
+
+> let exampleTree' = update (const (Leaf 6)) [Bttm] exampleTree
+
+> maxPathSum exampleTree'
+    16
 \end{minted}
 
 The incremental implementation, first adds hashes to the input which represent the internal data structure to the data structure (also known as a \textit{merkle tree}). This is used to efficiently check what parts of the input has changed. Then, the initial computation is performed which gives the result and a map of all the intermediate results. Next, the tree gets updated, in this case the bottom left leaf (\inlinehaskell{Leaf 8}) is replaced with \inlinehaskell{Leaf 6}. Finally, the updated tree is recomputed reusing the previously computed results. As a result, the complete right side of the root node did not have to be recomputed, because it stayed the same.
