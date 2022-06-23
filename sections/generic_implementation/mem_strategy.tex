@@ -1,10 +1,22 @@
-\section{Cache Replacement Policies}
+\section{Memory Management}
 \todo[inline]{Describe multiple memory strategies for keeping memory usage and execution time low}
+
+\subsection{Cache Addition Policy}
+
+\todo[inline]{Explain and benchmark}
+
+\begin{itemize}
+  \item Only add elements that have a certain height.
+\end{itemize}
+
+\subsection{Cache Replacement Policies}
+
+\todo[inline]{More explaining what to do, no benchmarks}
+Best policy is based on use-case. Cannot evaluate for multiple use-cases because it is very use case specific.
 
 Self made-up
 \begin{itemize}
   \item Remove the elements that are not used in the computation.
-  \item Only add elements that have a certain depth.
   \item Sort the elements based on the \textbf{amount of hits} times \textbf{the computational cost} (e.g., depth of data structure) and remove the lowest rated elements (could also be done with a probability). Additionally, reduce the amount of hits by one after every computation.
 \end{itemize}
 

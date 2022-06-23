@@ -96,4 +96,76 @@ The memory usage results are all linear with the amount of nodes. The Cata Sum u
 \end{figure}
 
 \newpage
-\subsection{Comparison Cache Replacement Policies}
+\subsection{Comparison Cache Addition Policies}
+
+\subsubsection{Minimum Recursion Height of 5}
+\begin{figure}[H]
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{plots/run-4/time/Worst/10/all_benchmarks.pdf}  
+  \end{minipage}
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{plots/run-4/time/Average/10/all_benchmarks.pdf}  
+  \end{minipage}
+  \begin{center}
+    \begin{minipage}[c]{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{plots/run-4/time/Best/10/all_benchmarks.pdf}  
+    \end{minipage}
+  \end{center}
+  \caption{The execution time over 10 executions for the Worst, Average and Best case, where the minimum recursion height is 5.}
+\end{figure}
+\begin{figure}[H]
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{plots/run-4/memory/Worst/10/all_benchmarks.pdf}  
+  \end{minipage}
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{plots/run-4/memory/Average/10/all_benchmarks.pdf}  
+  \end{minipage}
+  \begin{center}
+    \begin{minipage}[c]{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{plots/run-4/memory/Best/10/all_benchmarks.pdf}  
+    \end{minipage}
+  \end{center}
+  \caption{The max-bytes-used over 10 executions for the Worst, Average and Best case, where the minimum recursion height is 5.}
+\end{figure}
+
+\subsubsection{Minimum Recursion Height of 10}
+\begin{figure}[H]
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{plots/run-5/time/Worst/10/all_benchmarks.pdf}  
+  \end{minipage}
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{plots/run-5/time/Average/10/all_benchmarks.pdf}  
+  \end{minipage}
+  \begin{center}
+    \begin{minipage}[c]{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{plots/run-5/time/Best/10/all_benchmarks.pdf}  
+    \end{minipage}
+  \end{center}
+  \caption{The execution time over 10 executions for the Worst, Average and Best case, where the minimum recursion height is 10.}
+\end{figure}
+\begin{figure}[H]
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{plots/run-5/memory/Worst/10/all_benchmarks.pdf}  
+  \end{minipage}
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{plots/run-5/memory/Average/10/all_benchmarks.pdf}  
+  \end{minipage}
+  \begin{center}
+    \begin{minipage}[c]{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{plots/run-5/memory/Best/10/all_benchmarks.pdf}  
+    \end{minipage}
+  \end{center}
+  \caption{The max-bytes-used over 10 executions for the Worst, Average and Best case, where the minimum recursion height is 10.}
+\end{figure}
