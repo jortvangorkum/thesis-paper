@@ -109,7 +109,7 @@ def plot_comparison_runs(run_mem_dict: Dict[str, pd.DataFrame], run_time_dict: D
             data = df_mem_run,
             ax = axs[0][i],  # type: ignore
             x = 'Amount Nodes',
-            y = 'Memory Usage',
+            y = 'Max Bytes Used',
             style = 'Benchmark',
             hue = 'Benchmark',
             marker = "o",
