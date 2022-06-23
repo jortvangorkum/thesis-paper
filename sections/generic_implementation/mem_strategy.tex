@@ -11,6 +11,14 @@
 
 \subsection{Cache Replacement Policies}
 
+Metrics where policies can be based on:
+\begin{itemize}
+  \item Recency: when added in the HashMap
+  \item Frequency: how many times the value is looked up in the HashMap.
+  \item Computational cost: how many recursive calls are needed
+  \item Iterations: how many iterations the object stays in the HashMap.
+\end{itemize}
+
 \todo[inline]{More explaining what to do, no benchmarks}
 Best policy is based on use-case. Cannot evaluate for multiple use-cases because it is very use case specific.
 

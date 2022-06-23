@@ -32,6 +32,8 @@ maxPathSum (Node l x r) = x + max (maxPathSum l) (maxPathSum r)
 
 The incremental implementation, first adds hashes to the input which represent the internal data structure to the data structure (also known as a \textit{merkle tree}). This is used to efficiently check what parts of the input has changed. Then, the initial computation is performed which gives the result and a map of all the intermediate results. Next, the tree gets updated, in this case the bottom left leaf (\inlinehaskell{Leaf 8}) is replaced with \inlinehaskell{Leaf 6}. Finally, the updated tree is recomputed reusing the previously computed results. As a result, the complete right side of the root node did not have to be recomputed, because it stayed the same.
 
+\todo[inline]{Add the explanation of that we use the Zipper for updating the Tree}
+
 \begin{minted}{haskell}
 -- The incremental implementation of max-path-sum
 incMaxPathSum :: BinTree -> Int
@@ -56,9 +58,12 @@ incMaxPathSum (Node_ l x r) = x + max l r
 \end{minted}
 
 \section{Contributions}
+
+The main contributions of the Thesis are the following:
+
 \begin{itemize}
-    \item We define a solution for implementing incremental computation for a single datatype. This solution has a better time complexity than recomputing the entire datatype.
-    \item We implement a generic version of the specific solution. This is accomplished by using the \texttt{regular} library.
-    \item We compare storing the incremental computations in a HashMap or a Trie.
-    \item We show multiple strategies on how to store incremental results and which strategy has the best \textit{time execution/memory} ratio. % Garbage collection/retention rate for items in the map 
+    \item We define an algorithm for incremental computation over recursive data structures. The algorithm uses hashes for comparing if the data structures are equal in a constant time and a Zipper to efficiently update the recursive data structure without rehashing the entire data structure.
+    \item We use datatype-generic programming to write a generic version of the algorithm, to support a large class of datatypes, namely \textit{regular datatypes}.
+    \item We use pattern synonyms, to make the developer experience the same as implementing a non-incremental algorithm.
+    \item We define cache addition policies and cache replacement policies to optimize the performance/memory usage for different use-cases.
 \end{itemize}
