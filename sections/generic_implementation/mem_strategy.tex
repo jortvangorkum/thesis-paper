@@ -1,17 +1,15 @@
 \section{Memory Management}
-\todo[inline]{Describe multiple memory strategies for keeping memory usage and execution time low}
 
-\subsection{Cache Addition Policy}
+In the optimal case, each intermediate value can be stored. Unfortunately, we are limited by the amount of memory there is available on the machine. Therefore, the amount of intermediate values needs to be limited. There are two suggestions of limiting the amount of intermediate values with \textit{Cache Addition Policies} and \textit{Cache Replacement Policies}. Cache addition policies are policies which indicate if an intermediate value can be added to the cache. And the cache replacement policies are policies which remove intermediate values from the cache based on metrics (e.g., recency, frequency, computational cost, etc.). 
 
-\todo[inline]{Explain and benchmark}
+\subsection{Cache Addition Policies}
 
-\begin{itemize}
-  \item Only add elements that have a certain height.
-\end{itemize}
+An example of a cache addition policy would be to determine the amount of recursive calls a data structure has. So, given a node in a tree we then know how many times we have to go into recursion before reaching a leaf. Using that information we can define a filter for the cache, where only elements with a recursion depth of $>i$ can be added to the cache. This filters out a large amount of intermediate values and could potentially lead to a speed-up, because the lookup in the HashMap could take longer than the calculation itself. However, this does not prevent the memory from filling-up. 
+Instead, intermediate values need to be removed when there is no memory left. This is where cache replacement policies are needed.
 
 \subsection{Cache Replacement Policies}
 
-Metrics where policies can be based on:
+Cache replacement policies can be based on multiple metrics. 
 \begin{itemize}
   \item Recency: when added in the HashMap
   \item Frequency: how many times the value is looked up in the HashMap.
@@ -19,22 +17,15 @@ Metrics where policies can be based on:
   \item Iterations: how many iterations the object stays in the HashMap.
 \end{itemize}
 
-\todo[inline]{More explaining what to do, no benchmarks}
-Best policy is based on use-case. Cannot evaluate for multiple use-cases because it is very use case specific.
+The cache replacement policy can be based on a single metric of a combination of multiple metrics. Unfortunately, we cannot determine the overall best cache replacement policy, because the best cache replacement policy is application specific as stated in \citetitle{acar2003selective}\footnote{``In general the replacement policy must be application-specific, because, for any fixed policy, there are programs whose performance is made worse by that choice.''\cite{acar2003selective}}. As a result, this paper will only describe possible policies which can be used by developers, but not show any results.
+\question{Is this a good statement?}
 
-Self made-up
+
+Possible cache replacement policies:
 \begin{itemize}
-  \item Remove the elements that are not used in the computation.
-  \item Sort the elements based on the \textbf{amount of hits} times \textbf{the computational cost} (e.g., depth of data structure) and remove the lowest rated elements (could also be done with a probability). Additionally, reduce the amount of hits by one after every computation.
+  \item Random replacement: remove random elements from the cache.
+  \item Recency-based policies: remove elements based on when the element was added.
+  \item Frequency-based policies: remove elements based on the amount of lookups.
+  \item Computational cost policies: remove elements based on the amount of time it takes to compute the value.
+  \item Combination of policies mentioned above. For example, combine the frequency based policy with the computation cost policy.
 \end{itemize}
-
-Internet
-\begin{itemize}
-  \item Random Replacement
-  \item Queue-based policies
-  \item Recency-based policies
-  \item Frequency-based policies
-  \item RRIP-style policies
-\end{itemize}
-
-\todo[inline]{Write about paper selective memoization}
