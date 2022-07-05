@@ -17,3 +17,5 @@ n-ary
 recomputations
 merkle
 CityHash
+HashMap
+hashable

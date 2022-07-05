@@ -67,11 +67,11 @@ merkle :: (Regular a, Hashable (PF a), Functor (PF a))
 merkle = In . merkleG . fmap merkle . from
 \end{minted}
 
-The \texttt{Merkle} representation can then be used to define a function \texttt{cataMerkleState} which given a function \inlinehaskell{alg :: (f a -> a)} which converts the generic representation \inlinehaskell{f a} into a value of type \texttt{a} and the \texttt{Merkle f} data structure, and returns a \texttt{State} of \inlinehaskell{(Map Digest a) a}. The \inlinehaskell{cataMerkleState} function starts with retrieving the \texttt{State}, which keeps track of the intermediate results and stores them into a \inlinehaskell{Map Digest a}. Then, given the hash value of the recursive position, we look into the Map if the value has been computed. If the value has been computed, then return the value. Otherwise, recursively compute all the children, apply the given function \inlinehaskell{alg}, insert the new value into the \inlinehaskell{Map} and return the computed value.
+The \texttt{Merkle} representation can then be used to define a function \texttt{cataMerkleState} which given a function \inlinehaskell{alg :: (f a -> a)} which converts the generic representation \inlinehaskell{f a} into a value of type \texttt{a} and the \texttt{Merkle f} data structure, and returns a \texttt{State} of \inlinehaskell{(HashMap Digest a) a}. The \inlinehaskell{cataMerkleState} function starts with retrieving the \texttt{State}, which keeps track of the intermediate results and stores them into a \inlinehaskell{HashMap Digest a}. Then, given the hash value of the recursive position, we look into the HashMap if the value has been computed. If the value has been computed, then return the value. Otherwise, recursively compute all the children, apply the given function \inlinehaskell{alg}, insert the new value into the \inlinehaskell{HashMap} and return the computed value.
 
 \begin{minted}{haskell}
 cataMerkleState :: (Functor f, Traversable f)
-                => (f a -> a) -> Merkle f -> State (Map Digest a) a
+                => (f a -> a) -> Merkle f -> State (HashMap Digest a) a
 cataMerkleState alg (In (x :*: K h)) 
   = do m <- get
        case lookup h m of
@@ -81,18 +81,18 @@ cataMerkleState alg (In (x :*: K h))
                     modify (insert h r) >> return r
 \end{minted}
 
-The \texttt{cataMerkleState} function can be used, but to execute the function we first need to give the function a \inlinehaskell{Map Digest a}. To simplify the use of \texttt{cataMerkleState}, we define a function \inlinehaskell{cataMerkle}, which executes the \texttt{cataMerkleState} with an empty \texttt{Map} and returns the final computed result and the final state as the result. 
+The \texttt{cataMerkleState} function can be used, but to execute the function we first need to give the function a \inlinehaskell{HashMap Digest a}. To simplify the use of \texttt{cataMerkleState}, we define a function \inlinehaskell{cataMerkle}, which executes the \texttt{cataMerkleState} with an empty \texttt{HashMap} and returns the final computed result and the final state as the result. 
 
 \begin{minted}{haskell}
 cataMerkle :: (Functor f, Traversable f)
-           => (f a -> a) -> Merkle f -> (a, Map Digest a)
+           => (f a -> a) -> Merkle f -> (a, HashMap Digest a)
 cataMerkle alg t = runState (cataMerkleState alg t) empty
 \end{minted}
 
 Finally, we have all the necessary functionality defined to write a function over the generic representation and automatically generate all the intermediate results and the final result. The example below computes the sum over the generic representation of \inlinehaskell{Tree} by adding all the values of the leaf and nodes. 
 
 \begin{minted}{haskell}
-cataSum :: Merkle (PF (Tree Int)) -> (Int, Map Digest Int)
+cataSum :: Merkle (PF (Tree Int)) -> (Int, HashMap Digest Int)
 cataSum = cataMerkle
   (\case
     L (C (K x))                 -> x
