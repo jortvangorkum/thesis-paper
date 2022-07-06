@@ -27,9 +27,6 @@ incCataSum = cataMerkleMap
 
 The experiments will be benchmarks executed with the Haskell package \texttt{criterion}\cite{hackage2022criterion}. Criterion performs the benchmarks multiple times to get an average result. The benchmarks will track two metrics: the execution time and the memory usage. The execution time will be in seconds and the memory usage will be the max-bytes used. The results gather for execution time comes from the criterion package, however the memory usage will not come from the package. This is because criterion only keeps track of the memory allocation and not usage. Therefore, we measure the memory usage with the GHC profiler\cite*{ghc2022memoryprofiling} and profile every benchmark individually to know its memory usage.
 
-\question{Should I add this?}
-\todo[inline]{Add command used for profiling memory usage}
-
 To test how well the three functions perform, we perform three types of updates, multiple times. These benchmarks will be based on the three type of cases: worst, average and best.
 \begin{enumerate*}[label=(\arabic*)]
   \item The worst case updates the lowest left leaf to a new leaf.
@@ -137,6 +134,8 @@ The memory usage results are all linear with the amount of nodes. The Cata Sum u
   \end{center}
   \caption{The max-bytes-used over 10 executions for the Worst, Average and Best case, where the minimum amount of recursive calls is 5.}
 \end{figure}
+
+\todo[inline]{Move to appendix}
 
 \subsubsection{Minimum of 10 recursive calls}
 \begin{figure}[H]

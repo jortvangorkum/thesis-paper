@@ -3,6 +3,8 @@
 \todo[inline]{Write more context}
 \todo[inline]{Add a problem statement}
 
+\todo[inline]{Add why my thesis is unique}
+
 Incremental computation is an approach to improve performance by computing only the result of the changed parts of the input, instead of computing the entire result. To determine what parts of the input has changed, we provide a \textit{Zipper} which can be used by the user to efficiently update the previous input to a new input and keeps track of the changes to the input. As a result, we know which parts of the input stays the same. Therefore, we can reuse the results of a previously performed computation for the same input\footnote{The technique for reusing results based on input is called \textit{memoization}}.   
 
 The task of implementing incremental computation for Haskell is explained in Chapter \ref*{chap-spec-impl}. However, the task for implementing incremental computation for multiple datatypes, becomes repetitive and error-prone. To prevent writing implementations for every datatype, we use datatype-generic programming. Datatype-generic programming is a technique that uses the structure of a datatype to define functions for a large class of datatypes, which is explained in more detail in Chapter \ref*{chap-dat-gen-program}. Then, using the Haskell generics library \texttt{regular}, we implement the generic version. In Chapter \ref*{chap-gen-impl}, the generic implementation is explained and additionally describe: complexity, different garbage collection strategies and different data structures for storing results. 
