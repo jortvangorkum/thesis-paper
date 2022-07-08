@@ -20,6 +20,33 @@ instance (Functor f, Functor g) => Functor (f :*: g) where
   fmap f (x :*: y) = fmap f x :*: fmap f y
 \end{minted}
 
+\chapter{Cache Management}
+\section{Implementation Recursion Depth}
+\label{app-sec-impl-rec-depth}
+\begin{minted}{haskell}
+class Depth f where
+  depth :: f (AFix g MemoInfo) -> Int
+
+instance Depth (K a) where
+  depth _ = 1
+
+instance Depth U where
+  depth _ = 1
+
+instance Depth I where
+  depth (I x) = let ph = getDepth (getAnnotation x) in 1 + ph
+
+instance (Depth f, Depth g) => Depth (f :+: g) where
+  depth (L x) = depth x
+  depth (R x) = depth x
+
+instance (Depth f, Depth g) => Depth (f :*: g) where
+  depth (x :*: y) = max (depth x) (depth y)
+
+instance (Depth f) => Depth (C c f) where
+  depth (C x) = depth x
+\end{minted}
+
 \chapter{Results}
 
 \newcommand{\individualbenchmark}[2]{
