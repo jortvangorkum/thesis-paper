@@ -49,6 +49,44 @@ instance (Depth f) => Depth (C c f) where
 
 \chapter{Results}
 
+\section{Minimum of 10 recursion depth}
+\label{app-sec-10-rec-depth}
+\begin{figure}[H]
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{plots/run-5/time/Worst/10/all_benchmarks.pdf}  
+  \end{minipage}
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{plots/run-5/time/Average/10/all_benchmarks.pdf}  
+  \end{minipage}
+  \begin{center}
+    \begin{minipage}[c]{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{plots/run-5/time/Best/10/all_benchmarks.pdf}  
+    \end{minipage}
+  \end{center}
+  \caption{The execution time over 10 executions for the Worst, Average and Best case, where the minimum recursion depth is 10.}
+\end{figure}
+\begin{figure}[H]
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{plots/run-5/memory/Worst/10/all_benchmarks.pdf}  
+  \end{minipage}
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{plots/run-5/memory/Average/10/all_benchmarks.pdf}  
+  \end{minipage}
+  \begin{center}
+    \begin{minipage}[c]{.5\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{plots/run-5/memory/Best/10/all_benchmarks.pdf}  
+    \end{minipage}
+  \end{center}
+  \caption{The max-bytes-used over 10 executions for the Worst, Average and Best case, where the minimum recursion depth is 10.}
+\end{figure}
+
+
 \newcommand{\individualbenchmark}[2]{
   \begin{minipage}{.5\textwidth}
     \centering

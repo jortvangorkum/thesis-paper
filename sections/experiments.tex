@@ -96,10 +96,13 @@ The memory usage results are all linear with the amount of nodes. The Cata Sum u
 \end{figure}
 
 \newpage
-\question{Should I add this?}
 \subsection{Comparison Cache Addition Policies}
 
-\subsubsection{Minimum of 5 recursive calls}
+As expected the memory usage is lower than when all the intermediate values are stored. Even, the execution time did not increase significantly. However, this is probably because the function which is computed (addition) is not computational intensive. This means it is less computational intensive to recompute the value than to store the value and retrieve it when needed. This does not have to be the case for more extensive computations. So, for the best performance this parameter needs to be correctly tweaked.
+
+For example, if we increased the recursion depth limit to 10. The results in Appendix Section \ref*{app-sec-10-rec-depth} show that the memory usage is even lower than the limit of 5. However, the execution time increases significantly. This is because the computation takes longer to perform than to store and perform a lookup. 
+
+\subsubsection{Execution Time}
 \begin{figure}[H]
   \begin{minipage}{.5\textwidth}
     \centering
@@ -115,8 +118,10 @@ The memory usage results are all linear with the amount of nodes. The Cata Sum u
       \includegraphics[width=\textwidth]{plots/run-4/time/Best/10/all_benchmarks.pdf}  
     \end{minipage}
   \end{center}
-  \caption{The execution time over 10 executions for the Worst, Average and Best case, where the minimum amount of recursive calls is 5.}
+  \caption{The execution time over 10 executions for the Worst, Average and Best case, where the minimum recursion depth is 5.}
 \end{figure}
+
+\subsubsection*{Memory Usage}
 \begin{figure}[H]
   \begin{minipage}{.5\textwidth}
     \centering
@@ -132,43 +137,5 @@ The memory usage results are all linear with the amount of nodes. The Cata Sum u
       \includegraphics[width=\textwidth]{plots/run-4/memory/Best/10/all_benchmarks.pdf}  
     \end{minipage}
   \end{center}
-  \caption{The max-bytes-used over 10 executions for the Worst, Average and Best case, where the minimum amount of recursive calls is 5.}
-\end{figure}
-
-\todo[inline]{Move to appendix}
-
-\subsubsection{Minimum of 10 recursive calls}
-\begin{figure}[H]
-  \begin{minipage}{.5\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{plots/run-5/time/Worst/10/all_benchmarks.pdf}  
-  \end{minipage}
-  \begin{minipage}{.5\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{plots/run-5/time/Average/10/all_benchmarks.pdf}  
-  \end{minipage}
-  \begin{center}
-    \begin{minipage}[c]{.5\textwidth}
-      \centering
-      \includegraphics[width=\textwidth]{plots/run-5/time/Best/10/all_benchmarks.pdf}  
-    \end{minipage}
-  \end{center}
-  \caption{The execution time over 10 executions for the Worst, Average and Best case, where the minimum amount of recursive calls is 10.}
-\end{figure}
-\begin{figure}[H]
-  \begin{minipage}{.5\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{plots/run-5/memory/Worst/10/all_benchmarks.pdf}  
-  \end{minipage}
-  \begin{minipage}{.5\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{plots/run-5/memory/Average/10/all_benchmarks.pdf}  
-  \end{minipage}
-  \begin{center}
-    \begin{minipage}[c]{.5\textwidth}
-      \centering
-      \includegraphics[width=\textwidth]{plots/run-5/memory/Best/10/all_benchmarks.pdf}  
-    \end{minipage}
-  \end{center}
-  \caption{The max-bytes-used over 10 executions for the Worst, Average and Best case, where the minimum amount of recursive calls is 10.}
+  \caption{The max-bytes-used over 10 executions for the Worst, Average and Best case, where the minimum recursion depth is 5.}
 \end{figure}
