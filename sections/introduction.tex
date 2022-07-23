@@ -64,7 +64,7 @@ incMaxPathSum (Node_ l x r) = x + max l r
 The main contributions of the Thesis are the following:
 
 \begin{itemize}
-    \item We define an algorithm for incremental computation over recursive data structures. The algorithm uses hashes for comparing if the data structures are equal in a constant time and a Zipper to efficiently update the recursive data structure without rehashing the entire data structure.
+    \item We define an algorithm for incremental computation over recursive data structures. The algorithm uses hashes for comparing if data structures are equal in constant time and a Zipper to efficiently update the recursive data structure without rehashing the entire data structure.
     \item We use datatype-generic programming to write a generic version of the algorithm, to support a large class of datatypes, namely \textit{regular datatypes}.
     \item We use pattern synonyms, to make the developer experience the same as implementing a non-incremental algorithm.
     \item We define cache addition policies and cache replacement policies to optimize the performance/memory usage for different use-cases.

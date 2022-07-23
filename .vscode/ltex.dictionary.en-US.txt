@@ -19,3 +19,4 @@ merkle
 CityHash
 HashMap
 hashable
+cyclomatic

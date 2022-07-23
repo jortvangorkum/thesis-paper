@@ -1,24 +1,11 @@
 \chapter{Conclusion}
 
-% The results show that the incremental computation is faster, than the non-incremental computation after $10^3$ nodes. However, the initial pass of the incremental computation is slower than the non-incremental computation. Therefore, the optimal use case for the incremental computation is one where there are a lot of small updates to the data structure. This can be accomplished with almost no additional code implemented by the user. 
+We have created an algorithm for incremental computation over recursive datatypes in Haskell. We have shown that the algorithm performs faster than the non-incremental version after $10^3$ nodes. Also, the additional memory usage needed to store the cache for the incremental computation is negligible when correctly tuned. The better performance is accomplished by storing the hashes for equality inside the recursive data structure and using a Zipper to efficiently update the hashes when the data structure changes.
 
-% Furthermore, the additional memory overhead needed for keeping track of all the intermediate results is relatively low. This makes the use of the incremental computation not require a system with additional memory available compared to using the non-incremental computation. 
+We introduced the pattern synonyms to improve the developer experience to almost the same level as the non-incremental implementation. The pattern synonyms can also be generated using \texttt{TemplateHaskell} to elevate the amount of additional work for the developers.
 
-% Nonetheless, if memory usage becomes an issue overtime. A cache replacement policy can be chosen to be used. 
+We define possible cache addition and cache replacement policies to improve the performance/memory usage of the algorithm. There are multiple policies defined to inspire the developers to find the fitting one for their use-case.
 
-Setup of conclusion:
-\begin{itemize}
-  \item Start with the goal/contributions of the paper.
-  \item Show that the results are successful
-  \item Conclude with a one-liner.
-\end{itemize}
+However, some difficulties still remain. First, the initial pass of the incremental algorithm is a lot slower than the non-incremental version. Therefore, the algorithm needs to be performed a lot (with small changes), before being overall faster than the non-incremental version. Secondly, finding the correct policies for the best performance can be quite cumbersome. 
 
-\section{Future work}
-\todo[inline]{Write future work}
-
-\begin{itemize}
-  \item Only results for a sum over data structure computation (no real-world results / only synthetic results)
-  \item Only support regular datatypes (could support a larger class of datatypes, for example, mutually recursive datatypes)
-  \item Does not use Sums-of-Products
-  \item 
-\end{itemize}
+\input{sections/conclusion/future_work.tex}

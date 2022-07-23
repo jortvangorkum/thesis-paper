@@ -50,6 +50,8 @@ bestCase = update (const (Leaf i)) [Dwn]
 \newpage
 \section{Results}
 
+The experiments are performed on a laptop with a \texttt{Intel Core i7-8750H} with a base clock of \texttt{2.2GHz} and a boost clock of \texttt{4.1GHz}, with \texttt{16GB} of memory. First we explain the results of the three algorithms with three different scenarios, iterating 10 times. Then, we show the results of adding a cache addition policy.
+
 \subsection{Execution Time}
 
 For all the benchmarks, the Incremental Cata Sum is faster when the tree contains more than $10^3$ nodes. However, for every benchmark the execution time is better or worse depending on the type of update that is performed. The best case scenario has the biggest difference, then the average case and the closest performance difference is the worst case. The execution time for Cata Sum and Generic Cata Sum seems to be linear with the amount of nodes and the Incremental Cata Sum is constant/logarithmic. The discrepancy in the range between $10^2 - 10^3$ is probably because the amount of nodes is too low to get stable results.
