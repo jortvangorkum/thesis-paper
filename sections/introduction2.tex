@@ -1,0 +1,38 @@
+\chapter{Introduction}
+
+
+% Instead, use forward references from the narrative in the introduction. The introduction (including the contributions) should survey the whole paper, and therefore forward reference every important part.
+
+\begin{itemize}
+  \item Establish your territory
+  \begin{itemize}
+    \item State the general topic and give some background: \textit{incremental computation, using hashes to efficiently compare data structures, using a merkle tree for recursive datatypes, using a zipper for efficiently updating merkle tree}
+    \item Use examples to explain the topic
+    \item Define the terms and scope of the topic: \textit{implementing specific version of the algorithm, then a generic version and compare the results with a non-incremental algorithm}
+  \end{itemize}
+  \item Establish a niche: \textit{The combination of generic incremental computation for recursive data structures and efficiently updating these recursive datastructures}
+  \begin{itemize}
+    \item Outline the current situation. 
+    \item Evaluate the current situation.
+  \end{itemize}
+\end{itemize}
+
+\section{Current Situation}
+\question{Familiar with MemoTrie?}
+\begin{itemize}
+  \item \href{https://hackage.haskell.org/package/MemoTrie}{MemoTrie}
+  \begin{itemize}
+    \item Does not use hashes to compare the inputs for equality, but uses sums of products to represent the datatypes. This can result in different memory usage than this Thesis paper. 
+    \item \textbf{NOT CERTAIN} has to traverse the complete data structure for equality. This paper the equality check is constant and efficiently updated when data structure changes.
+  \end{itemize}
+  \item \href{https://monospacedmonologues.com/2022/01/memotries/}{Blog MemoTrie}
+  \item \href{https://www.cs.uu.nl/research/techreps/repo/CS-2009/2009-024.pdf}{Pull-Ups, Push-Downs, and Passing It Around.
+  Exercises in Functional Incrementalization}
+  \begin{itemize}
+    \item -
+  \end{itemize}
+  \item \href{https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.43.3272&rep=rep1&type=pdf}{Memo funtions, polytypially!}
+  \begin{itemize}
+    \item Is the paper version of the MemoTrie implementation
+  \end{itemize}
+\end{itemize}
