@@ -24,26 +24,26 @@ instance (Functor f, Functor g) => Functor (f :*: g) where
 \section{Implementation Recursion Depth}
 \label{app-sec-impl-rec-depth}
 \begin{minted}{haskell}
-class Depth f where
+class HasDepth f where
   depth :: f (AFix g MemoInfo) -> Int
 
-instance Depth (K a) where
+instance HasDepth (K a) where
   depth _ = 1
 
-instance Depth U where
+instance HasDepth U where
   depth _ = 1
 
-instance Depth I where
-  depth (I x) = let ph = getDepth (getAnnotation x) in 1 + ph
+instance HasDepth I where
+  depth (I x) = let ph = getHasDepth (getAnnotation x) in 1 + ph
 
-instance (Depth f, Depth g) => Depth (f :+: g) where
+instance (HasDepth f, HasDepth g) => HasDepth (f :+: g) where
   depth (L x) = depth x
   depth (R x) = depth x
 
-instance (Depth f, Depth g) => Depth (f :*: g) where
+instance (HasDepth f, HasDepth g) => HasDepth (f :*: g) where
   depth (x :*: y) = max (depth x) (depth y)
 
-instance (Depth f) => Depth (C c f) where
+instance (HasDepth f) => HasDepth (C c f) where
   depth (C x) = depth x
 \end{minted}
 

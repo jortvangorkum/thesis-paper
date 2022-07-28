@@ -63,6 +63,9 @@ instance Hashable a => Hashable (Tree a) where
 The hashes can then be used to efficiently compare two \texttt{Tree} data structures, without having to traverse the entire \texttt{Tree} data structure. 
 
 \todo[inline]{Add the implementation HashMap\cite{hackage2022hashmap}}
+\todo[inline]{Looking up a value in a trie takes time proportional to the size of the value.}
+\todo[inline]{Explain HashMap and that it uses Tries, which leads to constant lookups}
+
 To keep track of the intermediate results of the computation, we store the results in a \texttt{HashMap}\cite{hackage2022hashmap}. A \texttt{HashMap} is an implementation of mapping a \textit{hashable} key to a value. In our next example the \texttt{Digest} is the key and the value is the intermediate result.
 
 \begin{minted}{haskell}

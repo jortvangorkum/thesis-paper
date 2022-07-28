@@ -16,10 +16,10 @@ data MemoInfo = MemoInfo { getDigest :: Digest, getDepth :: Int }
 type Merkle f = AFix f MemoInfo
 \end{minted}
 
-Then to compute the digest and the recursion depth over a generic datatype, the \inlinehaskell{merkle} function has to be expanded. An additional type constraints \inlinehaskell{Depth (PF a)} is added for the new typeclass which computes the recursion depth. Then the digest and depth is computed over the pattern functor and the final annotated fix-point with the digest and recursion depth is returned.
+Then to compute the digest and the recursion depth over a generic datatype, the \inlinehaskell{merkle} function has to be expanded. An additional type constraints \inlinehaskell{HasDepth (PF a)} is added for the new typeclass which computes the recursion depth. Then the digest and depth is computed over the pattern functor and the final annotated fix-point with the digest and recursion depth is returned.
 
 \begin{minted}{haskell}
-merkle :: (Regular a, Hashable (PF a), Depth (PF a), Functor (PF a)) 
+merkle :: (Regular a, Hashable (PF a), HasDepth (PF a), Functor (PF a)) 
        => a -> Merkle (PF a)
 merkle x = AFix py (MemoInfo d h)
   where

@@ -20,3 +20,4 @@ CityHash
 HashMap
 hashable
 cyclomatic
+memoized

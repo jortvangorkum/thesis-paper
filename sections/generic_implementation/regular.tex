@@ -77,8 +77,8 @@ cataMerkleState alg (In (x :*: K h))
        case lookup h m of
          Just a  -> return a
          Nothing -> do y <- mapM (cataMerkleState alg) x
-                    let r = alg y
-                    modify (insert h r) >> return r
+                       let r = alg y
+                       modify (insert h r) >> return r
 \end{minted}
 
 The \texttt{cataMerkleState} function can be used, but to execute the function we first need to give the function a \inlinehaskell{HashMap Digest a}. To simplify the use of \texttt{cataMerkleState}, we define a function \inlinehaskell{cataMerkle}, which executes the \texttt{cataMerkleState} with an empty \texttt{HashMap} and returns the final computed result and the final state as the result. 
