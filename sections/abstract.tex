@@ -1,19 +1,5 @@
-
-\todo[inline]{Write Abstract}
-
-\begin{itemize}
-  \item Explain incremental computation and that is used by many things
-  \item Use incremental computation by reusing the structure of the data structure
-  \item Implementing in Haskell is time-consuming and error-prone
-  \item Explain the use of generic version of incremental computation
-  \item Explain that it is faster without writing additional code given the normal function.
-\end{itemize}
-
-\begin{itemize}
-  \item Motivation: making incremental computation over recursive datatypes as easy to develop as non-incremental computation
-  \item Approach: -
-  \item Results: -
-  \item Conclusion: -
-\end{itemize}
+\begin{abstract}
+Incremental computation improves performance when the same computation is performed with slightly different input. An implementation of incremental computation is memoization. Memoization checks if the input of a function has already been computed and if it is return that \textit{cached} result. However, comparing the input for equality to know if the result has already been computed is inefficient for large recursive data structures. To improve the performance this paper introduces an algorithm which introduces digests of the internal structures and stores it inside the data structure (merkle tree), updating these digests using a Zipper when the data structure changes, writing a generic algorithm to support the class of regular datatypes. And all this while the developer experience is the same as writing the non-incremental algorithm in Haskell. In the end, we show that the performance is better than the non-incremental version with minimal extra memory usage, when correctly tuned with cache policies.
+\end{abstract}
 
 % Word limit: 150 - 200 words
