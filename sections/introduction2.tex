@@ -5,22 +5,97 @@
 
 Incremental computation is an approach to improve performance by reusing results of a previously computed result when the both inputs are equal. There are multiple applications where incremental computation has a positive effect on: GUIs (e.g., DOM diffing), spreadsheets, attribute grammar evaluation, etc.  An example, where incremental computation has significant effect on performance, would be computing the Fibonacci sequence.
 
+\begin{figure}[H]
+\captionsetup{justification=justified,singlelinecheck=false,margin=0cm}
 \begin{minted}{haskell}
 fib :: Int -> Int
 fib 0 = 0
 fib 1 = 1
 fib n = fib (n - 2) + fib (n - 1)
 \end{minted}
+\caption{The implementation of the Fibonacci sequence in Haskell.}
+\label{fig-fib-alg}
+\end{figure}
 
-The implementation of the incremental computation for the Fibonacci sequence is called \textit{memoization}. Memoization is a term which is associated with a function that caches the result of the function for the given input. A well-used Haskell library which implements memoization is the \texttt{MemoTrie} library\cite*{hackage2022memotrie}.
+The implementation of the incremental computation for the Fibonacci sequence is called \textit{memoization}. Memoization is a term which is associated with a function that caches the result of the function for the given input. A well-used Haskell package which implements memoization is the \texttt{MemoTrie} package\cite*{hackage2022memotrie}.
 
-This works well when the comparison between inputs can be performed in a small amount of time. However, what if the input of that function is a large recursive data structure, for example a tree. Then, to determine if the memoized inputs and the given input are equal the entire tree needs to be traversed through. To improve the comparison of two data structure, we introduce the use of hash functions. Using hash functions to generate \textit{hash values/digests}, the comparison of two data structures can be performed in constant time.
+\begin{figure}[H]
+\captionsetup{justification=justified,singlelinecheck=false,margin=0cm}
+\begin{minted}{haskell}
+memoFib :: Integer -> Integer
+memoFib = memo memoFib'
+  where
+    memoFib' 0 = 0
+    memoFib' 1 = 1
+    memoFib' n = memoFib (n - 2) + memoFib (n - 1)
+\end{minted}
+\caption{The memoized implementation\cite*{memotrie2022fibonacci} of the Fibonacci algorithm using the \texttt{MemoTrie} package.}
+\label{fig-mem-fib-alg}
+\end{figure}
+
+This works well when the comparison between inputs can be performed in a small amount of time. However, what if the input of that function is a large recursive data structure, for example a tree. 
+
+\begin{figure}[H]
+\captionsetup{justification=justified,singlelinecheck=false,margin=0cm}
+\begin{minted}{haskell}
+data BinTree = Leaf Int
+             | Node BinTree Int BinTree
+
+sumTree :: BinTree -> Int
+sumTree (Leaf x)     = x
+sumTree (Node l x r) = x + sumTree l + sumTree r
+\end{minted}
+\caption{Computing the summation of all the numbers in the Tree.}
+\label{fig-bin-tree}
+\end{figure}
+
+Then, to determine if the memoized inputs and the given input are equal, the entire tree needs to be traversed through. To improve the comparison of two data structure, we introduce the use of hash functions. Using hash functions to generate \textit{hash values/digests}, the comparison of two data structures can be performed in constant time.
 
 To store the digests, we label every node in the tree with its corresponding digest. The digest represents the internal structure of itself and its children. This new data structure is called a \textit{Hash Tree} or \textit{Merkle Tree}\cite{merkle1987digital}. Using the digests within the data structure, the comparison can easily be performed by just comparing both digests for equality.
+
+\begin{figure}[H]
+\captionsetup{justification=justified,singlelinecheck=false,margin=0cm}
+\begin{minted}{haskell}
+data BinTreeH = Leaf Digest Int
+              | Node Digest BinTreeH Int BinTreeH
+
+merkelize :: BinTree -> BinTreeH
+merkelize (Leaf x)     = LeafH (hash ["Leaf", show x]) x
+merkelize (Node l x r) = NodeH (hash ["Node", hl, hr, show x]) l' x r'
+  where
+    l' = merkelize l
+    hl = getDigest l'
+    r' = merkelize r
+    hr = getDigest r'
+\end{minted}
+\caption{Converting the Tree into a Merkle Tree.}
+\label{fig-conv-tree}
+\end{figure}
 
 However, what if we want to update a small part of the merkle tree? Then the entire merkle tree needs to be rehashed, while only a small part of changes. The digests of the merkle tree only has to change if the node changes or one of the children nodes changes. In other words, only the nodes that changes and all its parents needs to be updated. To efficiently perform this in Haskell we use a technique named \textit{Zipper}\cite{huet1997zipper}.  
 
 The Zipper keeps track, during the navigation from the root node to a specific node, of the path that has been traversed through the data structure. When the specific node is reached, we update the node with a given function and then update the digests accordingly to the new data structure. Therefore, we only have to update a part of the digest in the data structure.
+
+\begin{figure}[H]
+\captionsetup{justification=justified,singlelinecheck=false,margin=0cm}
+\begin{minted}{haskell}
+data Direction = Lft | Rght
+data Cxt = Cxt Direction BinTreeH Digest Int
+type Loc = (BinTreeH, [Cxt])
+
+left :: Loc -> Loc
+left (NodeH d l x r, cs) = (l, (Cxt Lft r d x):cs)
+
+right :: Loc -> Loc
+right (NodeH d l x r, cs) = (r, (Cxt Rght l d x):cs)
+
+up :: Loc -> Loc
+up (l, (Cxt Lft r d x):cs)  = (NodeH d l x r, cs)
+up (r, (Cxt Rght l d x):cs) = (NodeH d l x r, cs)
+\end{minted}
+\caption{The implementation of a Zipper}
+\label{<label>}
+\end{figure}
 
 Unfortunately, when we implement this functionality it only works for a single datatype. When we want to support a different datatype the functionality needs to be copied and reimplemented for that specific datatype. This can become quite cumbersome and error-prone for developers. To support a large class of datatypes for this functionality we introduce \textit{Datatype-Generic programming}.
 
@@ -30,6 +105,7 @@ However, this does mean that the given function which computes a result needs to
 
 Finally, to keep the cache from growing too large for the available amount of memory, we show multiple policies, so that the developer can choose the best policy for their use-case. The policy can be focused on recency, frequency, computational cost or a combination of the previously mentioned metrics.
 
+\newpage
 \section{Contributions}
 
 In summary, the main contributions of the Thesis are the following:

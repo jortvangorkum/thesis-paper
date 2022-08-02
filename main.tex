@@ -21,6 +21,10 @@
 \usepackage[a4paper, includeheadfoot, margin=3cm]{geometry}
 
 \usepackage{minted}
+\usepackage{xpatch,letltxmacro}
+\LetLtxMacro{\cminted}{\minted}
+\let\endcminted\endminted
+\xpretocmd{\cminted}{\RecustomVerbatimEnvironment{Verbatim}{BVerbatim}{}}{}{}
 % \usemintedstyle{manni}
 % \usemintedstyle{bw}
 % \usemintedstyle{vs}
@@ -73,7 +77,7 @@
 \usepackage{siunitx}
 \usepackage{amsmath}
 
-\usepackage[justification=centering, margin=1cm]{caption}
+\usepackage[justification=centering, margin=1cm, belowskip=-10pt, labelfont=bf]{caption}
 
 %%%%%%%%%%%%
 % DOCUMENT %
