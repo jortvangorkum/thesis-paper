@@ -1,22 +1,7 @@
 \chapter{Specific Implementation}
 \label{chap-spec-impl}
 
-\begin{minted}{haskell}
-data Tree a = Leaf a
-            | Node (Leaf a) a (Leaf a)
-\end{minted}
-
-\begin{minted}{haskell}
-sumTree :: Tree Int -> Int
-sumTree (Leaf x)     = x
-sumTree (Node l x r) = x + (sumTree l) + (sumTree r)
-\end{minted}
-
-Computing a value of a data structure can easily be defined in Haskell, but every time there is a small change in the \texttt{Tree}, the entire \texttt{Tree} needs to be recomputed. This is inefficient, because most of the computations have already been performed in the previous computation. 
-
-To prevent recomputation of already computed values, the technique memoization is introduced. Memoization is a technique where the results of computational intensive tasks are stored and when the same input occurs, the result is reused. 
-
-The comparison of two values in Haskell is done with the \texttt{Eq} typeclass, which implements the equality operator \inlinehaskell{(==) :: a -> a -> Bool}. So, an example implementation of the \texttt{Eq} typeclass for the \texttt{Tree} datatype would be:
+The comparison of two values for equality in Haskell is performed using the \texttt{Eq} typeclass, which implements the equality operator \inlinehaskell{(==) :: a -> a -> Bool}. So, an example implementation of the \texttt{Eq} typeclass for the \texttt{Tree} datatype would be:
 
 \begin{minted}{haskell}
 instance Eq a => Eq (Tree a) where
@@ -25,12 +10,12 @@ instance Eq a => Eq (Tree a) where
   _             == _             = False
 \end{minted}
 
-The problem with using this implementation of the \texttt{Eq} typeclass for Memoization is that for every comparison of the \texttt{Tree} datatype the equality is computed. This is inefficient because the equality implementation has to traverse the complete \texttt{Tree} data structure to know if the \texttt{Tree}'s are equal. 
+The problem with using this implementation of the \texttt{Eq} typeclass for memoization is that for every comparison of the \texttt{Tree} datatype the equality is computed. This is inefficient because the equality implementation has to traverse the complete \texttt{Tree} data structure to know if the \texttt{Tree}'s are equal. 
 
 \todo[inline]{Check if hash and hash values are correctly used}
-To efficiently compare the \texttt{Tree} datatypes, we need to represent the structure in a manner which does not lead to traversing to the complete \texttt{Tree} data structure. This can be accomplished using a \texttt{hash} function. A hash function is a process of transforming a data structure into an arbitrary fixed-size value, where the same input always generates the same output. 
+To efficiently compare the \texttt{Tree} datatypes, we need to represent the structure in a manner which does not lead to traversing to the complete \texttt{Tree} data structure. This can be accomplished using a \textit{hash} function. A hash function is a process of transforming a data structure into an arbitrary fixed-size value, where the same input always generates the same output. 
 
-One disadvantage of using hashes is \textit{hash collisions}. Hash collisions happen when two different pieces of data have the same hash. This is because a hash function has a limited amount of bits to represent every possible combination of data. To calculate the chance of a hash collision occurring we use the formula $p = \epsilon^{\frac{-k(k-1)}{2N}}$ from \citetitle{hashcoll2011}\cite{hashcoll2011}. So, given a common hash function CRC-32\cite{peterson1961cyclic}, which has a digest size of 32bits, to get a $50\%$ chance of a hash collision occurring in a collection, it needs $0.5 = \epsilon^{\frac{-k(k-1)}{2\times2^{32}}} \rightarrow k = 77163$ hash values.
+One thing to be cautious when using hashes are \textit{hash collisions}. Hash collisions happen when two different inputs have the same resulting hash. This is because a hash function has a limited amount of bits to represent every possible combination of data. To calculate the chance of a hash collision occurring we use the formula $p = \epsilon^{\frac{-k(k-1)}{2N}}$ from \citetitle{hashcoll2011}\cite{hashcoll2011}. So, given a common hash function CRC-32\cite{peterson1961cyclic}, which has a digest size of 32bits, to get a $50\%$ chance of a hash collision occurring in a collection, it needs $0.5 = \epsilon^{\frac{-k(k-1)}{2\times2^{32}}} \rightarrow k = 77163$ hash values.
 
 \begin{table}[H]
   \centering\begin{tabular}{ | c | c | }
@@ -60,13 +45,10 @@ instance Hashable a => Hashable (Tree a) where
   hash (Node l x r) = concatHash [hash "Node", hash x, hash l, hash r]
 \end{minted}
 
-The hashes can then be used to efficiently compare two \texttt{Tree} data structures, without having to traverse the entire \texttt{Tree} data structure. 
+To keep track of the intermediate results of the computation, we store the results in a \texttt{HashMap}\cite{hackage2022hashmap}. A \texttt{HashMap} is an implementation of mapping a \textit{hashable} key to a value. Internally, the HashMap uses a \textit{Trie} data structure\cite*{fredkin1960trie}. 
+\todo[inline]{Add explanation of the Trie. Looking up a value in a trie takes time proportional to the size of the value. Explain HashMap and that it uses Tries, which leads to constant lookups}
 
-\todo[inline]{Add the implementation HashMap\cite{hackage2022hashmap}}
-\todo[inline]{Looking up a value in a trie takes time proportional to the size of the value.}
-\todo[inline]{Explain HashMap and that it uses Tries, which leads to constant lookups}
-
-To keep track of the intermediate results of the computation, we store the results in a \texttt{HashMap}\cite{hackage2022hashmap}. A \texttt{HashMap} is an implementation of mapping a \textit{hashable} key to a value. In our next example the \texttt{Digest} is the key and the value is the intermediate result.
+% In our next example the \texttt{Digest} is the key and the value is the intermediate result.
 
 \begin{minted}{haskell}
 sumTreeInc :: Tree Int -> (Int, HashMap Digest Int)
@@ -106,10 +88,10 @@ data TreeH a = LeafH Digest a
 
 \begin{minted}{haskell}
 merkle :: Tree Int -> TreeH Int
-merkle l@(Leaf x) = LeafH (hash l) x
-merkle (Node l x r) = NodeH h l' x r'
+merkle (Leaf x)     = LeafH (hash ["Leaf", show x]) x
+merkle (Node l x r) = NodeH d l' x r'
   where
-    h = hash ["Node", x, getHash l', getHash r']
+    d = hash ["Node", show x, getDigest l', getDigest r']
     l' = merkle l
     r' = merkle r
 \end{minted}

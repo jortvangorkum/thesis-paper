@@ -29,7 +29,7 @@ memoFib = memo memoFib'
     memoFib' 1 = 1
     memoFib' n = memoFib (n - 2) + memoFib (n - 1)
 \end{minted}
-\caption{The memoized implementation\cite*{memotrie2022fibonacci} of the Fibonacci algorithm using the \texttt{MemoTrie} package.}
+\caption{The memoized implementation\cite*{memotrie2022fibonacci} of the Fibonacci sequence using the \texttt{MemoTrie} package.}
 \label{fig-mem-fib-alg}
 \end{figure}
 
@@ -59,14 +59,13 @@ To store the digests, we label every node in the tree with its corresponding dig
 data BinTreeH = Leaf Digest Int
               | Node Digest BinTreeH Int BinTreeH
 
-merkelize :: BinTree -> BinTreeH
-merkelize (Leaf x)     = LeafH (hash ["Leaf", show x]) x
-merkelize (Node l x r) = NodeH (hash ["Node", hl, hr, show x]) l' x r'
+merkle :: BinTree -> BinTreeH
+merkle (Leaf x)     = LeafH (hash ["Leaf", show x]) x
+merkle (Node l x r) = NodeH d l' x r'
   where
-    l' = merkelize l
-    hl = getDigest l'
-    r' = merkelize r
-    hr = getDigest r'
+    d = hash ["Node", show x, getDigest l', getDigest r']
+    l' = merkle l
+    r' = merkle r
 \end{minted}
 \caption{Converting the Tree into a Merkle Tree.}
 \label{fig-conv-tree}
