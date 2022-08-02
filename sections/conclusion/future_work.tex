@@ -6,6 +6,7 @@ The Thesis paper still has some topics that need further exploring. A few small 
   \item Implement a default cache replacement policy which generally works well for all algorithms. 
   \item Implement the generation of the pattern synonyms using \texttt{TemplateHaskell}.
   \item Run the benchmarks in a more stable environment than a laptop.
+  \item Benchmark the results against the \texttt{MemoTrie} package.
 \end{itemize}
 
 \subsection{Support for Mutually Recursive Datatypes}
@@ -15,4 +16,4 @@ The current implementation of the algorithm only supports Regular datatypes. Thi
 The generic implementation of the algorithm uses pattern functors. Pattern functors are a simple way to define generic functionality. However, the pattern functors have no restrictions on how they are combined. The Sums-of-Products represents the Haskell datatype better than the pattern functors, by only limiting the creation of sums of products. This can make it easier to implement the generic version of the algorithm or add additional optimizations.
 
 \subsection{Benchmarking with real-world data}
-The current results presented in this paper are all synthetic benchmarks. This makes it easier to compare the results and make conclusions. However, it does not represent how well the algorithms actually perform in the real-world. A real-world example would be to compute a metric over public available code\footnote{This does mean that the algorithm needs to support mutually recursive datatypes.}.
+The current results presented in this paper are all synthetic benchmarks. This makes it easier to compare the results and make conclusions. However, it does not represent how well the algorithms actually perform in the real-world. A real-world example would be to compute a metric over public available code\footnote{This does mean that the algorithm first needs to support mutually recursive datatypes.}.

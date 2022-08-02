@@ -12,7 +12,6 @@ instance Eq a => Eq (Tree a) where
 
 The problem with using this implementation of the \texttt{Eq} typeclass for memoization is that for every comparison of the \texttt{Tree} datatype the equality is computed. This is inefficient because the equality implementation has to traverse the complete \texttt{Tree} data structure to know if the \texttt{Tree}'s are equal. 
 
-\todo[inline]{Check if hash and hash values are correctly used}
 To efficiently compare the \texttt{Tree} datatypes, we need to represent the structure in a manner which does not lead to traversing to the complete \texttt{Tree} data structure. This can be accomplished using a \textit{hash} function. A hash function is a process of transforming a data structure into an arbitrary fixed-size value, where the same input always generates the same output. 
 
 One thing to be cautious when using hashes are \textit{hash collisions}. Hash collisions happen when two different inputs have the same resulting hash. This is because a hash function has a limited amount of bits to represent every possible combination of data. To calculate the chance of a hash collision occurring we use the formula $p = \epsilon^{\frac{-k(k-1)}{2N}}$ from \citetitle{hashcoll2011}\cite{hashcoll2011}. So, given a common hash function CRC-32\cite{peterson1961cyclic}, which has a digest size of 32bits, to get a $50\%$ chance of a hash collision occurring in a collection, it needs $0.5 = \epsilon^{\frac{-k(k-1)}{2\times2^{32}}} \rightarrow k = 77163$ hash values.
