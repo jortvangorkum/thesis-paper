@@ -44,10 +44,7 @@ instance Hashable a => Hashable (Tree a) where
   hash (Node l x r) = concatHash [hash "Node", hash x, hash l, hash r]
 \end{minted}
 
-To keep track of the intermediate results of the computation, we store the results in a \texttt{HashMap}\cite{hackage2022hashmap}. A \texttt{HashMap} is an implementation of mapping a \textit{hashable} key to a value. Internally, the HashMap uses a \textit{Trie} data structure\cite*{fredkin1960trie}. 
-\todo[inline]{Add explanation of the Trie. Looking up a value in a trie takes time proportional to the size of the value. Explain HashMap and that it uses Tries, which leads to constant lookups}
-
-% In our next example the \texttt{Digest} is the key and the value is the intermediate result.
+To keep track of the intermediate results of the computation, we store the results in a \texttt{HashMap}\cite{hackage2022hashmap}. A \texttt{HashMap} is an implementation of mapping a \textit{hashable} key to a value. The implementation of the HashMap is based on \textit{hash array mapped tries}\cite*{bagwell2001ideal}. The average-case complexity for the \texttt{lookup} and \texttt{insert} are $\mathcal{O}(\log{n})$, however in practice these operations are in constant time. Especially, because the keys are digests, meaning that the key size is constant.
 
 \begin{minted}{haskell}
 sumTreeInc :: Tree Int -> (Int, HashMap Digest Int)
