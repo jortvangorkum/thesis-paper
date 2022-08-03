@@ -1,13 +1,14 @@
 \section{Sums of Products}
-\todo[inline]{Add a description of what a universe is}
-
-A different way of describing datatypes in a generic representation, besides pattern functors, are \textit{Sums of Products}\cite{vries2014sums} (SOP). SOP is a generic representation with additional constraints which more faithfully reflects the Haskell datatypes: each datatype is a single n-ary sum, where each component of the sum is a single n-ary product. The SOP universe is described using \textit{codes} of kind \texttt{[[*]]}. The outer list describes an n-ary sum, representing the choice between constructors and each inner list an n-ary products, representing the constructor arguments.  The code of kind \inlinehaskell{[[*]]} can then be interpreted to describe Haskell datatypes of kind \inlinehaskell{*}. To define a code, the tick mark \inlinehaskell{`} is used to lift the list to a type-level. 
+A different way of describing datatypes in a generic representation, besides pattern functors, are \textit{Sums of Products}\cite{vries2014sums} (SOP). SOP is a generic representation with additional constraints compared to pattern functors, which more faithfully reflects the Haskell datatypes: each datatype is a single n-ary sum, where each component of the sum is a single n-ary product. The SOP universe is described using \textit{codes} of kind \texttt{[[*]]}. The outer list describes an n-ary sum, representing the choice between constructors and each inner list an n-ary products, representing the constructor arguments.  The code of kind \inlinehaskell{[[*]]} can then be interpreted to describe Haskell datatypes of kind \inlinehaskell{*}. To define a code, the tick mark \inlinehaskell{`} is used to lift the list to a type-level. 
 
 \begin{minted}{haskell}
 Code (Tree a) = `[`[a], `[Tree a, a, Tree a]]
 \end{minted}
 
-The usage of SOP has a positive effect on expressing generic functions easily or at all. Additionally, the SOP completely divides the structural representation from the metadata. As a result, you do not have to deal with metadata while writing generic functions. However, the additional constraints on the generic representation makes the SOP universe size comparatively bigger than pattern functors. Therefore, it is more complex to extend the SOP than for pattern functors.
+The usage of SOP has a positive effect on expressing generic functions easily or at all. Additionally, the SOP completely divides the structural representation from the metadata. As a result, you do not have to deal with metadata while writing generic functions. 
+
+\question{How to explain that SOP is more complex than pattern functors?}
+However, the additional constraints on the generic representation makes the SOP universe size comparatively bigger than pattern functors. Therefore, it is more complex to extend the SOP than for pattern functors.
 
 % \begin{itemize}
 %     \item While many of the libraries that are

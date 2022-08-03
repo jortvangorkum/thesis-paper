@@ -2,7 +2,7 @@
 
 The \texttt{regular} generic programming library was chosen, because it has the smallest universe size compared to other libraries. Therefore, implementing the generic implementation is less complex. However, \texttt{regular} does not support \textit{Sums of Products} and \textit{mutually recursive datatypes}, but we expect that the results will be meaningful without supporting these features.
 
-\todo[inline]{Write about why Regular is chosen}
+\todo[inline]{Rewrite regular part}
 
 The first step of the incremental computation was computing the Merkle Tree. In other terms, we need to store the hash of the data structure inside the data structure. We accomplish this by defining a new type \texttt{Merkle} which is a fixed-point over the data structure where each of the recursive positions contains a hash (\inlinehaskell{K Digest}).
 
