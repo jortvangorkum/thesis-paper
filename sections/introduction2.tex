@@ -33,7 +33,9 @@ memoFib = memo memoFib'
 \label{fig-mem-fib-alg}
 \end{figure}
 
-This works well when the comparison between inputs can be performed in a small amount of time. However, what if the input of that function is a large recursive data structure, for example a tree. 
+\todo[inline]{Be explicit is stating that the lookup is based on the length of the input, while with hashes the length is constant}
+
+This works well when the comparison between inputs can be performed in a small amount of time. However, what if the input of that function is a large recursive data structure, for example a tree.  
 
 \begin{figure}[H]
 \captionsetup{justification=justified,singlelinecheck=false,margin=0cm}
@@ -73,34 +75,37 @@ merkle (Node l x r) = NodeH d l' x r'
 
 However, what if we want to update a small part of the merkle tree? Then the entire merkle tree needs to be rehashed, while only a small part of changes. The digests of the merkle tree only has to change if the node changes or one of the children nodes changes. In other words, only the nodes that changes and all its parents needs to be updated. To efficiently perform this in Haskell we use a technique named \textit{Zipper}\cite{huet1997zipper}.  
 
-The Zipper keeps track, during the navigation from the root node to a specific node, of the path that has been traversed through the data structure. When the specific node is reached, we update the node with a given function and then update the digests accordingly to the new data structure. Therefore, we only have to update a part of the digest in the data structure.
+% The Zipper keeps track, during the navigation from the root node to a specific node, of the path that has been traversed through the data structure. When the specific node is reached, we update the node with a given function and then update the digests accordingly to the new data structure. Therefore, we only have to update a part of the digest in the data structure.
 
-\begin{figure}[H]
-\captionsetup{justification=justified,singlelinecheck=false,margin=0cm}
-\begin{minted}{haskell}
-data Direction = Lft | Rght
-data Cxt = Cxt Direction BinTreeH Digest Int
-type Loc = (BinTreeH, [Cxt])
+% \begin{figure}[H]
+% \captionsetup{justification=justified,singlelinecheck=false,margin=0cm}
+% \begin{minted}{haskell}
+% data Direction = Lft | Rght
+% data Cxt = Cxt Direction BinTreeH Digest Int
+% type Loc = (BinTreeH, [Cxt])
 
-left :: Loc -> Loc
-left (NodeH d l x r, cs) = (l, (Cxt Lft r d x):cs)
+% left :: Loc -> Loc
+% left (NodeH d l x r, cs) = (l, (Cxt Lft r d x):cs)
 
-right :: Loc -> Loc
-right (NodeH d l x r, cs) = (r, (Cxt Rght l d x):cs)
+% right :: Loc -> Loc
+% right (NodeH d l x r, cs) = (r, (Cxt Rght l d x):cs)
 
-up :: Loc -> Loc
-up (l, (Cxt Lft r d x):cs)  = (NodeH d l x r, cs)
-up (r, (Cxt Rght l d x):cs) = (NodeH d l x r, cs)
-\end{minted}
-\caption{The implementation of a Zipper}
-\label{<label>}
-\end{figure}
+% up :: Loc -> Loc
+% up (l, (Cxt Lft r d x):cs)  = (NodeH d l x r, cs)
+% up (r, (Cxt Rght l d x):cs) = (NodeH d l x r, cs)
+% \end{minted}
+% \caption{The implementation of a Zipper}
+% \label{<label>}
+% \end{figure}
 
 Unfortunately, when we implement this functionality it only works for a single datatype. When we want to support a different datatype the functionality needs to be copied and reimplemented for that specific datatype. This can become quite cumbersome and error-prone for developers. To support a large class of datatypes for this functionality we introduce \textit{Datatype-Generic programming}.
 
 Datatype-generic programming is a technique to exploit the structure of datatypes to define functions by induction over the type structure. To represent datatypes in a generic, we use pattern functors. Then using datatype-generic programming, we define generic functionality for: computing the digests of the data structure, storing the digests inside the data structure, a generic zipper, and, finally functionality for computing the result for a given function and cache with intermediate results. 
 
 However, this does mean that the given function which computes a result needs to use the representation types. The representation types are quite verbose and the extension cannot be a drop-in replacement for existing functionality. To make it easier for developers to use, we introduce \textit{Pattern synonyms}\cite*{pickering2016pattern}. Pattern synonyms add an abstraction over patterns, which can be used to simplify the case expressions used in the given function, making the functionality almost a drop-in extension (we only need to add an underscore to the data constructors). 
+
+\todo[inline]{Add example on how the incremental computation is used}
+
 
 Finally, to keep the cache from growing too large for the available amount of memory, we show multiple policies, so that the developer can choose the best policy for their use-case. The policy can be focused on recency, frequency, computational cost or a combination of the previously mentioned metrics.
 

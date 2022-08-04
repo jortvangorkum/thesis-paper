@@ -8,6 +8,8 @@ Code (Tree a) = `[`[a], `[Tree a, a, Tree a]]
 The usage of SOP has a positive effect on expressing generic functions easily or at all. Additionally, the SOP completely divides the structural representation from the metadata. As a result, you do not have to deal with metadata while writing generic functions. 
 
 \question{How to explain that SOP is more complex than pattern functors?}
+\todo[inline]{The SOP is more complex because SOP uses type level list, which is more complex that the pattern functor which does not use the type level to define constraints}
+\todo[inline]{The SOP you need to define functionality for converting the type level constraints, which is rather complex}
 However, the additional constraints on the generic representation makes the SOP universe size comparatively bigger than pattern functors. Therefore, it is more complex to extend the SOP than for pattern functors.
 
 % \begin{itemize}

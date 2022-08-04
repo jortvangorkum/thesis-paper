@@ -14,12 +14,12 @@ There are multiple generic programming libraries, however to demonstrate the wor
 
 First, the pattern functors defined in \texttt{regular} are 5 core pattern functors and 2 meta information pattern functors. The core pattern functors describe the datatypes. The meta information pattern functors only contain information (e.g., constructor name) but not any structural information.
 
-\question{What do you call the datatypes which combine into a pattern functor?}
+\todo[inline]{Use \textit{primitive type constructors} as definition for the datatypes which create a pattern functor}
 
 \begin{minted}{haskell}
-data U r         = U                 -- Empty constructors
+data U r         = U                 -- Empty constructor
 data I r         = I r               -- Recursive call
-data K a r       = K a               -- Constants
+data K a r       = K a               -- Constant
 data (f :+: g) r = L (f r) | R (g r) -- Sums (Choice)
 data (f :*: g) r = (f r) :*: (g r)   -- Products (Combine)
 \end{minted}

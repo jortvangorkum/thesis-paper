@@ -1,5 +1,7 @@
 \section{Future Work}
 
+\todo[inline]{Add priority and how complex a topic is}
+
 The Thesis paper still has some topics that need further exploring. A few small topics would be: 
 \begin{itemize}
   \item Implement a storage medium which does not rehash the key (because the key is already a hash).
@@ -17,3 +19,5 @@ The generic implementation of the algorithm uses pattern functors. Pattern funct
 
 \subsection{Benchmarking with real-world data}
 The current results presented in this paper are all synthetic benchmarks. This makes it easier to compare the results and make conclusions. However, it does not represent how well the algorithms actually perform in the real-world. A real-world example would be to compute a metric over public available code\footnote{This does mean that the algorithm first needs to support mutually recursive datatypes.}.
+
+\todo[inline]{Write subsection which explains that given a new tree, tries to differ between new tree and current tree and computes the changes which can then be applied using the Zipper}
