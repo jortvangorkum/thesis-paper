@@ -12,9 +12,7 @@ In this chapter, we introduce Datatype-Generic Programming, also known as \texti
 \section{Introduction}
 There are multiple generic programming libraries, however to demonstrate the workings of generic programming we will be using a single library as inspiration, named \texttt{regular}\cite*{regular2022}. Here the generic representation of a datatype is called a \textit{pattern functor}. A pattern functor is a stripped-down version of a data type, by only containing the constructor but not the recursive structure. The recursive structure is done explicitly by using a fixed-point operator. 
 
-First, the pattern functors defined in \texttt{regular} are 5 core pattern functors and 2 meta information pattern functors. The core pattern functors describe the datatypes. The meta information pattern functors only contain information (e.g., constructor name) but not any structural information.
-
-\todo[inline]{Use \textit{primitive type constructors} as definition for the datatypes which create a pattern functor}
+First, the pattern functor defined in \texttt{regular} are 5 primitive type constructors and 2 meta information constructors. The primitive type constructors describe the datatypes. The meta information constructors only contain information (e.g., constructor name) but not any structural information.
 
 \begin{minted}{haskell}
 data U r         = U                 -- Empty constructor
@@ -24,7 +22,7 @@ data (f :+: g) r = L (f r) | R (g r) -- Sums (Choice)
 data (f :*: g) r = (f r) :*: (g r)   -- Products (Combine)
 \end{minted}
 
-The conversion from regular datatypes into pattern functors is done by the \texttt{Regular} type class. The \texttt{Regular} type class has two functions. The \texttt{from} function converts the datatype into a pattern functor and the \texttt{to} function converts the pattern functor back into a datatype. In \texttt{regular}, the pattern functor is represented by a type family. Then using the \texttt{Regular} conversion to a pattern functor, we can write the \texttt{Tree} datatype from Chapter \ref{chap-spec-impl} as:
+The conversion from datatypes into pattern functors is done by the \texttt{Regular} type class. The \texttt{Regular} type class has two functions. The \texttt{from} function converts the datatype into a pattern functor and the \texttt{to} function converts the pattern functor back into a datatype. In \texttt{regular}, the pattern functor is represented by a type family. Then using the \texttt{Regular} conversion to a pattern functor, we can write the \texttt{Tree} datatype from Chapter \ref{chap-spec-impl} as:
 
 \begin{minted}{haskell}
 type family PF a :: * -> *
@@ -44,14 +42,14 @@ class Regular (Tree a) where
   to (R (I l :*: K x :*: I r)) = Node l x r
 \end{minted}
 
-To demonstrate the workings of generic programming, we are going to implement a simple generic function which determines the length of an arbitrary datatype. First, we define the length function within a type class. The type class is used, to define how to determine the length for every pattern functor \texttt{f}. 
+To demonstrate the workings of generic programming, we are going to implement a simple generic function which determines the length of an arbitrary datatype. First, we define the length function within a type class. The type class is used, to define how to determine the length for every primitive type constructor \texttt{f}. 
 
 \begin{minted}{haskell}
 class GLength f where
   glength :: (a -> Int) -> f a -> Int
 \end{minted}
 
-Writing instances for the empty constructor \texttt{U} and the constants \texttt{K} is simple because both pattern functors return zero. The \texttt{U} pattern functor returns zero, because it does not contain any children. The \texttt{K} pattern functor returns zero, because we do not count constants for the length. 
+Writing instances for the empty constructor \texttt{U} and the constants \texttt{K} is simple because both primitive type constructors return zero. The \texttt{U} returns zero, because it does not contain any children. The \texttt{K} returns zero, because we do not count constants for the length. 
 
 \begin{minted}{haskell}
 instance GLength U where
@@ -61,7 +59,7 @@ instance GLength (K a) where
   glength _ _ = 0
 \end{minted}
 
-The instances for sums and products pattern functors are quite similar. The sums pattern functor recurses into the specified choice. The product pattern functor recurses in both constructors and combines them.
+The instances for sums and products are quite similar. The sums recurses into the specified choice. The product recurses in both constructors and combines them.
 
 \begin{minted}{haskell}
 instance (GLength f, GLength g) => GLength (f :+: g) where
@@ -79,7 +77,7 @@ instance GLength I where
   glength f (I x) = f x
 \end{minted}
 
-Then using the \texttt{GLength} instances for all pattern functors, a function can be defined using the generic length function. By first, converting the datatype into a generic representation, then calling \texttt{glength} given recursively itself, and for every recursive call increase the length by one. 
+Then using the \texttt{GLength} instances for all primitive type constructors, a function can be defined using the generic length function. By first, converting the datatype into a generic representation, then calling \texttt{glength} given recursively itself, and for every recursive call increase the length by one. 
 
 \begin{minted}{haskell}
 length :: (Regular a, GLength (PF a)) => a -> Int
@@ -100,5 +98,3 @@ length = 1 + glength length (from x)
 \input{sections/generic_programming/sums_of_products.tex}
 
 \input{sections/generic_programming/mult_rec_datatypes.tex}
-
-% \input{sections/generic_programming/comp_gen_lib.tex}

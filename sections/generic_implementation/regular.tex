@@ -1,10 +1,8 @@
 \section{Regular}
 
-The \texttt{regular} generic programming library was chosen, because it has the smallest universe size compared to other libraries. Therefore, implementing the generic implementation is less complex. However, \texttt{regular} does not support \textit{Sums of Products} and \textit{mutually recursive datatypes}, but we expect that the results will be meaningful without supporting these features.
+Ultimately, the generic programming library chosen to implement the incremental computation is the \texttt{regular} library. The \texttt{regular} library is chosen, because the library is the easiest to use, while still supporting enough datatypes to have meaningful results. However, the mutually recursive datatypes are not supported, and it does not use SOP which can cause more bugs to occur, because pattern functors do not represent Haskell datatypes as correctly as SOP.
 
-\todo[inline]{Rewrite regular part}
-
-The first step of the incremental computation was computing the Merkle Tree. In other terms, we need to store the hash of the data structure inside the data structure. We accomplish this by defining a new type \texttt{Merkle} which is a fixed-point over the data structure where each of the recursive positions contains a hash (\inlinehaskell{K Digest}).
+The first step of writing the generic incremental computation was computing the Merkle Tree. In other terms, we need to store the hash of the data structure inside the data structure. We accomplish this by defining a new type \texttt{Merkle} which is a fixed-point over the data structure where each of the recursive positions contains a hash (\inlinehaskell{K Digest}).
 
 \begin{minted}{haskell}
 type Merkle f = Fix (f :*: K Digest)
