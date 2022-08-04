@@ -1,0 +1,97 @@
+\chapter{Introduction}
+
+
+% Instead, use forward references from the narrative in the introduction. The introduction (including the contributions) should survey the whole paper, and therefore forward reference every important part.
+
+Incremental computation is an approach to improve performance by reusing results of a previously computed result when the both inputs are equal. There are multiple applications where incremental computation has a positive effect on: GUIs (e.g., DOM diffing), spreadsheets, attribute grammar evaluation, etc.  An example, where incremental computation has significant effect on performance, would be computing the Fibonacci sequence.
+
+\begin{figure}[H]
+\captionsetup{justification=justified,singlelinecheck=false,margin=0cm}
+\begin{minted}{haskell}
+fib :: Int -> Int
+fib 0 = 0
+fib 1 = 1
+fib n = fib (n - 2) + fib (n - 1)
+\end{minted}
+\caption{The implementation of the Fibonacci sequence in Haskell.}
+\label{fig-fib-alg}
+\end{figure}
+
+The implementation of the incremental computation for the Fibonacci sequence is called \textit{memoization}. Memoization is a term which is associated with a function that caches the result of the function for the given input. A well-used Haskell package which implements memoization is the \texttt{MemoTrie} package\cite*{hackage2022memotrie}.
+
+\begin{figure}[H]
+\captionsetup{justification=justified,singlelinecheck=false,margin=0cm}
+\begin{minted}{haskell}
+memoFib :: Integer -> Integer
+memoFib = memo memoFib'
+  where
+    memoFib' 0 = 0
+    memoFib' 1 = 1
+    memoFib' n = memoFib (n - 2) + memoFib (n - 1)
+\end{minted}
+\caption{The memoized implementation\cite*{memotrie2022fibonacci} of the Fibonacci sequence using the \texttt{MemoTrie} package.}
+\label{fig-mem-fib-alg}
+\end{figure}
+
+The problem with \texttt{MemoTrie} is that the performance of \texttt{lookup} is based on the size of the input, because the entire structure of the input needs to be traversed through. This works well when the input of a function is a small datatype, but can become problematic when given a large recursive data structure. For example, when we want to compute the summation over a tree, the \texttt{lookup} can take up a lot of processing time. 
+
+\begin{figure}[H]
+\captionsetup{justification=justified,singlelinecheck=false,margin=0cm}
+\begin{minted}{haskell}
+data BinTree = Leaf Int
+             | Node BinTree Int BinTree
+
+sumTree :: BinTree -> Int
+sumTree (Leaf x)     = x
+sumTree (Node l x r) = x + sumTree l + sumTree r
+\end{minted}
+\caption{Computing the summation of all the numbers in the Tree.}
+\label{fig-bin-tree}
+\end{figure}
+
+To improve the comparison of two recursive data structure, we introduce the use of hash functions. Using hash functions to generate \textit{hash values/digests}, the comparison of two data structures can be performed in constant time.
+
+To store the digests, we label every node in the tree with its corresponding digest. The digest represents the internal structure of itself and its children. This new data structure is called a \textit{Hash Tree} or \textit{Merkle Tree}\cite{merkle1987digital}. Using the digests within the data structure, the comparison can easily be performed by just comparing both digests for equality.
+
+\begin{figure}[H]
+\captionsetup{justification=justified,singlelinecheck=false,margin=0cm}
+\begin{minted}{haskell}
+data BinTreeH = Leaf Digest Int
+              | Node Digest BinTreeH Int BinTreeH
+
+merkle :: BinTree -> BinTreeH
+merkle (Leaf x)     = LeafH (hash ["Leaf", show x]) x
+merkle (Node l x r) = NodeH d l' x r'
+  where
+    d = hash ["Node", show x, getDigest l', getDigest r']
+    l' = merkle l
+    r' = merkle r
+\end{minted}
+\caption{Converting the Tree into a Merkle Tree.}
+\label{fig-conv-tree}
+\end{figure}
+
+However, what if we want to update a small part of the merkle tree? Then the entire merkle tree needs to be rehashed, while only a small part of changes. The digests of the merkle tree only has to change if the node changes or one of the children nodes changes. In other words, only the nodes that changes and all its parents needs to be updated. To efficiently perform this in Haskell we use a technique named \textit{Zipper}\cite{huet1997zipper}.  
+
+Unfortunately, with this implementation it only works for a single datatype. When we want to support a different datatype the functionality needs to be copied and reimplemented for that specific datatype. This can become quite cumbersome and error-prone for developers. To support a large class of datatypes for this functionality we introduce \textit{Datatype-Generic programming}.
+
+Datatype-generic programming is a technique to exploit the structure of datatypes to define functions by induction over the type structure. To represent datatypes in a generic, we use pattern functors. Then using datatype-generic programming, we define generic functionality for: computing the digests of the data structure, storing the digests inside the data structure, a generic zipper, and, finally functionality for computing the result for a given function and cache with intermediate results. 
+
+However, this does mean that the given function which computes a result needs to use the representation types. The representation types are quite verbose and the extension cannot be a drop-in replacement for existing functionality. To make it easier for developers to use, we introduce \textit{Pattern synonyms}\cite*{pickering2016pattern}. Pattern synonyms add an abstraction over patterns, which can be used to simplify the case expressions used in the given function, making the functionality almost a drop-in extension (we only need to add an underscore to the data constructors). 
+
+\input{sections/introduction/code.tex}
+
+Finally, to keep the cache from growing too large for the available amount of memory, we show multiple policies, so that the developer can choose the best policy for their use-case. The policy can be focused on recency, frequency, computational cost or a combination of the previously mentioned metrics.
+
+\newpage
+\section{Contributions}
+
+In summary, the main contributions of the Thesis are the following:
+
+\begin{itemize}
+    \item We define an algorithm for incremental computation over recursive data structures. The algorithm uses hashes for comparing if data structures are equal in constant time and a Zipper to efficiently update the recursive data structure without rehashing the entire data structure.
+    \item We use datatype-generic programming to write a generic version of the algorithm, to support a large class of datatypes, namely \textit{regular datatypes}.
+    \item We use pattern synonyms, to make the developer experience the same as implementing a non-incremental algorithm.
+    \item We define cache addition policies and cache replacement policies to optimize the performance/memory usage for different use-cases.
+\end{itemize}
+
