@@ -6,7 +6,7 @@
 
 \section{Conclusion}
 
-We have created an algorithm for incremental computation over recursive datatypes in Haskell. We have shown that the algorithm performs faster than the non-incremental version after $10^3$ nodes. Also, the additional memory usage needed to store the cache for the incremental computation is negligible when correctly tuned. The better performance is accomplished by storing the hashes for equality inside the recursive data structure and using a Zipper to efficiently update the hashes when the data structure changes.
+We have created an algorithm for incremental computation over recursive datatypes in Haskell. We have shown that the algorithm performs faster than the non-incremental version when the data structure contains more than $10^3$ nodes. Also, the additional memory usage needed to store the cache for the incremental computation is negligible when correctly tuned. The better performance is accomplished by storing the hashes for equality inside the recursive data structure and using a Zipper to efficiently update the hashes when the data structure changes.
 
 We introduced the pattern synonyms to improve the developer experience to almost the same level as the non-incremental implementation. The pattern synonyms can also be generated using \texttt{TemplateHaskell} to elevate the amount of additional work for the developers.
 

@@ -25,7 +25,7 @@ incCataSum = cataMerkleMap
   )
 \end{minted}
 
-The experiments will be benchmarks executed with the Haskell package \texttt{criterion}\cite{hackage2022criterion}. Criterion performs the benchmarks multiple times to get an average result. The benchmarks will track two metrics: the execution time and the memory usage. The execution time will be in seconds and the memory usage will be the max-bytes used. The results gather for execution time comes from the criterion package, however the memory usage will not come from the package. This is because criterion only keeps track of the memory allocation and not usage. Therefore, we measure the memory usage with the GHC profiler\cite*{ghc2022memoryprofiling} and profile every benchmark individually to know its memory usage.
+The experiments will be benchmarks executed with the Haskell package \texttt{criterion}\cite{hackage2022criterion}. Criterion performs the benchmarks multiple times to get an average result. The benchmarks will track two metrics: the execution time and the memory usage. The execution time will be in seconds and the memory usage will be the max-bytes used. The results gathered for the execution time comes from the criterion package, however the memory usage will not come from the package. This is because criterion only keeps track of the memory allocation and not usage. Therefore, we measure the memory usage with the GHC profiler\cite*{ghc2022memoryprofiling} and profile every benchmark individually to know its memory usage.
 
 To test how well the three functions perform, we perform three types of updates, multiple times. These benchmarks will be based on the three type of cases: worst, average and best.
 \begin{enumerate*}[label=(\arabic*)]
@@ -53,6 +53,9 @@ bestCase = update (const (Leaf i)) [Dwn]
 The experiments are performed on a laptop with a \texttt{Intel Core i7-8750H} with a base clock of \texttt{2.2GHz} and a boost clock of \texttt{4.1GHz}, with \texttt{16GB} of memory. First we explain the results of the three algorithms with three different scenarios, iterating 10 times. Then, we show the results of adding a cache addition policy.
 
 \subsection{Execution Time}
+\todo[inline]{Add an explanation why the generic cata sum is slower than the original cata sum}
+\todo[inline]{Add introduction sentence}
+\todo[inline]{Add reference to the figure}
 
 For all the benchmarks, the Incremental Cata Sum is faster when the tree contains more than $10^3$ nodes. However, for every benchmark the execution time is better or worse depending on the type of update that is performed. The best case scenario has the biggest difference, then the average case and the closest performance difference is the worst case. The execution time for Cata Sum and Generic Cata Sum seems to be linear with the amount of nodes and the Incremental Cata Sum is constant/logarithmic. The discrepancy in the range between $10^2 - 10^3$ is probably because the amount of nodes is too low to get stable results.
 
@@ -76,6 +79,8 @@ For all the benchmarks, the Incremental Cata Sum is faster when the tree contain
 
 \newpage
 \subsection{Memory Usage}
+\todo[inline]{Add introduction sentence}
+\todo[inline]{Add reference to the figure}
 
 The memory usage results are all linear with the amount of nodes. The Cata Sum uses the least amount of memory, then the Incremental Cata Sum and the most used bytes is the Generic Cata Sum. We think that the Incremental Cata Sum uses less memory than the Generic Cata Sum, because the Incremental Cata Sum needs to load-in fewer parts of the data structure than the Generic Cata Sum. Also, the same discrepancy occurs in the range between $10^2 - 10^3$ as with the execution time.
 

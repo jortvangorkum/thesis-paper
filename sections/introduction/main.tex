@@ -1,9 +1,9 @@
 \chapter{Introduction}
 
-
+\todo{Add forward referencing}
 % Instead, use forward references from the narrative in the introduction. The introduction (including the contributions) should survey the whole paper, and therefore forward reference every important part.
 
-Incremental computation is an approach to improve performance by reusing results of a previously computed result when the both inputs are equal. There are multiple applications where incremental computation has a positive effect on: GUIs (e.g., DOM diffing), spreadsheets, attribute grammar evaluation, etc.  An example, where incremental computation has significant effect on performance, would be computing the Fibonacci sequence.
+Incremental computation is an approach to improve performance by reusing results of a previously computed result when both of the inputs are equal. There are multiple applications where incremental computation has a positive effect: GUIs (e.g., DOM diffing), spreadsheets, attribute grammar evaluation, etc.  An example, where incremental computation has significant effect on performance, is computing the Fibonacci sequence.
 
 \begin{figure}[H]
 \captionsetup{justification=justified,singlelinecheck=false,margin=0cm}
@@ -49,7 +49,7 @@ sumTree (Node l x r) = x + sumTree l + sumTree r
 \label{fig-bin-tree}
 \end{figure}
 
-To improve the comparison of two recursive data structure, we introduce the use of hash functions. Using hash functions to generate \textit{hash values/digests}, the comparison of two data structures can be performed in constant time.
+To improve the comparison of two recursive data structure, we introduce the use of hash functions. Using hash functions to generate \textit{hash values/digests}, the comparison of two data structures can be performed in constant time. \todo{Add forward referencing to specific implementation of merkle tree}
 
 To store the digests, we label every node in the tree with its corresponding digest. The digest represents the internal structure of itself and its children. This new data structure is called a \textit{Hash Tree} or \textit{Merkle Tree}\cite{merkle1987digital}. Using the digests within the data structure, the comparison can easily be performed by just comparing both digests for equality.
 
@@ -71,7 +71,7 @@ merkle (Node l x r) = NodeH d l' x r'
 \label{fig-conv-tree}
 \end{figure}
 
-However, what if we want to update a small part of the merkle tree? Then the entire merkle tree needs to be rehashed, while only a small part of changes. The digests of the merkle tree only has to change if the node changes or one of the children nodes changes. In other words, only the nodes that changes and all its parents needs to be updated. To efficiently perform this in Haskell we use a technique named \textit{Zipper}\cite{huet1997zipper}.  
+However, what if we want to update a small part of the merkle tree? Then the entire merkle tree gets rehashed, while only a small part is updated. To improve the performance, only the digest of a node has to change if the node itself changes or one of its children changes. To efficiently perform this in Haskell we use a technique named \textit{Zipper}\cite{huet1997zipper}.  
 
 Unfortunately, with this implementation it only works for a single datatype. When we want to support a different datatype the functionality needs to be copied and reimplemented for that specific datatype. This can become quite cumbersome and error-prone for developers. To support a large class of datatypes for this functionality we introduce \textit{Datatype-Generic programming}.
 
@@ -79,7 +79,7 @@ Datatype-generic programming is a technique to exploit the structure of datatype
 
 However, this does mean that the given function which computes a result needs to use the representation types. The representation types are quite verbose and the extension cannot be a drop-in replacement for existing functionality. To make it easier for developers to use, we introduce \textit{Pattern synonyms}\cite*{pickering2016pattern}. Pattern synonyms add an abstraction over patterns, which can be used to simplify the case expressions used in the given function, making the functionality almost a drop-in extension (we only need to add an underscore to the data constructors). 
 
-Finally, to keep the cache from growing too large for the available amount of memory, we show multiple policies, so that the developer can choose the best policy for their use-case. The policy can be focused on recency, frequency, computational cost or a combination of the previously mentioned metrics.
+Finally, to prevent the cache from growing too large for the available amount of memory, we provide multiple policies, so that the developer can choose the best policy for their use-case. The policy can be focused on recency, frequency, computational cost or a combination of the previously mentioned metrics.
 
 \subsection*{Example}
 \input{sections/introduction/code.tex}
@@ -90,7 +90,7 @@ Finally, to keep the cache from growing too large for the available amount of me
 In summary, the main contributions of the Thesis are the following:
 
 \begin{itemize}
-    \item We define an algorithm for incremental computation over recursive data structures. The algorithm uses hashes for comparing if data structures are equal in constant time and a Zipper to efficiently update the recursive data structure without rehashing the entire data structure.
+    \item We define an algorithm for incremental computation over recursive data structures. The algorithm uses hashes for comparing whether data structures are equal in constant time and a Zipper to efficiently update the recursive data structure without rehashing the entire data structure.
     \item We use datatype-generic programming to write a generic version of the algorithm, to support a large class of datatypes, namely \textit{regular datatypes}.
     \item We use pattern synonyms, to make the developer experience the same as implementing a non-incremental algorithm.
     \item We define cache addition policies and cache replacement policies to optimize the performance/memory usage for different use-cases.

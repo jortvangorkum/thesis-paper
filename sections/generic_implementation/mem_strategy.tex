@@ -58,6 +58,7 @@ applyPolicy :: HashMap Digest (a, CacheInfo) -> HashMap Digest (a, CacheInfo)
 applyPolicy = filter (replacementPolicy . snd)
 \end{minted}
 
+\todo{Write a whole sentence}
 Possible cache replacement policies:
 \begin{itemize}
   \item Random replacement: remove random elements from the cache.
