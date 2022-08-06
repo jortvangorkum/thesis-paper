@@ -15,38 +15,4 @@ Besides, the comparison of equality of the inputs, the results of the given inpu
 To solve this issue, the study \citetitle*{miraldo2019efficient} uses the combination of digests and tries. As a result, the \texttt{lookup} function becomes constant time, because the size of the digest is fixed. This study is also the inspiration for using digests and tries.
 
 \subsection{Updating the input}
-\todo[inline]{Write updating the input}
-\begin{itemize}
-  \item This paper: using a zipper, and updates the hashes of effected nodes.
-  \item Other papers: keep track of a monad with modifications. Updates based on modifiable references.
-\end{itemize}
-
-% \begin{itemize}
-%   \item MemoTrie.\cite{hinze2000memo}
-%   \item \href{http://jeroen.bransen.nl/phdthesis.pdf}{Jeroen Bransen - On the Incremental Evaluation of Higher-Order Attribute Grammars}
-%   \begin{itemize}
-%     \item In this paper we describe work on the automatic generation of incremental attribute grammar evaluators, with the purpose of (semi-)automatically generating an incremental compiler from a regular attribute grammar definition.
-%     \item Incrementality for attribute evaluation is achieved by maintaining additional bookkeeping about which attribute values have changed. We show benchmarks for the implementation technique dealing with higher-order attributes. The benchmarks indicate that the bookkeeping overhead in our prototype implementation comes with a serious hit on performance
-%     \item \textbf{Difference with paper}: Uses the state to compare for equality. This takes a performance hit, which is improved in this paper by using hash functions.
-%   \end{itemize}
-  % \item \href{https://dl.acm.org/doi/pdf/10.1145/1186632.1186634}{Umut Acar - Adaptive Functional Programming}
-  % \begin{itemize}
-  %   \item We present techniques for incremental computing by introducing adaptive functional programming. As an adaptive program executes, the underlying system represents the data and control dependence in the execution in the form of a dynamic dependence graph. When the input to the program changes, a change propagation algorithm updates the output and the dynamic dependence graph by propagating changes through the graph and re-executing code where necessary. Adaptive programs adapt their output to any change in the input, small or large.
-  %   \item We show that adaptivity techniques are practical by giving an efficient implementation as a small ML library.
-  %   \item The main contributions of the article are the particular set of primitives we suggest, the change-propagation algorithm, and the semantics along with the proofs that it is sound. The simplicity of the primitives is achieved by using a destination passing style. The efficiency of the change-propagation is achieved by using an optimal order-maintenance algorithm. The soundness of the semantics is aided by a modal type system.
-  %   \item We have presented a mechanism for adaptive computation based on the idea of a modifiable reference.
-  %   \item \textbf{Difference with paper}: Does the same by referencing the value in a dependency graph. Does not use hashes but modifiable references (A reference to value that can change overtime). Does not implement it generically for Haskell. This is written in ML.
-  % \end{itemize}
-%   \item \href{http://firsov.ee/incremental/incremental.pdf}{Purely Functional Incremental Computing}
-%   \begin{itemize}
-%     \item  Our framework allows the user to implement incremental computations using arbitrary monad families that encapsulate mutable state. This makes it possible to use highly efficient algorithms for core computations
-%     \item In the future, we want to develop a generic notion of change for inductive data types and use it to define generic transformations based on recursion schemes. We expect that general recursion schemes cannot be efficiently incrementalized. However, we plan to characterize recursion schemes that allow for efficient change propagation. All functions that are defined in terms of these recursion schemes can then be efficiently incrementalized automatically.
-%   \end{itemize}
-%   \item \href{https://dl.acm.org/doi/pdf/10.1145/581478.581482?casa_token=RBzeRZRH7MQAAAAA:LBZY0xz8T3hSkAdb8HXA-i42tQLkTmn2FpILTpjHq2v7AubOSoJCzcm7XorRDwvtCvKXwF8dq5VJWA}{Monads for Incremental Computing}
-%   \begin{itemize}
-%     \item This paper presents a monadic approach to incremental computation, suitable for purely functional languages such as Haskell.
-%     \item Let us make the design decision that we only provide the conservative equality operation for modifiables, which is true if and only if the arguments are the same modifiable.
-%     \item The comparison is not optimal, because the semantic equality cannot be supported because of the use of modifiables (which can changes) and wanting to perform equality in constant time.
-%     \item 
-%   \end{itemize}
-% \end{itemize} 
+Also, a difference between this paper and other studies are the updates of the input. This paper uses a Zipper to efficiently update the value in the data structure of the input and then updates the affected nodes. Alternatively, the study \citetitle{carlsson2002monads}\cite{carlsson2002monads} keeps track of all the modifications inside a Monad and then propagates the modifications when the \texttt{propogate} function is called. This is more efficient manner, because if two updates modify the same thing, the first update does not need to be calculated. Additionaly, the data structure does not have to be navigate through, because of the modifiable references. However, for this paper the Zipper was a more easy to use technique, because it made it very easy to update the digests of the parents compared to using a Monad.
