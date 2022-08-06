@@ -14,6 +14,12 @@ Besides, the comparison of equality of the inputs, the results of the given inpu
 
 To solve this issue, the study \citetitle*{miraldo2019efficient} uses the combination of digests and tries. As a result, the \texttt{lookup} function becomes constant time, because the size of the digest is fixed. This study is also the inspiration for using digests and tries.
 
+\subsection{Updating the input}
+\todo[inline]{Write updating the input}
+\begin{itemize}
+  \item This paper: using a zipper, and updates the hashes of effected nodes.
+  \item Other papers: keep track of a monad with modifications. Updates based on modifiable references.
+\end{itemize}
 
 % \begin{itemize}
 %   \item MemoTrie.\cite{hinze2000memo}
