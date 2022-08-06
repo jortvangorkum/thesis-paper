@@ -21,3 +21,6 @@ HashMap
 hashable
 cyclomatic
 memoized
+Incrementality
+adaptivity
+incrementalized

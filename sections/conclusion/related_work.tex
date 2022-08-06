@@ -1,10 +1,46 @@
 \section{Related Work}
 
-\todo[inline]{Write related work}
-\begin{itemize}
-  \item MemoTrie.\cite{hinze2000memo}
-  \item \href{http://jeroen.bransen.nl/phdthesis.pdf}{Jeroen Bransen - On the Incremental Evaluation of Higher-Order Attribute Grammars}
-  \item \href{https://dl.acm.org/doi/pdf/10.1145/1186632.1186634}{Umut Acar - Adaptive Functional Programming}
-  \item \href{http://firsov.ee/incremental/incremental.pdf}{Purely Functional Incremental Computing}
-  \item \href{https://dl.acm.org/doi/pdf/10.1145/581478.581482?casa_token=RBzeRZRH7MQAAAAA:LBZY0xz8T3hSkAdb8HXA-i42tQLkTmn2FpILTpjHq2v7AubOSoJCzcm7XorRDwvtCvKXwF8dq5VJWA}{Monads for Incremental Computing}
-\end{itemize} 
+There are many other studies which implement incremental computation in functional languages\cite*{hinze2000memo} \cite*{acar2006adaptive} \cite*{firsov2016purely} \cite*{carlsson2002monads}. However, each study has a different approach in implementing incremental computation. The most important part of incremental computation is to know if the input has changed and what has changed. 
+
+\subsection{Comparison of equality in constant time}
+To determine the changes between the old and current input is by comparing the inputs for equality. This makes it very important that the comparison of the input for equality can be performed efficiently. The problem with most studies is that for every comparison the entire data structure of the input needs to be traversed through (e.g., a tree), which can become every inefficient when folding over a tree \cite*{hinze2000memo} \cite*{bransen2013generic}. 
+
+The study \citetitle*{carlsson2002monads}\cite*{carlsson2002monads} performs the equality check in constant time, however the equality check is only on a shallow level. For example, when comparing a list for equality, the two lists are only equal if both lists are empty or both heads are equal, and the tail is the same modifiable. This can lead to recomputing the inputs while they are equal. 
+
+This paper solves these issues, by introducing the use of hash functions. The initial computation for computing the digests is the same as the previous equality, however every incremental computation is in constant time, because the digests are already computed. And it still compares the entire data structure of the input instead of a shallow comparison. Nevertheless, this still has drawbacks, because this solution has the risk of hash collisions, but with a large enough digest size the chance of having a hash collision is very small.
+
+\subsection{Storing the cached results}
+Besides, the comparison of equality of the inputs, the results of the given input also has to be stored. The idea of storing the results in a \textit{Trie} is done by multiple studies \cite*{hinze2000memo} \cite*{miraldo2019efficient}. The implementation of the \citetitle{hinze2000memo}\cite*{hinze2000memo} study, MemoTrie\cite*{hackage2022memotrie} uses the input as a key and the results as the value in the trie. This makes the performance of the \texttt{lookup} function dependent on the size of the input, because the performance of the \texttt{lookup} on a trie is dependent on the size of the key. This becomes problematic when the input of a function is a large recursive data structure. 
+
+To solve this issue, the study \citetitle*{miraldo2019efficient} uses the combination of digests and tries. As a result, the \texttt{lookup} function becomes constant time, because the size of the digest is fixed. This study is also the inspiration for using digests and tries.
+
+
+% \begin{itemize}
+%   \item MemoTrie.\cite{hinze2000memo}
+%   \item \href{http://jeroen.bransen.nl/phdthesis.pdf}{Jeroen Bransen - On the Incremental Evaluation of Higher-Order Attribute Grammars}
+%   \begin{itemize}
+%     \item In this paper we describe work on the automatic generation of incremental attribute grammar evaluators, with the purpose of (semi-)automatically generating an incremental compiler from a regular attribute grammar definition.
+%     \item Incrementality for attribute evaluation is achieved by maintaining additional bookkeeping about which attribute values have changed. We show benchmarks for the implementation technique dealing with higher-order attributes. The benchmarks indicate that the bookkeeping overhead in our prototype implementation comes with a serious hit on performance
+%     \item \textbf{Difference with paper}: Uses the state to compare for equality. This takes a performance hit, which is improved in this paper by using hash functions.
+%   \end{itemize}
+  % \item \href{https://dl.acm.org/doi/pdf/10.1145/1186632.1186634}{Umut Acar - Adaptive Functional Programming}
+  % \begin{itemize}
+  %   \item We present techniques for incremental computing by introducing adaptive functional programming. As an adaptive program executes, the underlying system represents the data and control dependence in the execution in the form of a dynamic dependence graph. When the input to the program changes, a change propagation algorithm updates the output and the dynamic dependence graph by propagating changes through the graph and re-executing code where necessary. Adaptive programs adapt their output to any change in the input, small or large.
+  %   \item We show that adaptivity techniques are practical by giving an efficient implementation as a small ML library.
+  %   \item The main contributions of the article are the particular set of primitives we suggest, the change-propagation algorithm, and the semantics along with the proofs that it is sound. The simplicity of the primitives is achieved by using a destination passing style. The efficiency of the change-propagation is achieved by using an optimal order-maintenance algorithm. The soundness of the semantics is aided by a modal type system.
+  %   \item We have presented a mechanism for adaptive computation based on the idea of a modifiable reference.
+  %   \item \textbf{Difference with paper}: Does the same by referencing the value in a dependency graph. Does not use hashes but modifiable references (A reference to value that can change overtime). Does not implement it generically for Haskell. This is written in ML.
+  % \end{itemize}
+%   \item \href{http://firsov.ee/incremental/incremental.pdf}{Purely Functional Incremental Computing}
+%   \begin{itemize}
+%     \item  Our framework allows the user to implement incremental computations using arbitrary monad families that encapsulate mutable state. This makes it possible to use highly efficient algorithms for core computations
+%     \item In the future, we want to develop a generic notion of change for inductive data types and use it to define generic transformations based on recursion schemes. We expect that general recursion schemes cannot be efficiently incrementalized. However, we plan to characterize recursion schemes that allow for efficient change propagation. All functions that are defined in terms of these recursion schemes can then be efficiently incrementalized automatically.
+%   \end{itemize}
+%   \item \href{https://dl.acm.org/doi/pdf/10.1145/581478.581482?casa_token=RBzeRZRH7MQAAAAA:LBZY0xz8T3hSkAdb8HXA-i42tQLkTmn2FpILTpjHq2v7AubOSoJCzcm7XorRDwvtCvKXwF8dq5VJWA}{Monads for Incremental Computing}
+%   \begin{itemize}
+%     \item This paper presents a monadic approach to incremental computation, suitable for purely functional languages such as Haskell.
+%     \item Let us make the design decision that we only provide the conservative equality operation for modifiables, which is true if and only if the arguments are the same modifiable.
+%     \item The comparison is not optimal, because the semantic equality cannot be supported because of the use of modifiables (which can changes) and wanting to perform equality in constant time.
+%     \item 
+%   \end{itemize}
+% \end{itemize} 

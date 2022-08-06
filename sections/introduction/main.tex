@@ -79,9 +79,10 @@ Datatype-generic programming is a technique to exploit the structure of datatype
 
 However, this does mean that the given function which computes a result needs to use the representation types. The representation types are quite verbose and the extension cannot be a drop-in replacement for existing functionality. To make it easier for developers to use, we introduce \textit{Pattern synonyms}\cite*{pickering2016pattern}. Pattern synonyms add an abstraction over patterns, which can be used to simplify the case expressions used in the given function, making the functionality almost a drop-in extension (we only need to add an underscore to the data constructors). 
 
-\input{sections/introduction/code.tex}
-
 Finally, to keep the cache from growing too large for the available amount of memory, we show multiple policies, so that the developer can choose the best policy for their use-case. The policy can be focused on recency, frequency, computational cost or a combination of the previously mentioned metrics.
+
+\subsection*{Example}
+\input{sections/introduction/code.tex}
 
 \newpage
 \section{Contributions}
