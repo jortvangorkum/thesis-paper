@@ -3,7 +3,7 @@
 There are many other studies which implement incremental computation in functional languages\cite*{hinze2000memo} \cite*{acar2006adaptive} \cite*{firsov2016purely} \cite*{carlsson2002monads}. However, each study has a different approach in implementing incremental computation. The most important part of incremental computation is to know if the input has changed and what has changed. 
 
 \subsection{Comparison of equality in constant time}
-To determine the changes between the old and current input is by comparing the inputs for equality. This makes it very important that the comparison of the input for equality can be performed efficiently. The problem with most studies is that for every comparison the entire data structure of the input needs to be traversed through (e.g., a tree), which can become every inefficient when folding over a tree \cite*{hinze2000memo} \cite*{bransen2013generic}. 
+To determine the changes between the old and current input is by comparing the inputs for equality. This makes it very important that the comparison of the input for equality can be performed efficiently. The problem with most studies is that for every comparison the entire data structure of the input needs to be traversed through (e.g., a tree), which can become every inefficient when folding over a tree \cite*{hinze2000memo} \cite*{bransen2015incremental}. 
 
 The study \citetitle*{carlsson2002monads}\cite*{carlsson2002monads} performs the equality check in constant time, however the equality check is only on a shallow level. For example, when comparing a list for equality, the two lists are only equal if both lists are empty or both heads are equal, and the tail is the same modifiable. This can lead to recomputing the inputs while they are equal. 
 
