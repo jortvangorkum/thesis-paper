@@ -15,7 +15,7 @@ pattern Node_ l x r <- R (C (I l :*: K x :*: I r)) where
   Node_ l x r = R (C (I l :*: K x :*: I r))
 \end{minted}
 
-The previously defined \texttt{pattern}s can then be used to define the \texttt{cataSum} as the original datatype \texttt{Tree}, but the constructor names leading with an additional underscore. However, writing all the patterns for all pattern functors is an arduous task. Luckily, we can use \texttt{TemplateHaskell} to generate the pattern synonyms\footnote{An example of using \texttt{TemplateHaskell} to generate pattern synonyms can be found at \href{https://hackage.haskell.org/package/generics-mrsop-2.3.0/docs/Generics-MRSOP-TH.html}{\textit{Generics-MRSOP-TH}}}.
+The previously defined \texttt{pattern}s can then be used to define the \texttt{cataSum} as the original datatype \texttt{Tree}, but the constructor names leading with an additional underscore. 
 
 \begin{minted}{haskell}
 cataSum :: Merkle (PF (Tree Int)) -> (Int, HashMap Digest Int)

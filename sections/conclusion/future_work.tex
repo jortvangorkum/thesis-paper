@@ -2,6 +2,8 @@
 
 \todo[inline]{Add priority and how complex a topic is}
 
+
+
 The Thesis paper still has some topics that need further exploring. A few small topics would be: 
 \begin{itemize}
   \item Implement a storage medium which does not rehash the key (because the key is already a hash).
@@ -12,7 +14,7 @@ The Thesis paper still has some topics that need further exploring. A few small 
 \end{itemize}
 
 \subsection{Support for Mutually Recursive Datatypes}
-The current implementation of the algorithm only supports regular datatypes. This makes the possible datatypes this algorithm can be used with quite limited. To increase the amount of datatypes, we need to support mutually recursive datatypes. One big advantage of supporting mutually recursive datatypes is that then most AST of popular programming languages can be used with the algorithm. So, for example, we can incrementally calculate the cyclomatic complexity metric over the AST of a programming language.
+The current implementation of the algorithm only supports regular datatypes. This makes the possible datatypes this algorithm can be used with quite limited. To increase the amount of datatypes, we need to support mutually recursive datatypes. One big advantage of supporting mutually recursive datatypes is that then most abstract syntax tree (AST) of popular programming languages can be used with the algorithm. So, for example, we can incrementally calculate the cyclomatic complexity metric over the AST of a programming language. 
 
 \subsection{Implement the algorithm using Sums-of-Products}
 The generic implementation of the algorithm uses pattern functors. Pattern functors are a simple way to define generic functionality. However, the pattern functors have no restrictions on how they are combined. The Sums-of-Products represents the Haskell datatype better than the pattern functors, by only limiting the creation of sums of products. This can make it easier to implement the generic version of the algorithm or add additional optimizations.
@@ -22,3 +24,8 @@ The current results presented in this paper are all synthetic benchmarks. This m
 
 \subsection{Support for a new input without changes}
 The incremental algorithm presented in this paper expects that the changes are given to them by an external system/process (e.g., a structure editor). This limits the way this algorithm can be used by other developers. To support more use-cases (e.g., a compiler), the incremental algorithm needs to support that when given a new input, without changes, it can still efficiently compute the result. A way to support this, is to perform a \textit{diff} algorithm between the previous input and the current input and compute the changes between the two. Then using these changes update the previous input and compute the result using the incremental algorithm. An implementation of such \textit{diff} algorithm can be found in the paper \citetitle*{bransen2015incremental} by \citeauthor{bransen2015incremental} in Section 4.6.3. However, this is certainly not faster than the current incremental algorithm and could be quite slower than using the non-incremental algorithm. 
+
+\subsection{Prioritization}
+The simplest topic to research which adds a lot of value to this project is the generation of pattern synonyms using \texttt{TemplateHaskell}. Currently, the user has to define their own pattern synonyms which is quite developer unfriendly. The learning curve of \texttt{TemplateHaskell} is quite steep, but the eventual implementation is not complex. An example of using \texttt{TemplateHaskell} to generate pattern synonyms can be found at \href{https://hackage.haskell.org/package/generics-mrsop-2.3.0/docs/Generics-MRSOP-TH.html}{\textit{Generics-MRSOP-TH}}\cite*{genericsmrsop2022}.
+
+A more complex topic which adds a lot of value to the project is supporting mutually recursive datatypes. By supporting mutually recursive datatypes, the incremental algorithm can then be used for AST's of most programming languages. As a result, a new generic programming library needs to be used which supports mutually recursive datatypes (e.g., \texttt{multirec}\cite*{multirec2022}). This can take a lot of time, 

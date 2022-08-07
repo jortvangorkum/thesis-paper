@@ -13,3 +13,4 @@
 {"rule":"THREE_NN","sentence":"^\\QThen to compute the max path sum over the Changed Tree, the previously computed \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q can be used to reduce the amount of recomputation.\\E$"}
 {"rule":"THREE_NN","sentence":"^\\QA cache replacement policy can be chosen to be used.\\E$"}
 {"rule":"THREE_NN","sentence":"^\\QAn example of a cache addition policy would be\\E$"}
+{"rule":"THREE_NN","sentence":"^\\QCurrently, the user has to define their own pattern synonym definition which can become\\E$"}
