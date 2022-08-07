@@ -20,6 +20,7 @@ digest = digestStr . show -- converts a string into a hash value
 
 The Hashable instance of \texttt{U} is simple. The \texttt{digest} function is used to convert the constructor name \texttt{U} into a \texttt{Digest}. The \texttt{K} also uses the \texttt{digest} function to convert the constructor name into a \texttt{Digest}, but it also calls \texttt{digest} on the constant value of \texttt{K}. Therefore, the type of the value of \texttt{K} needs an instance for \texttt{Show}. Then both digests are combined into a single digest. 
 
+\pagebreak
 \begin{minted}{haskell}
 instance Hashable U where
   hash _ = digest "U"
@@ -65,6 +66,7 @@ merkle :: (Regular a, Hashable (PF a), Functor (PF a))
 merkle = In . merkleG . fmap merkle . from
 \end{minted}
 
+\pagebreak
 The \texttt{Merkle} representation can then be used to define a function \texttt{cataMerkleState} which given a function \inlinehaskell{alg :: (f a -> a)} which converts the generic representation \inlinehaskell{f a} into a value of type \texttt{a} and the \texttt{Merkle f} data structure, and returns a \texttt{State} of \inlinehaskell{(HashMap Digest a) a}. The \inlinehaskell{cataMerkleState} function starts with retrieving the \texttt{State}, which keeps track of the intermediate results and stores them into a \inlinehaskell{HashMap Digest a}. Then, given the hash value of the recursive position, we look into the HashMap if the value has been computed. If the value has been computed, then return the value. Otherwise, recursively compute all the children, apply the given function \inlinehaskell{alg}, insert the new value into the \inlinehaskell{HashMap} and return the computed value.
 
 \begin{minted}{haskell}

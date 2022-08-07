@@ -43,6 +43,7 @@ data instance Ctx I r = CId
 
 The \texttt{Zipper} type class can now be defined using the \texttt{Ctx}. There are 6 primary functions, which we need to build navigating functions. The \texttt{cmap} function works like the \texttt{fmap}, but over contexts. The \texttt{fill} function fills the hole in a context with a given value, which is used to reconstruct the data structure. The final 4 functions (\texttt{first}, \texttt{last}, \texttt{next} and \texttt{prev}) are the \textit{primary} navigation operations used to build \textit{interface} functions such as \texttt{left}, \texttt{right}, \texttt{up}, \texttt{down}, etc.
 
+\pagebreak
 \begin{minted}{haskell}
 class Functor f => Zipper f where
   cmap        :: (a -> b) -> Ctx f a -> Ctx f b

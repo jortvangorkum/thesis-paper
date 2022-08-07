@@ -12,6 +12,7 @@ The Thesis paper still has some topics that need further exploring. A few small 
 \subsection{Support for Mutually Recursive Datatypes}
 The current implementation of the incremental algorithm only supports regular datatypes. This makes the possible datatypes this incremental algorithm can be used with quite limited. To increase the amount of datatypes, we need to support mutually recursive datatypes. One big advantage of supporting mutually recursive datatypes is that then most abstract syntax tree (AST) of popular programming languages can be used with the incremental algorithm. So, for example, we can incrementally calculate the cyclomatic complexity metric over the AST of a programming language. 
 
+\pagebreak
 \subsection{Implement the incremental algorithm using Sums-of-Products}
 The generic implementation of the incremental algorithm uses pattern functors. Pattern functors are a simple way to define generic functionality. However, the pattern functors have no restrictions on how they are combined. The Sums-of-Products represents the Haskell datatype better than the pattern functors, by only limiting the creation of sums of products. This can make it easier to implement the generic version of the incremental algorithm or add additional optimizations.
 

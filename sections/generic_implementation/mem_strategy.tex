@@ -7,6 +7,7 @@ In the optimal case, each intermediate value can be stored. Unfortunately, we ar
 
 An example of a cache addition policy would be to determine the recursion depth a data structure has. So, given a node in a tree we then know how many times we have to go into recursion before reaching a leaf. Using that information we can define a filter for the cache, where only elements with a recursion depth of $>i$ can be added to the cache. This filters out a large amount of cached results and could potentially lead to a speed-up, because the lookup in the HashMap could take longer than the calculation itself. 
 
+\pagebreak
 The recursion depth can be determined in the same pass as when the hashes are calculated. To accomplish this we introduce an annotated fix-point. The annotated fix-point contains the fix-point as explained in Section \ref*{sec-explicit-recursion} and an annotation for which we store the information about the digest and the recursion depth. The final \inlinehaskell{Merkle} type is the annotated fix-point with the annotation containing the digest and the recursion depth. The implementation of the determining the recursion depth is in Appendix \ref*{app-sec-impl-rec-depth}.
 
 \begin{minted}{haskell}
