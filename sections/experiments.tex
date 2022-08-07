@@ -97,7 +97,7 @@ The \Cref*{fig-mem-usage-no-policy} shows that the memory usage is, for all algo
 
 \subsection{Comparison Cache Addition Policies}
 
-As seen in \Cref*{fig-exec-time-policy-rec-depth-5} and \Cref*{fig-mem-usage-policy-rec-depth-5}, the memory usage is lower than when all the intermediate values are stored. Even, the execution time did not increase significantly. However, this is probably because the function which is computed (addition) is not computational intensive. This means it is less computational intensive to recompute the value than to store the value and retrieve it when needed. This does not have to be the case for more extensive computations. So, for the best performance this parameter needs to be correctly tweaked.
+As seen in \Cref*{fig-exec-time-policy-rec-depth-5} and \Cref*{fig-mem-usage-policy-rec-depth-5}, the memory usage is lower than when all the cached results are stored. Even, the execution time did not increase significantly. However, this is probably because the function which is computed (addition) is not computational intensive. This means it is less computational intensive to recompute the value than to store the value and retrieve it when needed. This does not have to be the case for more extensive computations. So, for the best performance this parameter needs to be correctly tweaked.
 
 For example, if we increased the recursion depth limit to 10. The results in Appendix Section \ref*{app-sec-10-rec-depth} show that the memory usage is even lower than the limit of 5. However, the execution time increases significantly. This is because the computation takes longer to perform than to store and perform a lookup. 
 

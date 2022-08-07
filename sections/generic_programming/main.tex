@@ -3,7 +3,7 @@
 
 \todo[inline]{Compare paper \citetitle{van2008lightweight}}
 
-The implementation in Chapter \ref{chap-spec-impl} is an efficient implementation for incrementally computing the summation over a \texttt{Tree} datatype. However, when we want to implement this functionality for a different datatype, a lot of code needs to be copied while the process remains the same. This results in poor maintainability, is error-prone and is in general boring work.
+The implementation in \Cref{chap-spec-impl} is an efficient implementation for incrementally computing the summation over a \texttt{Tree} datatype. However, when we want to implement this functionality for a different datatype, a lot of code needs to be copied while the process remains the same. This results in poor maintainability, is error-prone and is in general boring work.
 
 An example of reducing manual implementations for datatypes is the \textit{deriving} mechanism in Haskell. The built-in classes of Haskell, such as \texttt{Show, Ord, Read}, can be derived for a large class of datatypes. However, deriving is not supported for custom classes. Therefore, we use \textit{Datatype-Generic Programming}\cite*{gibbons2006datatype} to define functionality for a large class of datatypes.
 
@@ -22,7 +22,7 @@ data (f :+: g) r = L (f r) | R (g r) -- Sums (Choice)
 data (f :*: g) r = (f r) :*: (g r)   -- Products (Combine)
 \end{minted}
 
-The conversion from datatypes into pattern functors is done by the \texttt{Regular} type class. The \texttt{Regular} type class has two functions. The \texttt{from} function converts the datatype into a pattern functor and the \texttt{to} function converts the pattern functor back into a datatype. In \texttt{regular}, the pattern functor is represented by a type family. Then using the \texttt{Regular} conversion to a pattern functor, we can write the \texttt{Tree} datatype from Chapter \ref{chap-spec-impl} as:
+The conversion from datatypes into pattern functors is done by the \texttt{Regular} type class. The \texttt{Regular} type class has two functions. The \texttt{from} function converts the datatype into a pattern functor and the \texttt{to} function converts the pattern functor back into a datatype. In \texttt{regular}, the pattern functor is represented by a type family. Then using the \texttt{Regular} conversion to a pattern functor, we can write the \texttt{Tree} datatype from \Cref{chap-spec-impl} as:
 
 \begin{minted}{haskell}
 type family PF a :: * -> *

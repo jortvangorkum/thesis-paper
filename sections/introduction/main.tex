@@ -1,8 +1,5 @@
 \chapter{Introduction}
 
-\todo[inline]{Use Cref instead of ref}
-\todo[inline]{Use incremental algorithm instead of algorithm}
-
 Incremental computation is an approach to improve performance by reusing results of a previously computed result when both of the inputs are equal. There are multiple applications where incremental computation has a positive effect: GUIs (e.g., DOM diffing), spreadsheets, attribute grammar evaluation, etc.  An example, where incremental computation has significant effect on performance, is computing the Fibonacci sequence.
 
 \begin{figure}[H]
@@ -89,8 +86,8 @@ Finally, to prevent the cache from growing too large for the available amount of
 In summary, the main contributions of the Thesis are the following:
 
 \begin{itemize}
-    \item We define an algorithm for incremental computation over recursive data structures. The algorithm uses hashes for comparing whether data structures are equal in constant time and a Zipper to efficiently update the recursive data structure without rehashing the entire data structure.
-    \item We use datatype-generic programming to write a generic version of the algorithm, to support a large class of datatypes, namely \textit{regular datatypes}.
+    \item We define an algorithm for incremental computation over recursive data structures. The incremental algorithm uses hashes for comparing whether data structures are equal in constant time and a Zipper to efficiently update the recursive data structure without rehashing the entire data structure.
+    \item We use datatype-generic programming to write a generic version of the incremental algorithm, to support a large class of datatypes, namely \textit{regular datatypes}.
     \item We use pattern synonyms, to make the developer experience the same as implementing a non-incremental algorithm.
     \item We define cache addition policies and cache replacement policies to optimize the performance/memory usage for different use-cases.
 \end{itemize}
