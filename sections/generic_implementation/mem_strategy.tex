@@ -27,9 +27,21 @@ merkle x = AFix py (MemoInfo d h)
     py = merkle <$> from x
     d  = hash py
     h  = depth py
-\end{minted}
 
-\todo[inline]{Add implementation for the usage of cache addition policy (in cataMerkleState)}
+-- Updated cataMerkleState to support cache addition policy for recursion depth
+cataMerkleState :: (Functor f, Traversable f) 
+                => (f a -> a) -> AFix f MemoInfo 
+                -> State (HashMap Digest (a, CacheInfo)) a
+cataMerkleState alg (AFix x (MemoInfo di de))
+  = do m <- get
+      case lookup di m of
+        Just a -> return a
+        Nothing -> do y <- mapM (cataMerkleState alg) x
+                      let r = alg y
+                      if minDepth <= de
+                        then  modify (insert d r) >> return r
+                      else return r   
+\end{minted}
 
 However, this does not prevent the memory from filling-up. A more drastic measure is needed to keep the memory from filling up and that is to remove intermediate values from the cache. For this another policy needs to be defined and that are the cache replacement policies.
 
@@ -42,22 +54,22 @@ The cache replacement policy can be based on a single metric of a combination of
 Fortunately, it is quite simple to implement the cache replacement policies. At the end of the \inlinehaskell{cataMerkle} computation, a filter is passed over the intermediate values. If the intermediate value is true with the current cache replacement policy, it gets discarded. Otherwise, the intermediate value stays in the cache. 
 
 \begin{minted}{haskell}
-  data CacheInfo = CacheInfo { getFrequency :: Int, getRecency :: Int }
+data CacheInfo = CacheInfo { getFrequency :: Int, getRecency :: Int }
   
   -- An example for a replacement policy
 replacementPolicy :: CacheInfo -> Bool
 replacementPolicy c = getFrequency c <= 1
 \end{minted}
 
-\todo[inline]{Show implementation of cataMerkle}
 \begin{minted}{haskell}
--- Add the CacheInfo to the intermediate values
-cataMerkle :: (f a -> a) -> AFix f MemoInfo 
-           -> State (HashMap Digest (a, CacheInfo)) a
-
-
 applyPolicy :: HashMap Digest (a, CacheInfo) -> HashMap Digest (a, CacheInfo)
 applyPolicy = filter (replacementPolicy . snd)
+
+cataMerkle :: (Functor f, Traversable f) 
+           => (f a -> a) -> AFix f MemoInfo -> (a, HashMap Digest (a, CacheInfo))
+cataMerkle alg t = (y, applyPolicy ys)
+  where
+    (y, ys) = runState (cataMerkleState alg t) empty
 \end{minted}
 
 There are a multitude of replacement policies which can be chosen to replace cached results. Below, there are some suggestions of what type of replacement policies can be chosen.
