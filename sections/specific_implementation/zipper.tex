@@ -45,7 +45,7 @@ leave l        = top (up l)
 \end{minted}
 
 
-\subsection{Zipper \texttt{TreeH}}
+\subsection{Zipper Merkle Tree}
 \label{subsec-zipper-treeh}
 
 The implementation of the Zipper for the \texttt{TreeH} datatype is the same as for the \texttt{Tree} datatype. However, the \texttt{TreeH} also contains the hash of the current and underlying data structure. Therefore, when a value is modified in the \texttt{TreeH}, all the parent nodes of the modified value needs to be updated. 

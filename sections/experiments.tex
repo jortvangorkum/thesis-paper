@@ -47,22 +47,17 @@ bestCase :: Merkle (PF (Tree Int)) -> Merkle (PF (Tree Int))
 bestCase = update (const (Leaf i)) [Dwn]
 \end{minted}
 
-\newpage
 \section{Results}
 
 The experiments are performed on a laptop with a \texttt{Intel Core i7-8750H} with a base clock of \texttt{2.2GHz} and a boost clock of \texttt{4.1GHz}, with \texttt{16GB} of memory. First we explain the results of the three algorithms with three different scenarios, iterating 10 times. Then, we show the results of adding a cache addition policy.
 
 \subsection{Execution Time}
-\todo[inline]{Add an explanation why the generic cata sum is slower than the original cata sum}
-\todo[inline]{Add introduction sentence}
-\todo[inline]{Add reference to the figure}
-
-For all the benchmarks, the Incremental Cata Sum is faster when the tree contains more than $10^3$ nodes. However, for every benchmark the execution time is better or worse depending on the type of update that is performed. The best case scenario has the biggest difference, then the average case and the closest performance difference is the worst case. The execution time for Cata Sum and Generic Cata Sum seems to be linear with the amount of nodes and the Incremental Cata Sum is constant/logarithmic. The discrepancy in the range between $10^2 - 10^3$ is probably because the amount of nodes is too low to get stable results.
+Looking at \Cref{fig-exec-time-no-policy} the Incremental Cata Sum is faster when the tree contains more than $10^3$ nodes. However, for every benchmark the execution time is better or worse depending on the type of update that is performed. The best case scenario has the biggest difference, then the average case and the closest performance difference is the worst case. The execution time for Cata Sum and Generic Cata Sum seems to be linear with the amount of nodes and the Incremental Cata Sum is constant/logarithmic. The Cata Sum seems to be a factor faster than the Generic Cata Sum, which makes sense because Generic Cata Sum does the same computation as the Cata Sum. And, additionally computes the generic representation of the data structure, computes the digests for the data structure and stores all the cached result into a \texttt{HashMap}. The Incremental Cata Sum is constant/logarithmic, because it only updates the digests of the changed nodes and its parent nodes and recomputes the nodes with changed digests, which is worst case $\mathcal{O}(M \log{N})$ where $M$ is the amount of changes and $N$ is the size of the tree. The discrepancy in the range between $10^2 - 10^3$ is probably because the amount of nodes is too low to get stable results.
 
 \begin{figure}[H]
   \begin{minipage}{.5\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{plots/run-3/time/Worst/10/all_benchmarks.pdf}  
+    \includegraphics[width=\textwidth]{plots/run-3/time/Worst/10/all_benchmarks.pdf}
   \end{minipage}
   \begin{minipage}{.5\textwidth}
     \centering
@@ -75,14 +70,11 @@ For all the benchmarks, the Incremental Cata Sum is faster when the tree contain
     \end{minipage}
   \end{center}
   \caption{The execution time over 10 executions for the Worst, Average and Best case.}
+  \label{fig-exec-time-no-policy}
 \end{figure}
 
-\newpage
 \subsection{Memory Usage}
-\todo[inline]{Add introduction sentence}
-\todo[inline]{Add reference to the figure}
-
-The memory usage results are all linear with the amount of nodes. The Cata Sum uses the least amount of memory, then the Incremental Cata Sum and the most used bytes is the Generic Cata Sum. We think that the Incremental Cata Sum uses less memory than the Generic Cata Sum, because the Incremental Cata Sum needs to load-in fewer parts of the data structure than the Generic Cata Sum. Also, the same discrepancy occurs in the range between $10^2 - 10^3$ as with the execution time.
+The \Cref*{fig-mem-usage-no-policy} shows that the memory usage is, for all algorithms, linear with the amount of nodes. The Cata Sum uses the least amount of memory, then the Incremental Cata Sum and the most used bytes is the Generic Cata Sum. We think that the Incremental Cata Sum uses less memory than the Generic Cata Sum, because the Incremental Cata Sum needs to load-in fewer parts of the data structure than the Generic Cata Sum. Also, the same discrepancy occurs in the range between $10^2 - 10^3$ as with the execution time.
 
 \begin{figure}[H]
   \begin{minipage}{.5\textwidth}
@@ -100,12 +92,12 @@ The memory usage results are all linear with the amount of nodes. The Cata Sum u
     \end{minipage}
   \end{center}
   \caption{The max-bytes-used over 10 executions for the Worst, Average and Best case.}
+  \label{fig-mem-usage-no-policy}
 \end{figure}
 
-\newpage
 \subsection{Comparison Cache Addition Policies}
 
-As expected the memory usage is lower than when all the intermediate values are stored. Even, the execution time did not increase significantly. However, this is probably because the function which is computed (addition) is not computational intensive. This means it is less computational intensive to recompute the value than to store the value and retrieve it when needed. This does not have to be the case for more extensive computations. So, for the best performance this parameter needs to be correctly tweaked.
+As seen in \Cref*{fig-exec-time-policy-rec-depth-5} and \Cref*{fig-mem-usage-policy-rec-depth-5}, the memory usage is lower than when all the intermediate values are stored. Even, the execution time did not increase significantly. However, this is probably because the function which is computed (addition) is not computational intensive. This means it is less computational intensive to recompute the value than to store the value and retrieve it when needed. This does not have to be the case for more extensive computations. So, for the best performance this parameter needs to be correctly tweaked.
 
 For example, if we increased the recursion depth limit to 10. The results in Appendix Section \ref*{app-sec-10-rec-depth} show that the memory usage is even lower than the limit of 5. However, the execution time increases significantly. This is because the computation takes longer to perform than to store and perform a lookup. 
 
@@ -126,6 +118,7 @@ For example, if we increased the recursion depth limit to 10. The results in App
     \end{minipage}
   \end{center}
   \caption{The execution time over 10 executions for the Worst, Average and Best case, where the minimum recursion depth is 5.}
+  \label{fig-exec-time-policy-rec-depth-5}
 \end{figure}
 
 \subsubsection*{Memory Usage}
@@ -145,4 +138,5 @@ For example, if we increased the recursion depth limit to 10. The results in App
     \end{minipage}
   \end{center}
   \caption{The max-bytes-used over 10 executions for the Worst, Average and Best case, where the minimum recursion depth is 5.}
+  \label{fig-mem-usage-policy-rec-depth-5}
 \end{figure}

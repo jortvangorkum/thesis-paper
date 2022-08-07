@@ -74,7 +74,7 @@ sumTreeIncMap m n@(Node l x r) = case lookup (hash n) m of
 
 Generating a hash for every computation over the data structure is time-consuming and unnecessary, because most of the \texttt{Tree} data structure stays the same. The work of \citeauthor{miraldo2019efficient}\cite{miraldo2019efficient} inspired the use of the Merkle Tree. A Merkle Tree is a data structure which integrates the hashes within the data structure.
 
-\section{Merkle Tree (\texttt{TreeH})}
+\section{Merkle Tree}
 First we introduce a new datatype \texttt{TreeH}, which contains a \texttt{Digest} for every constructor in \texttt{Tree}. Then to convert the \texttt{Tree} datatype into the \texttt{TreeH} datatype, the structure of the Tree is hashed and stored into the datatype using the \texttt{merkle} function.
 
 \begin{minted}{haskell}

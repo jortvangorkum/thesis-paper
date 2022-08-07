@@ -35,10 +35,11 @@ However, this does not prevent the memory from filling-up. A more drastic measur
 
 \subsection{Cache Replacement Policies}
 
+\todo[inline]{Go from intermediate values to cached results}
+
 The cache replacement policy can be based on a single metric of a combination of multiple metrics. Unfortunately, we cannot determine the overall best cache replacement policy, because the best cache replacement policy is application specific as stated in \citetitle{acar2003selective}\footnote{``In general the replacement policy must be application-specific, because, for any fixed policy, there are programs whose performance is made worse by that choice.''\cite{acar2003selective}}. As a result, this paper will only describe possible policies which can be used by developers, but not show any results.
 
 Fortunately, it is quite simple to implement the cache replacement policies. At the end of the \inlinehaskell{cataMerkle} computation, a filter is passed over the intermediate values. If the intermediate value is true with the current cache replacement policy, it gets discarded. Otherwise, the intermediate value stays in the cache. 
-
 
 \begin{minted}{haskell}
   data CacheInfo = CacheInfo { getFrequency :: Int, getRecency :: Int }
@@ -59,8 +60,7 @@ applyPolicy :: HashMap Digest (a, CacheInfo) -> HashMap Digest (a, CacheInfo)
 applyPolicy = filter (replacementPolicy . snd)
 \end{minted}
 
-\todo{Write a whole sentence}
-Possible cache replacement policies:
+There are a multitude of replacement policies which can be chosen to replace cached results. Below, there are some suggestions of what type of replacement policies can be chosen.
 \begin{itemize}
   \item Random replacement: remove random elements from the cache.
   \item Recency-based policies: remove elements based on when the element was added.
