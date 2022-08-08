@@ -13,3 +13,5 @@ We introduced the pattern synonyms to improve the developer experience to almost
 We define possible cache addition and cache replacement policies to improve the performance/memory usage of the incremental algorithm. There are multiple policies defined to inspire the developers to find the fitting one for their use-case.
 
 However, some difficulties still remain. First, the initial pass of the incremental algorithm is a lot slower than the non-incremental version. Therefore, the incremental algorithm needs to be performed a lot (with small changes), before being overall faster than the non-incremental version. Secondly, finding the correct policies for the best performance can be quite cumbersome. Third, the pattern synonyms have to be handwritten instead of being generated using \texttt{TemplateHaskell}.
+
+The code of the Thesis Project can be found at: \href{https://github.com/jortvangorkum/memo-cata}{\texttt{https://github.com/jortvangorkum/memo-cata}}
