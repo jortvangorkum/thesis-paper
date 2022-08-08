@@ -24,3 +24,5 @@ memoized
 Incrementality
 adaptivity
 incrementalized
+Trie
+trie

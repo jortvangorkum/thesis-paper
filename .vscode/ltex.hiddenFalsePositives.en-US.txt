@@ -14,3 +14,5 @@
 {"rule":"THREE_NN","sentence":"^\\QA cache replacement policy can be chosen to be used.\\E$"}
 {"rule":"THREE_NN","sentence":"^\\QAn example of a cache addition policy would be\\E$"}
 {"rule":"THREE_NN","sentence":"^\\QCurrently, the user has to define their own pattern synonym definition which can become\\E$"}
+{"rule":"THREE_NN","sentence":"^\\QThen, we show the results of adding a cache addition policy.\\E$"}
+{"rule":"THE_SUPERLATIVE","sentence":"^\\QThe Incremental Cata Sum is constant/logarithmic, because it only updates the digests of the changed nodes and its parent nodes and recomputes the nodes with changed digests, which is worst case \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q where \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q is the amount of changes and \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q is the size of the tree.\\E$"}
