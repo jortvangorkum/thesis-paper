@@ -1,16 +1,14 @@
 \chapter{Datatype-Generic Programming}
 \label{chap-dat-gen-program}
 
-\todo[inline]{Compare paper \citetitle{van2008lightweight}}
-
 The implementation in \Cref{chap-spec-impl} is an efficient implementation for incrementally computing the summation over a \texttt{Tree} datatype. However, when we want to implement this functionality for a different datatype, a lot of code needs to be copied while the process remains the same. This results in poor maintainability, is error-prone and is in general boring work.
 
-An example of reducing manual implementations for datatypes is the \textit{deriving} mechanism in Haskell. The built-in classes of Haskell, such as \texttt{Show, Ord, Read}, can be derived for a large class of datatypes. However, deriving is not supported for custom classes. Therefore, we use \textit{Datatype-Generic Programming}\cite*{gibbons2006datatype} to define functionality for a large class of datatypes.
+An example of reducing manual implementations for datatypes is the \textit{deriving} mechanism in Haskell. The built-in classes of Haskell, such as \texttt{Show, Ord, Read}, can be derived for a large class of datatypes. However, \textit{deriving} is not supported for recursive datatypes. Therefore, we use \textit{Datatype-Generic Programming}\cite*{gibbons2006datatype} to define functionality for a large class of datatypes.
 
-In this chapter, we introduce Datatype-Generic Programming, also known as \textit{generic programming} or \textit{generics} in Haskell, as a technique that uses the structure of a datatype to define functions for a large class of datatypes. This prevents the need to write the previously defined functionality for every datatype.
+In this chapter, we introduce Datatype-Generic Programming, also known as \textit{generic programming} in Haskell, as a technique that uses the structure of a datatype to define functions for a large class of datatypes. This prevents the need to write the previously defined functionality for every datatype.
 
 \section{Introduction}
-There are multiple generic programming libraries, however to demonstrate the workings of generic programming we will be using a single library as inspiration, named \texttt{regular}\cite*{regular2022}. Here the generic representation of a datatype is called a \textit{pattern functor}. A pattern functor is a stripped-down version of a data type, by only containing the constructor but not the recursive structure. The recursive structure is done explicitly by using a fixed-point operator. 
+There are multiple generic programming libraries, however to demonstrate the workings of generic programming we will be using a single library as inspiration, named \texttt{regular}\cite*{regular2022}. Here the generic representation of a datatype is called a \textit{pattern functor}. A pattern functor is a stripped-down version of a datatype, by only containing the constructor but not the recursive structure. The recursive structure is done explicitly by using a fixed-point operator. 
 
 First, the pattern functor defined in \texttt{regular} are 5 primitive type constructors and 2 meta information constructors. The primitive type constructors describe the datatypes. The meta information constructors only contain information (e.g., constructor name) but not any structural information.
 
@@ -43,7 +41,7 @@ class Regular (Tree a) where
   to (R (I l :*: K x :*: I r)) = Node l x r
 \end{minted}
 
-To demonstrate the workings of generic programming, we are going to implement a simple generic function which determines the length of an arbitrary datatype. First, we define the length function within a type class. The type class is used, to define how to determine the length for every primitive type constructor \texttt{f}. 
+To demonstrate the workings of generic programming, we are going to implement a simple generic function which determines the length of an arbitrary datatype. First, we define the length function within a type class. The type class is used, to define how to compute the length for every primitive type constructor \texttt{f}. 
 
 \begin{minted}{haskell}
 class GLength f where
@@ -71,14 +69,14 @@ instance (GLength f, GLength g) => GLength (f :*: g) where
   glength f (x :*: y) = glength f x + glength f y
 \end{minted}
 
-The instance for the recursive call \texttt{I} needs an additional argument. Because, we do not know the type of \texttt{x}, so an additional function (\inlinehaskell{f :: a -> Int}) needs to be given which converts \texttt{x} into the length for that type.
+The instance for the recursive call \texttt{I} needs an additional argument. Because, we do not know the type of \texttt{x}, so, an additional function (\inlinehaskell{f :: a -> Int}) needs to be given which converts \texttt{x} into the length for that type.
 
 \begin{minted}{haskell}
 instance GLength I where
   glength f (I x) = f x
 \end{minted}
 
-Then using the \texttt{GLength} instances for all primitive type constructors, a function can be defined using the generic length function. By first, converting the datatype into a generic representation, then calling \texttt{glength} given recursively itself, and for every recursive call increase the length by one. 
+Then using the \texttt{GLength} instances for all primitive type constructors, a function can be defined using the generic length function. By first, converting the datatype into a generic representation, then calling \texttt{glength} with the function \texttt{length} recursively, and for every recursive call increase the length by one. 
 
 \begin{minted}{haskell}
 length :: (Regular a, GLength (PF a)) => a -> Int

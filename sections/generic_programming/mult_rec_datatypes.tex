@@ -1,5 +1,5 @@
 \section{Mutually recursive datatypes}
-A large class of datatypes is supported by the previous section, namely \textit{regular} datatypes. Regular datatypes are datatypes in which the recursion only goes into the same datatype. However, if we want to support the abstract syntax tree of many programming languages, we need to support datatypes which can recurse over different datatypes, namely mutually recursive datatypes.
+A large class of datatypes is supported by the previous section, namely \textit{regular} datatypes. Regular datatypes are datatypes in which the recursion only goes into the same datatype. However, if we want to support the abstract syntax tree (AST) of many programming languages, we need to support datatypes which can recurse over different datatypes, namely mutually recursive datatypes.
 
 \begin{minted}{haskell}
 data Tree a = Empty 

@@ -2,45 +2,39 @@
 
 Ultimately, the generic programming library chosen to implement the incremental computation is the \texttt{regular} library. The \texttt{regular} library is chosen, because the library is the easiest to use, while still supporting enough datatypes to have meaningful results. However, the mutually recursive datatypes are not supported, and it does not use SOP which can cause more bugs to occur, because pattern functors do not represent Haskell datatypes as correctly as SOP.
 
-The first step of writing the generic incremental computation was computing the Merkle Tree. In other terms, we need to store the hash of the data structure inside the data structure. We accomplish this by defining a new type \texttt{Merkle} which is a fixed-point over the data structure where each of the recursive positions contains a hash (\inlinehaskell{K Digest}).
+The first step of writing the generic incremental computation was computing the Merkle Tree. In other terms, we need to store the hash of the data structure inside the data structure. We accomplish this by defining a new type \texttt{Merkle} which is a fixed-point over the data structure where each of the recursive positions contains a digest of type (\inlinehaskell{K Digest}).
 
 \begin{minted}{haskell}
 type Merkle f = Fix (f :*: K Digest)
 \end{minted}
 
-But, before the hash can be stored inside the data structure, the hash needs to be computed from the data structure. For this we need to know how to hash the generic datatypes. We introduce a typeclass named \texttt{Hashable} which defines a function \texttt{hash}, which converts the \texttt{f} datatype into a \texttt{Digest} (also known as a \textit{hash value}).
+But, before the hash can be stored inside the data structure, the hash needs to be computed from the data structure. For this we need to know how to hash the primitive type constructors. We introduce a typeclass named \texttt{Hashable} which defines a function \texttt{hash}, which converts the \texttt{f} datatype into a \texttt{Digest}.
 
 \begin{minted}{haskell}
 class Hashable f where
   hash :: f (Merkle g) -> Digest
-
-digest :: Show a => a -> Digest
-digest = digestStr . show -- converts a string into a hash value
 \end{minted}
 
-The Hashable instance of \texttt{U} is simple. The \texttt{digest} function is used to convert the constructor name \texttt{U} into a \texttt{Digest}. The \texttt{K} also uses the \texttt{digest} function to convert the constructor name into a \texttt{Digest}, but it also calls \texttt{digest} on the constant value of \texttt{K}. Therefore, the type of the value of \texttt{K} needs an instance for \texttt{Show}. Then both digests are combined into a single digest. 
+The Hashable instance of \texttt{U} is simple. The \texttt{hash} function is used to convert the constructor name \texttt{U} into a \texttt{Digest}. The \texttt{K} also uses the \texttt{hash} function to convert the constructor name into a \texttt{Digest}, but it also calls \texttt{hash} on the constant value of \texttt{K}. Therefore, the type of the value of \texttt{K} needs an instance for \texttt{Show}. Then both digests are combined into a single digest. 
 
 \pagebreak
 \begin{minted}{haskell}
 instance Hashable U where
-  hash _ = digest "U"
+  hash _ = hash "U"
 
 instance (Show a) => Hashable (K a) where
-  hash (K x) = digestConcat [digest "K", digest x]
+  hash (K x) = digestConcat [hash "K", hash x]
 \end{minted}
 
-The instances for \inlinehaskell{:+:}, \inlinehaskell{:*:} and \inlinehaskell{C} are quite similar as the instance for the \texttt{K} datatype. However, the value inside the constructor are recursively called.
+The instances for sums and products are quite similar as the instance for the \texttt{K} datatype. However, the value inside the constructor are recursively called.
 
 \begin{minted}{haskell}
 instance (Hashable f, Hashable g) => Hashable (f :+: g) where
-  hash (L x) = digestConcat [digest "L", hash x]
-  hash (R x) = digestConcat [digest "R", hash x]
+  hash (L x) = digestConcat [hash "L", hash x]
+  hash (R x) = digestConcat [hash "R", hash x]
 
 instance (Hashable f, Hashable g) => Hashable (f :*: g) where
-  hash (x :*: y) = digestConcat [digest "P", hash x, hash y]
-
-instance (Hashable f) => Hashable (C c f) where
-  hash (C x) = digestConcat [digest "C", hash x]
+  hash (x :*: y) = digestConcat [hash "P", hash x, hash y]
 \end{minted}
 
 The \texttt{I} instance is different from the previous instances, because the recursive position is already converted into a Merkle Tree. Thus, we need to get the computed hash from the recursive position, digest the datatype name and combine the digests. 
@@ -55,7 +49,7 @@ instance Hashable I where
 
 The \texttt{hash} implementation can then be used to define a function \inlinehaskell{merkleG} which converts from a shallow generic representation, to a generic representation where one layer of recursive positions contains a hash value. 
 
-Subsequently, we can define a function \inlinehaskell{merkle} which converts the entire generic representation, into a generic representation where every recursive position contains a hash value. We can define \inlinehaskell{merkle} using the same implementation as in Section \ref*{sec-explicit-recursion}, but we add a step where after all the children are recursively called, the \texttt{merkleG} function is applied. 
+Subsequently, we can define a function \inlinehaskell{merkle} which converts the entire datatype, into a pattern functor where every recursive position contains a hash value. We can define \inlinehaskell{merkle} using the same implementation as in Section \ref*{sec-explicit-recursion}, but we add a step where after all the children are recursively called, the \texttt{merkleG} function is applied. 
 
 \begin{minted}{haskell}
 merkleG :: Hashable f => f (Merkle g) -> (f :*: K Digest) (Merkle g)
@@ -67,7 +61,7 @@ merkle = In . merkleG . fmap merkle . from
 \end{minted}
 
 \pagebreak
-The \texttt{Merkle} representation can then be used to define a function \texttt{cataMerkleState} which given a function \inlinehaskell{alg :: (f a -> a)} which converts the generic representation \inlinehaskell{f a} into a value of type \texttt{a} and the \texttt{Merkle f} data structure, and returns a \texttt{State} of \inlinehaskell{(HashMap Digest a) a}. The \inlinehaskell{cataMerkleState} function starts with retrieving the \texttt{State}, which keeps track of the intermediate results and stores them into a \inlinehaskell{HashMap Digest a}. Then, given the hash value of the recursive position, we look into the HashMap if the value has been computed. If the value has been computed, then return the value. Otherwise, recursively compute all the children, apply the given function \inlinehaskell{alg}, insert the new value into the \inlinehaskell{HashMap} and return the computed value.
+The \texttt{Merkle} representation can then be used to define a function \texttt{cataMerkleState} which given a function \inlinehaskell{alg :: (f a -> a)} which converts the generic representation \inlinehaskell{f a} into a value of type \texttt{a} and the \texttt{Merkle f} data structure, and returns a \texttt{State} of \inlinehaskell{(HashMap Digest a) a}. The \inlinehaskell{cataMerkleState} function starts with retrieving the \texttt{State}, which keeps track of the cached results and stores them into a \inlinehaskell{HashMap Digest a}. Then, given the hash value of the recursive position, we look into the HashMap if the value has been computed. If the value has been computed, then return the value. Otherwise, recursively compute all the children, apply the given function \inlinehaskell{alg}, insert the new value into the \inlinehaskell{HashMap} and return the computed value.
 
 \begin{minted}{haskell}
 cataMerkleState :: (Functor f, Traversable f)
@@ -81,7 +75,7 @@ cataMerkleState alg (In (x :*: K h))
                        modify (insert h r) >> return r
 \end{minted}
 
-The \texttt{cataMerkleState} function can be used, but to execute the function we first need to give the function a \inlinehaskell{HashMap Digest a}. To simplify the use of \texttt{cataMerkleState}, we define a function \inlinehaskell{cataMerkle}, which executes the \texttt{cataMerkleState} with an empty \texttt{HashMap} and returns the final computed result and the final state as the result. 
+The \texttt{cataMerkleState} function can be used, but to execute the function, first the function needs a \inlinehaskell{HashMap Digest a}. To simplify the use of \texttt{cataMerkleState}, a function \inlinehaskell{cataMerkle} is defined, which executes the \texttt{cataMerkleState} with an empty \texttt{HashMap} and returns the final computed result and the final state as the result. 
 
 \begin{minted}{haskell}
 cataMerkle :: (Functor f, Traversable f)
@@ -89,7 +83,7 @@ cataMerkle :: (Functor f, Traversable f)
 cataMerkle alg t = runState (cataMerkleState alg t) empty
 \end{minted}
 
-Finally, we have all the necessary functionality defined to write a function over the generic representation and automatically generate all the intermediate results and the final result. The example below computes the sum over the generic representation of \inlinehaskell{Tree} by adding all the values of the leaf and nodes. 
+Finally, all the necessary functionality is defined to write a function over the generic representation and automatically generate all the cached results and the final result. The example below computes the sum over the generic representation of \inlinehaskell{Tree} by adding all the values of the leaf and nodes. 
 
 \begin{minted}{haskell}
 cataSum :: Merkle (PF (Tree Int)) -> (Int, HashMap Digest Int)
