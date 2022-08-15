@@ -12,7 +12,7 @@ instance Eq a => Eq (Tree a) where
 
 The problem with using this implementation of the \texttt{Eq} typeclass for memoization is that for every comparison of the \texttt{Tree} datatype the equality is computed. This is inefficient because the equality implementation has to traverse the complete \texttt{Tree} data structure to know if the \texttt{Tree}'s are equal. 
 
-To efficiently compare the \texttt{Tree} datatypes, we need to represent the structure in a manner which does not lead to traversing to the complete \texttt{Tree} data structure. This can be accomplished using a \textit{hash} function. A hash function is a process of transforming a data structure into an arbitrary fixed-size value, where the same input always generates the same output. 
+To efficiently compare the \texttt{Tree} datatypes, we need to represent the structure in a manner which does not lead to traversing to the complete \texttt{Tree} data structure. This can be accomplished using a \textit{hash} function. A hash function is a process of transforming input into an arbitrary fixed-size value, where the same input always generates the same output. 
 
 One thing to be cautious when using digests are \textit{hash collisions}. Hash collisions happen when two different inputs have the same resulting hash. This is because a hash function has a limited amount of bits to represent every possible combination of data. To calculate the chance of a hash collision occurring we use the formula $p = \epsilon^{\frac{-k(k-1)}{2N}}$ from \citetitle{hashcoll2011}\cite{hashcoll2011}. So, given a common hash function CRC-32\cite{peterson1961cyclic}, which has a digest size of 32bits, to get a $50\%$ chance of a hash collision occurring in a collection, it needs $0.5 = \epsilon^{\frac{-k(k-1)}{2\times2^{32}}} \rightarrow k = 77163$ hash values.
 
@@ -40,8 +40,8 @@ instance Show a => Hashable a where
   hash = cityHash64 . show
 
 instance Hashable a => Hashable (Tree a) where
-  hash (Leaf x)     = concatHash [hash "Leaf", hash x]
-  hash (Node l x r) = concatHash [hash "Node", hash x, hash l, hash r]
+  hash (Leaf x)     = concatDigest [hash "Leaf", hash x]
+  hash (Node l x r) = concatDigest [hash "Node", hash x, hash l, hash r]
 \end{minted}
 
 To keep track of the results of the computation, we store the results in a \texttt{HashMap}\cite{hackage2022hashmap}. A \texttt{HashMap} is an implementation of mapping a \textit{hashable} key to a value. The implementation of the HashMap is based on \textit{hash array mapped tries}\cite*{bagwell2001ideal}. The average-case complexity for the \texttt{lookup} and \texttt{insert} are $\mathcal{O}(\log{n})$, however in practice these operations are in constant time. Especially, because the keys are digests, meaning that the key size is constant.
@@ -58,11 +58,13 @@ sumTreeInc n@(Node l x r) = (y, insert (hash n) y (ml <> mr))
 
 Then after the first computation over the entire \texttt{Tree}, we can recompute the \texttt{Tree} using the previously created \texttt{HashMap}. Thus, when we recompute the \texttt{Tree}, we first look in the \texttt{HashMap} if the computation has already been performed then return the result. Otherwise, compute the result and store it in the \texttt{HashMap}.
 
+\todo[inline]{Fix code}
+
 \begin{minted}{haskell}
 sumTreeIncMap :: HashMap Digest Int -> Tree Int -> (Int, HashMap Digest Int)
 sumTreeIncMap m l@(Leaf x) = case lookup (hash l) m of
-  Just x  -> (x, m) 
-  Nothing -> (x, insert (hash l) x empty)
+  Just z  -> (z, m) 
+  Nothing -> (x, insert (hash l) x m)
 sumTreeIncMap m n@(Node l x r) = case lookup (hash n) m of
   Just x  -> (x, m)
   Nothing -> (y, insert (hash n) y (ml <> mr))

@@ -89,8 +89,8 @@ Finally, all the necessary functionality is defined to write a function over the
 cataSum :: Merkle (PF (Tree Int)) -> (Int, HashMap Digest Int)
 cataSum = cataMerkle
   (\case
-    L (C (K x))                 -> x
-    R (C (I l :*: K x :*: I r)) -> l + x + r
+    L (K x)                 -> x
+    R (I l :*: K x :*: I r) -> l + x + r
   )
 
 > cataSum $ merkle $ Node (Leaf 1) 2 (Leaf 3)

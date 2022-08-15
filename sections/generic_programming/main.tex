@@ -15,7 +15,7 @@ First, the pattern functor defined in \texttt{regular} are 5 primitive type cons
 \pagebreak
 \begin{minted}{haskell}
 data U r         = U                 -- Empty constructor
-data I r         = I r               -- Recursive call
+data I r         = I r               -- Recursive position
 data K a r       = K a               -- Constant
 data (f :+: g) r = L (f r) | R (g r) -- Sums (Choice)
 data (f :*: g) r = (f r) :*: (g r)   -- Products (Combine)
